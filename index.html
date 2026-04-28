@@ -164,8 +164,10 @@ td.num{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;white-
 td.dt{font-size:12px;color:var(--ink4);white-space:nowrap;}
 tfoot td{font-weight:700;background:var(--paper2)!important;font-size:14px;border-top:2px solid var(--paper3)!important;}
 
-/* 付款記錄表格：固定欄寬，避免在窄畫面下欄位被拉開 */
+/* 付款記錄表格：固定欄寬 + 條紋背景（zebra stripe） */
 table.pay-table{table-layout:fixed;}
+table.pay-table tbody tr:nth-child(even) td{background:rgba(255,201,25,.04);}
+table.pay-table tbody tr:hover td{background:rgba(255,201,25,.10)!important;}
 table.pay-table th:nth-child(1),table.pay-table td:nth-child(1){width:108px;}  /* 日期：YYYY/MM/DD */
 table.pay-table th:nth-child(2),table.pay-table td:nth-child(2){width:108px;}  /* 類別 */
 table.pay-table th:nth-child(3),table.pay-table td:nth-child(3){width:120px;}  /* 廠商 */
@@ -238,22 +240,28 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 /* ── RECEIPT ROWS ─── */
 .rr-head,.rr-row{display:grid;grid-template-columns:minmax(56px,90px) 78px 80px 78px 60px 44px 24px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--paper2);justify-content:start;}
 .rr-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
+/* 客戶收款進度 zebra stripe */
+.rr-row:nth-child(even){background:rgba(255,201,25,.04);}
 .rr-row:last-child{border-bottom:none;}
-.rr-row:hover{background:rgba(246,195,28,.03);}
+.rr-row:hover{background:rgba(255,201,25,.10);}
+
+/* 預算追蹤 zebra stripe */
+.br-row:nth-child(even){background:rgba(255,201,25,.04);}
 
 /* ── FIXED COST GROUPS ─── */
-.fg-head{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--paper2);border-bottom:1px solid var(--paper3);}
-.fg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.fg-nm{font-size:14px;font-weight:700;}
-.fg-pct{font-size:11px;color:var(--ink4);}
-.fg-total{margin-left:auto;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
-.fg-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
+.fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(to right,var(--paper2),var(--paper));border-bottom:2px solid var(--paper3);}
+.fg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px var(--paper);}
+.fg-nm{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
+.fg-pct{font-size:11px;color:var(--ink4);background:var(--paper2);padding:2px 8px;border-radius:10px;font-weight:600;}
+.fg-total{margin-left:auto;font-size:16px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+
+.fg-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;border-bottom:1px solid var(--paper2);}
 .fg-item:last-child{border-bottom:none;}
-.fg-item:hover{background:rgba(246,195,28,.03);}
-.fi-nm{font-size:13px;font-weight:500;color:var(--ink2);}
-.fi-am{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.01em;flex-shrink:0;}
-.fi-ds{font-size:11px;color:var(--ink4);line-height:1.4;margin-top:2px;}
-.fi-mt{font-size:11px;color:var(--ink4);text-align:right;}
+.fg-item:nth-child(even){background:rgba(255,201,25,.03);}
+.fg-item:hover{background:rgba(255,201,25,.10);}
+.fi-nm{font-size:14px;font-weight:600;color:var(--ink);}
+.fi-am{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.01em;flex-shrink:0;color:var(--ink);}
+.fi-ds{font-size:12px;color:var(--ink4);line-height:1.4;margin-top:3px;}
 .fi-cat-head{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;}
 
 /* ── BE (BREAK EVEN) ─── */
@@ -311,7 +319,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .ie-cancel{padding:3px 9px;background:transparent;color:var(--ink4);border:1px solid var(--paper3);border-radius:var(--r3);font-size:12px;cursor:pointer;font-family:inherit;}
 
 /* ── TOAST ─── */
-.ts{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:var(--r5);font-size:13px;border-left:3px solid var(--y);transform:translateY(60px);opacity:0;transition:all .2s;z-index:999;}
+.ts{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:14px 22px;border-radius:var(--r5);font-size:14px;font-weight:500;border-left:3px solid var(--y);transform:translateY(60px);opacity:0;transition:all .2s;z-index:999;max-width:480px;box-shadow:0 8px 24px rgba(0,0,0,.18);line-height:1.5;}
 .ts.on{transform:translateY(0);opacity:1;}
 </style>
 </head>
@@ -421,7 +429,9 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
               <option value="custom">自訂期數</option>
             </select>
             <input type="number" class="fi" id="p-expand-n" placeholder="期數" min="2" max="36" style="width:80px;display:none" oninput="onExpandChange()">
-            <span style="font-size:12px;color:var(--ink4)">每期日期：付款日 +N 月（例如 5/5、6/5、7/5...）</span>
+            <span style="font-size:13px;color:var(--ink3)">每月</span>
+            <input type="number" class="fi" id="p-expand-day" placeholder="" min="1" max="31" style="width:64px" oninput="onExpandChange()">
+            <span style="font-size:13px;color:var(--ink3)">號付款</span>
           </div>
           <div id="p-expand-preview" style="font-size:12px;color:var(--ink3);margin-top:8px;padding-top:8px;border-top:1px dashed var(--paper3);display:none"></div>
         </div>
@@ -764,7 +774,7 @@ async function rProj(key){
     <div style="padding:24px 18px;text-align:center;background:linear-gradient(180deg,var(--paper),var(--paper2))">
       <div style="font-size:14px;color:var(--ink2);margin-bottom:6px">📋 此專案尚未建立撥款項目</div>
       <div style="font-size:13px;color:var(--ink4);margin-bottom:14px">已內建合約撥款模板：共 ${tplCount} 期 / 合計 ${$m(tplTotal)}</div>
-      <button class="btn btn-y" onclick="initReceiptTemplate('${key}')">📋 一鍵初始化撥款項目</button>
+      <button class="btn btn-y" onclick="initReceiptTemplate('${key}',this)">📋 一鍵初始化撥款項目</button>
       <div style="font-size:11px;color:var(--ink4);margin-top:10px">點下後會自動寫入到 Google Sheet 的「${key}_總覽」</div>
     </div></div>`;
   }
@@ -1284,25 +1294,30 @@ async function deletePayRow(){
   if(!confirm('確定要刪除這筆付款記錄嗎？此操作無法復原。'))return;
   const sheet=PKS.includes(cur)?cur+'_付款帳':null;
   if(!sheet)return;
-  // 用 row 自身儲存的真實 sheet row（避免 filter 偏移寫到錯的列）
   const editingRow=window._curRows&&window._curRows[_editingPayIdx];
   const sheetRow=editingRow&&editingRow.__sheetRow?editingRow.__sheetRow:(_editingPayIdx+6);
+  // 鎖按鈕避免重複觸發
+  const delBtn=document.getElementById('payDelBtn');
+  if(delBtn){delBtn.disabled=true;delBtn.textContent='🔄 刪除中...';}
   cdel(sheet);
   try{
-    // 把 12 個欄位全部清空（軟刪除，下次載入時會被 $valid 過濾掉）
-    const updates=[];
+    // 序列清空 12 個欄位（並行送會被 Apps Script 擋成 Failed to fetch）
     for(let col=1;col<=12;col++){
-      updates.push(post({action:'updateCell',sheetName:sheet,row:sheetRow,col,value:''}));
+      toast(`刪除中... ${col}/12`);
+      await post({action:'updateCell',sheetName:sheet,row:sheetRow,col,value:''});
     }
-    await Promise.all(updates);
     closeModal('pay');
     toast('✅ 記錄已刪除');
     setTimeout(render,800);
-  }catch(e){toast('⚠️ 刪除失敗: '+e.message);}
+  }catch(e){
+    toast('⚠️ 刪除失敗: '+e.message);
+  }finally{
+    if(delBtn){delBtn.disabled=false;delBtn.innerHTML='🗑️ 刪除此筆';}
+  }
 }
 
 // 一鍵初始化撥款項目（從模板批次寫入 _總覽 sheet）
-async function initReceiptTemplate(key){
+async function initReceiptTemplate(key,btn){
   const TPL = {
     '2_海保署月曆': [
       ['第1次撥款 30%（決標日 +15 工作天，函送工作規劃期程表後）', 1200000, '2026/04/30', 0, '⏳待收', ''],
@@ -1314,16 +1329,21 @@ async function initReceiptTemplate(key){
   const tpl = TPL[key];
   if(!tpl){toast('⚠️ 此專案沒有預設撥款模板');return;}
   if(!confirm(`即將寫入 ${tpl.length} 筆撥款項目到 ${key}_總覽，確定嗎？`))return;
+  // 立刻 disable 按鈕，避免重複點
+  if(btn){btn.disabled=true;btn.textContent='🔄 寫入中... 請勿重複點擊';}
   const sheet = key+'_總覽';
   cdel(sheet);
   try{
-    // 序列寫入（避免 Apps Script 並發衝突）
     for(let i=0;i<tpl.length;i++){
+      toast(`寫入中... ${i+1}/${tpl.length}`);
       await post({sheetName:sheet, row: tpl[i]});
     }
     toast(`✅ 已寫入 ${tpl.length} 筆撥款項目`);
-    setTimeout(render, 800);
-  }catch(e){toast('⚠️ 寫入失敗: '+e.message);}
+    setTimeout(render, 1200);
+  }catch(e){
+    toast('⚠️ 寫入失敗: '+e.message);
+    if(btn){btn.disabled=false;btn.textContent='📋 一鍵初始化撥款項目';}
+  }
 }
 
 async function submitReceiptEdit(){
@@ -1335,12 +1355,10 @@ async function submitReceiptEdit(){
   const invoice=document.getElementById('rc-invoice').value.trim();
   cdel(sheet);
   try{
-    // 更新 D=實際到帳(col 4), E=狀態(col 5), F=發票連結(col 6)
-    await Promise.all([
-      post({action:'updateCell',sheetName:sheet,row:sheetRow,col:4,value:actual}),
-      post({action:'updateCell',sheetName:sheet,row:sheetRow,col:5,value:st}),
-      post({action:'updateCell',sheetName:sheet,row:sheetRow,col:6,value:invoice}),
-    ]);
+    // 序列更新 D=實際到帳, E=狀態, F=發票（並行送會 Failed to fetch）
+    await post({action:'updateCell',sheetName:sheet,row:sheetRow,col:4,value:actual});
+    await post({action:'updateCell',sheetName:sheet,row:sheetRow,col:5,value:st});
+    await post({action:'updateCell',sheetName:sheet,row:sheetRow,col:6,value:invoice});
     closeModal('receipt');
     _editingReceipt=null;
     toast('✅ 收款記錄已更新');
@@ -1352,25 +1370,32 @@ async function submitReceiptEdit(){
 function onExpandChange(){
   const sel=document.getElementById('p-expand');
   const inp=document.getElementById('p-expand-n');
+  const dayInp=document.getElementById('p-expand-day');
   const prev=document.getElementById('p-expand-preview');
   if(sel.value==='custom'){
     inp.style.display='inline-block';
   } else {
     inp.style.display='none';
   }
+  // 自動把「每月幾號」設為付款日的日數（如果還沒填）
+  const date=document.getElementById('p0').value;
+  if(date && dayInp && !dayInp.value){
+    const d=new Date(date);
+    if(!isNaN(d.getTime()))dayInp.value=d.getDate();
+  }
   const n=getExpandCount();
   if(n<=1){prev.style.display='none';return;}
-  const date=document.getElementById('p0').value;
   const amt=parseInt(document.getElementById('p4').value)||0;
   const desc=document.getElementById('p3').value||'(說明)';
   if(!date){prev.innerHTML='⚠️ 請先填入付款日期';prev.style.display='block';return;}
+  const day=parseInt(dayInp.value)||(new Date(date).getDate());
   const lines=[];
   for(let i=0;i<Math.min(n,5);i++){
-    const d=addMonths(date,i);
-    lines.push(`<div>📌 第 ${i+1} 期：${d}　${desc}（${i+1}/${n}）　NT$${amt.toLocaleString('zh-TW')}</div>`);
+    const dt=addMonthsWithDay(date,i,day);
+    lines.push(`<div>📌 第 ${i+1} 期：${dt}　${desc}（${i+1}/${n}）　NT$${amt.toLocaleString('zh-TW')}</div>`);
   }
   if(n>5)lines.push(`<div style="color:var(--ink4)">… 共 ${n} 期</div>`);
-  prev.innerHTML=`即將建立 <b>${n} 筆</b>付款記錄：${lines.join('')}`;
+  prev.innerHTML=`即將建立 <b>${n} 筆</b>付款記錄（每月 ${day} 號）：${lines.join('')}`;
   prev.style.display='block';
 }
 function getExpandCount(){
@@ -1381,13 +1406,29 @@ function getExpandCount(){
   }
   return parseInt(sel.value)||1;
 }
+function getExpandDay(){
+  const dayInp=document.getElementById('p-expand-day');
+  if(dayInp&&dayInp.value)return parseInt(dayInp.value)||1;
+  const date=document.getElementById('p0').value;
+  return date?new Date(date).getDate():1;
+}
 function addMonths(dateStr,months){
   const d=new Date(dateStr);
   if(isNaN(d.getTime()))return dateStr;
   const day=d.getDate();
   d.setMonth(d.getMonth()+months);
-  // 如果原本是每月 31 號但下個月只有 30 天，setMonth 會自動跳到下下個月，要修
   if(d.getDate()!==day)d.setDate(0);
+  return d.toISOString().split('T')[0];
+}
+// 加 N 月後落在指定的日（如「每月 5 號」），若該月沒有此日則用月底最後一日
+function addMonthsWithDay(dateStr,months,day){
+  const d=new Date(dateStr);
+  if(isNaN(d.getTime()))return dateStr;
+  d.setDate(1);  // 先設為 1 號避免跳月
+  d.setMonth(d.getMonth()+months);
+  // 嘗試設為指定日
+  const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+  d.setDate(Math.min(day,lastDay));
   return d.toISOString().split('T')[0];
 }
 
@@ -1407,8 +1448,11 @@ async function submitPay(){
       const editingRow=window._curRows&&window._curRows[_editingPayIdx];
       const sheetRow=editingRow&&editingRow.__sheetRow?editingRow.__sheetRow:(_editingPayIdx+6);
       const row=buildRow(baseDate,baseDesc,baseDeadline,baseStatus);
-      const updates=row.map((val,col)=>post({action:'updateCell',sheetName:sheet,row:sheetRow,col:col+1,value:val}));
-      await Promise.all(updates);
+      // 序列更新（並行會被 Apps Script 擋）
+      for(let col=0;col<row.length;col++){
+        toast(`儲存中... ${col+1}/${row.length}`);
+        await post({action:'updateCell',sheetName:sheet,row:sheetRow,col:col+1,value:row[col]});
+      }
       closeModal('pay');toast('✅ 記錄已更新');setTimeout(render,800);
     } else {
       // 新增模式：檢查是否要分期展開
@@ -1418,26 +1462,30 @@ async function submitPay(){
         await post({sheetName:sheet,row:buildRow(baseDate,baseDesc,baseDeadline,baseStatus)});
         closeModal('pay');toast('✅ 記錄已新增');setTimeout(render,800);
       } else {
-        // 分 N 期：建立 N 筆，每期日期 = 付款日 + i 個月
-        if(!confirm(`即將建立 ${n} 筆付款記錄（從 ${baseDate} 起，每月一次），確定嗎？`))return;
-        // 真正的序列執行：每筆都 await 完成才送下一筆
+        // 分 N 期：建立 N 筆，每期日期 = 每月指定日
+        const day=getExpandDay();
+        if(!confirm(`即將建立 ${n} 筆付款記錄（每月 ${day} 號付款，共 ${n} 個月），確定嗎？`))return;
+        // 鎖按鈕避免重複
+        const submitBtn=document.querySelector('#ov-pay .mf .btn-y');
+        if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='🔄 建立中...';}
         let success=0;
         try{
           for(let i=0;i<n;i++){
-            const d=addMonths(baseDate,i);
+            const d=addMonthsWithDay(baseDate,i,day);
             const dl=baseDeadline?addMonths(baseDeadline,i):'';
             const desc=`${baseDesc}（${i+1}/${n}）`;
             const st=i===0?baseStatus:'⏳待付';
-            // 顯示進度
             toast(`寫入中... ${i+1}/${n}`);
             await post({sheetName:sheet,row:buildRow(d,desc,dl,st)});
             success++;
           }
           closeModal('pay');
-          toast(`✅ 已建立 ${success} 筆分期記錄`);
+          toast(`✅ 已建立 ${success} 筆分期記錄（每月 ${day} 號）`);
           setTimeout(render,1200);
         }catch(e){
           toast(`⚠️ 寫入到第 ${success+1} 筆失敗: ${e.message}（前 ${success} 筆已成功）`);
+        }finally{
+          if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='新增記錄';}
         }
       }
     }
