@@ -6,368 +6,218 @@
 <title>會飛的手｜財務管理系統</title>
 <style>
   :root {
-    --navy: #1a2744;
-    --navy-light: #243358;
-    --teal: #0f6e56;
-    --teal-light: #1d9e75;
-    --teal-bg: #e1f5ee;
-    --amber: #ba7517;
-    --amber-bg: #faeeda;
-    --gray: #5f5e5a;
-    --gray-light: #f1efe8;
-    --gray-border: #d3d1c7;
-    --white: #ffffff;
-    --red: #a32d2d;
-    --red-bg: #fcebeb;
-    --text: #2c2c2a;
-    --text-muted: #888780;
+    --yellow: #F6C31C;
+    --yellow-dark: #D9AB0E;
+    --yellow-light: #FDF3C0;
+    --yellow-bg: #FFFBE6;
+    --gray: #9B9EA4;
+    --gray-light: #F2F2F2;
+    --gray-border: #E0E0E0;
+    --black: #2C2C2A;
+    --black-soft: #3D3D3A;
+    --white: #FFFFFF;
+    --red: #C0392B;
+    --red-bg: #FDEDEB;
+    --green: #27AE60;
+    --green-bg: #E8F8EE;
+    --amber: #E67E22;
+    --amber-bg: #FEF3E2;
+    --text: #2C2C2A;
+    --text-muted: #9B9EA4;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Noto Sans TC', 'PingFang TC', -apple-system, sans-serif;
-    background: #f4f3ef;
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* Layout */
-  .app { display: flex; min-height: 100vh; }
+  body { font-family: 'Noto Sans TC','PingFang TC',-apple-system,sans-serif; background:#F5F5F3; color:var(--text); min-height:100vh; }
+  .app { display:flex; min-height:100vh; }
 
   /* Sidebar */
-  .sidebar {
-    width: 220px;
-    background: var(--navy);
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-  }
-
-  .sidebar-logo {
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .sidebar-logo .company { font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 0.05em; }
-  .sidebar-logo .title { font-size: 16px; color: #fff; font-weight: 600; margin-top: 4px; }
-
-  .sidebar-nav { padding: 12px 0; flex: 1; }
-  .nav-section { padding: 16px 20px 6px; font-size: 10px; letter-spacing: 0.1em; color: rgba(255,255,255,0.3); text-transform: uppercase; }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 20px;
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    cursor: pointer;
-    border-left: 2px solid transparent;
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .nav-item:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.05); }
-  .nav-item.active { color: #fff; background: rgba(255,255,255,0.1); border-left-color: var(--teal-light); }
-  .nav-item .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: rgba(255,255,255,0.2); flex-shrink: 0;
-  }
-  .nav-item.active .dot { background: var(--teal-light); }
-
-  .sidebar-footer {
-    padding: 16px 20px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    font-size: 11px;
-    color: rgba(255,255,255,0.25);
-  }
+  .sidebar { width:220px; background:var(--black); flex-shrink:0; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; overflow-y:auto; }
+  .sidebar-logo { padding:24px 20px 18px; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .sidebar-logo .arrow { font-size:22px; color:var(--yellow); margin-bottom:8px; display:block; }
+  .sidebar-logo .company { font-size:11px; color:rgba(255,255,255,0.4); letter-spacing:0.08em; }
+  .sidebar-logo .title { font-size:14px; color:#fff; font-weight:600; margin-top:3px; letter-spacing:0.02em; }
+  .sidebar-logo .subtitle { font-size:10px; color:var(--yellow); margin-top:2px; letter-spacing:0.06em; }
+  .sidebar-nav { padding:10px 0; flex:1; }
+  .nav-section { padding:14px 20px 5px; font-size:9px; letter-spacing:0.12em; color:rgba(255,255,255,0.25); text-transform:uppercase; }
+  .nav-item { display:flex; align-items:center; gap:8px; padding:9px 20px; font-size:12.5px; color:rgba(255,255,255,0.55); cursor:pointer; border-left:2px solid transparent; transition:all 0.15s; }
+  .nav-item:hover { color:rgba(255,255,255,0.9); background:rgba(255,255,255,0.05); }
+  .nav-item.active { color:#fff; background:rgba(246,195,28,0.12); border-left-color:var(--yellow); }
+  .nav-item .dot { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.2); flex-shrink:0; }
+  .nav-item.active .dot { background:var(--yellow); }
+  .nav-badge { margin-left:auto; background:var(--red); color:#fff; font-size:9px; padding:1px 6px; border-radius:10px; font-weight:600; }
+  .sidebar-footer { padding:14px 20px; border-top:1px solid rgba(255,255,255,0.06); font-size:10px; color:rgba(255,255,255,0.2); }
 
   /* Main */
-  .main { flex: 1; overflow: hidden; }
+  .main { flex:1; overflow:hidden; }
+  .topbar { background:var(--white); border-bottom:1px solid var(--gray-border); padding:14px 32px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+  .topbar-left { display:flex; align-items:center; gap:12px; }
+  .topbar-tag { background:var(--yellow); color:var(--black); font-size:10px; font-weight:700; padding:2px 8px; border-radius:3px; letter-spacing:0.04em; }
+  .topbar-left h1 { font-size:16px; font-weight:600; color:var(--black); }
+  .topbar-left .sub { font-size:12px; color:var(--text-muted); }
+  .topbar-actions { display:flex; gap:8px; align-items:center; }
+  .btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:5px; font-size:12.5px; font-weight:500; cursor:pointer; border:none; transition:all 0.15s; font-family:inherit; }
+  .btn-primary { background:var(--yellow); color:var(--black); font-weight:700; }
+  .btn-primary:hover { background:var(--yellow-dark); }
+  .btn-ghost { background:transparent; color:var(--gray); border:1px solid var(--gray-border); }
+  .btn-ghost:hover { background:var(--gray-light); }
+  .btn-sm { padding:5px 10px; font-size:11.5px; }
+  .content { padding:24px 32px; }
 
-  .topbar {
-    background: var(--white);
-    border-bottom: 1px solid var(--gray-border);
-    padding: 16px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .topbar h1 { font-size: 18px; font-weight: 600; color: var(--navy); }
-  .topbar .sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
-
-  .topbar-actions { display: flex; gap: 8px; align-items: center; }
-
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500;
-    cursor: pointer; border: none; transition: all 0.15s;
-  }
-  .btn-primary { background: var(--teal); color: #fff; }
-  .btn-primary:hover { background: var(--teal-light); }
-  .btn-ghost { background: transparent; color: var(--gray); border: 1px solid var(--gray-border); }
-  .btn-ghost:hover { background: var(--gray-light); }
-  .btn-sm { padding: 5px 10px; font-size: 12px; }
-
-  .content { padding: 24px 32px; }
+  /* Alert */
+  .alert-banner { border-radius:6px; padding:11px 16px; margin-bottom:18px; display:flex; align-items:center; gap:10px; border-left:3px solid; }
+  .alert-banner.danger { background:var(--red-bg); border-color:var(--red); }
+  .alert-banner.warn { background:var(--amber-bg); border-color:var(--amber); }
+  .alert-text { font-size:13px; font-weight:500; }
+  .alert-banner.danger .alert-text { color:var(--red); }
+  .alert-banner.warn .alert-text { color:var(--amber); }
 
   /* Stats */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .stat-card {
-    background: var(--white);
-    border-radius: 10px;
-    padding: 16px 20px;
-    border: 1px solid var(--gray-border);
-  }
-  .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 8px; }
-  .stat-value { font-size: 22px; font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; }
-  .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-  .stat-card.green .stat-value { color: var(--teal); }
-  .stat-card.amber .stat-value { color: var(--amber); }
-  .stat-card.red .stat-value { color: var(--red); }
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px; }
+  .stat-card { background:var(--white); border-radius:8px; padding:14px 18px; border:1px solid var(--gray-border); }
+  .stat-card.highlight { background:var(--yellow); border-color:var(--yellow-dark); }
+  .stat-label { font-size:10px; color:var(--text-muted); letter-spacing:0.06em; text-transform:uppercase; margin-bottom:6px; font-weight:600; }
+  .stat-card.highlight .stat-label { color:var(--black-soft); opacity:0.65; }
+  .stat-value { font-size:20px; font-weight:700; color:var(--black); font-variant-numeric:tabular-nums; }
+  .stat-card.highlight .stat-value { color:var(--black); }
+  .stat-sub { font-size:10px; color:var(--text-muted); margin-top:3px; }
+  .stat-card.highlight .stat-sub { color:var(--black-soft); opacity:0.6; }
+  .stat-card.red .stat-value { color:var(--red); }
+  .stat-card.green .stat-value { color:var(--green); }
 
   /* Table container */
-  .table-container {
-    background: var(--white);
-    border-radius: 10px;
-    border: 1px solid var(--gray-border);
-    overflow: hidden;
-  }
-
-  .table-header {
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--gray-border);
-  }
-  .table-header h2 { font-size: 14px; font-weight: 600; color: var(--navy); }
-  .table-header .count { font-size: 12px; color: var(--text-muted); margin-left: 8px; }
-
-  .filter-row {
-    display: flex; gap: 8px; align-items: center;
-    padding: 12px 20px;
-    border-bottom: 1px solid #f1efe8;
-    background: #fafaf8;
-  }
-  .filter-chip {
-    padding: 4px 12px; border-radius: 20px; font-size: 12px;
-    cursor: pointer; border: 1px solid var(--gray-border);
-    background: var(--white); color: var(--text-muted); transition: all 0.15s;
-  }
-  .filter-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-  .filter-chip:hover:not(.active) { border-color: var(--navy); color: var(--navy); }
+  .table-container { background:var(--white); border-radius:8px; border:1px solid var(--gray-border); overflow:hidden; }
+  .table-header { padding:14px 18px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--gray-border); background:#FAFAF8; }
+  .table-header h2 { font-size:13px; font-weight:700; color:var(--black); letter-spacing:0.02em; }
+  .table-header .count { font-size:11px; color:var(--text-muted); margin-left:6px; }
+  .filter-row { display:flex; gap:6px; padding:10px 16px; border-bottom:1px solid #F0F0EE; background:#FAFAF8; flex-wrap:wrap; }
+  .filter-chip { padding:3px 11px; border-radius:20px; font-size:11px; cursor:pointer; border:1px solid var(--gray-border); background:var(--white); color:var(--text-muted); transition:all 0.12s; font-weight:500; }
+  .filter-chip:hover { border-color:var(--black); color:var(--black); }
+  .filter-chip.active { background:var(--black); color:#fff; border-color:var(--black); }
+  .filter-chip.danger { border-color:var(--red); color:var(--red); }
+  .filter-chip.danger.active { background:var(--red); color:#fff; }
 
   /* Table */
-  .data-table { width: 100%; border-collapse: collapse; }
-  .data-table th {
-    text-align: left; padding: 10px 12px;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
-    color: var(--text-muted); background: #fafaf8;
-    border-bottom: 1px solid var(--gray-border);
-    white-space: nowrap;
-  }
-  .data-table td {
-    padding: 12px; font-size: 13px; color: var(--text);
-    border-bottom: 1px solid #f1efe8; vertical-align: middle;
-  }
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: #fafaf9; }
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th { text-align:left; padding:9px 12px; font-size:10px; font-weight:700; letter-spacing:0.06em; color:var(--text-muted); background:#FAFAF8; border-bottom:1px solid var(--gray-border); white-space:nowrap; }
+  .data-table td { padding:11px 12px; font-size:12.5px; color:var(--text); border-bottom:1px solid #F5F5F3; vertical-align:middle; }
+  .data-table tr:last-child td { border-bottom:none; }
+  .data-table tr:hover td { background:#FDFDF9; }
+  .data-table tr.overdue td { background:#FFF8F7; }
+  .data-table tr.due-soon td { background:#FFFDF5; }
+  .data-table td.date { color:var(--text-muted); font-size:11.5px; white-space:nowrap; }
+  .data-table td.amount { font-weight:700; color:var(--black); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; font-size:13px; }
 
-  .data-table td.date { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
-  .data-table td.amount { font-weight: 600; color: var(--navy); text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .data-table td.desc { max-width: 200px; }
-  .data-table td.desc span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Due badge */
+  .due-badge { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+  .due-badge.overdue { background:var(--red-bg); color:var(--red); }
+  .due-badge.due-soon { background:var(--amber-bg); color:var(--amber); }
+  .due-badge.ok { color:var(--text-muted); font-size:11.5px; }
+  .due-badge.empty { color:var(--gray-border); font-size:11px; }
 
-  /* Status badges */
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
-    white-space: nowrap;
-  }
-  .badge-paid { background: var(--teal-bg); color: var(--teal); }
-  .badge-pending { background: var(--amber-bg); color: var(--amber); }
-  .badge-quote { background: var(--red-bg); color: var(--red); }
-  .badge-confirm { background: #e6f1fb; color: #185fa5; }
+  /* Status select */
+  .status-select { appearance:none; border:none; cursor:pointer; font-size:11px; padding:3px 10px; border-radius:20px; outline:none; font-family:inherit; font-weight:600; }
+  .status-select.paid { background:var(--green-bg); color:var(--green); }
+  .status-select.pending { background:var(--yellow-light); color:#8A6D00; }
+  .status-select.quote { background:var(--gray-light); color:var(--gray); }
 
-  /* Status click */
-  .status-cell { cursor: pointer; position: relative; }
-  .status-cell:hover .badge { opacity: 0.8; }
+  /* Links */
+  .link-cell a { color:var(--black); font-size:11.5px; text-decoration:none; border-bottom:1px solid var(--yellow); padding-bottom:1px; }
+  .link-cell a:hover { border-bottom-color:var(--black); }
+  .link-add { color:var(--gray-border); font-size:11.5px; cursor:pointer; }
+  .link-add:hover { color:var(--text-muted); }
 
-  /* Payer chip */
-  .payer { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
-  .payer-company { background: var(--gray-light); color: var(--gray); }
-  .payer-boss { background: var(--amber-bg); color: var(--amber); }
-
-  /* Category tag */
-  .category { font-size: 11px; color: var(--text-muted); }
-
-  /* Loading & empty */
-  .loading { padding: 60px; text-align: center; color: var(--text-muted); }
-  .spinner { width: 24px; height: 24px; border: 2px solid var(--gray-border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .empty { padding: 60px; text-align: center; color: var(--text-muted); font-size: 14px; }
+  /* Payer */
+  .payer { font-size:11px; padding:2px 7px; border-radius:3px; font-weight:600; }
+  .payer-company { background:var(--gray-light); color:var(--gray); }
+  .payer-boss { background:var(--yellow-light); color:#8A6D00; }
 
   /* Modal */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--white); border-radius: 12px; width: 560px; max-width: 95vw;
-    max-height: 90vh; overflow-y: auto;
-    transform: translateY(8px); transition: transform 0.2s;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-head {
-    padding: 20px 24px; border-bottom: 1px solid var(--gray-border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .modal-head h3 { font-size: 16px; font-weight: 600; color: var(--navy); }
-  .modal-close { cursor: pointer; font-size: 20px; color: var(--text-muted); line-height: 1; }
-  .modal-body { padding: 20px 24px; }
-  .modal-foot {
-    padding: 16px 24px; border-top: 1px solid var(--gray-border);
-    display: flex; justify-content: flex-end; gap: 8px;
-  }
+  .modal-overlay { position:fixed; inset:0; background:rgba(44,44,42,0.5); display:flex; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--white); border-radius:10px; width:580px; max-width:95vw; max-height:90vh; overflow-y:auto; transform:translateY(8px); transition:transform 0.2s; border-top:3px solid var(--yellow); }
+  .modal-overlay.open .modal { transform:translateY(0); }
+  .modal-head { padding:18px 22px; border-bottom:1px solid var(--gray-border); display:flex; align-items:center; justify-content:space-between; }
+  .modal-head h3 { font-size:15px; font-weight:700; color:var(--black); }
+  .modal-close { cursor:pointer; font-size:20px; color:var(--text-muted); line-height:1; }
+  .modal-body { padding:20px 22px; }
+  .modal-foot { padding:14px 22px; border-top:1px solid var(--gray-border); display:flex; justify-content:flex-end; gap:8px; background:#FAFAF8; border-radius:0 0 10px 10px; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+  .form-group { display:flex; flex-direction:column; gap:5px; }
+  .form-group.full { grid-column:1/-1; }
+  .form-label { font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:0.04em; text-transform:uppercase; }
+  .form-control { padding:8px 11px; border-radius:5px; border:1px solid var(--gray-border); font-size:12.5px; color:var(--text); background:var(--white); outline:none; transition:border-color 0.15s; font-family:inherit; }
+  .form-control:focus { border-color:var(--yellow); box-shadow:0 0 0 2px rgba(246,195,28,0.15); }
 
-  /* Form */
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .form-grid.full { grid-template-columns: 1fr; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
-  .form-control {
-    padding: 9px 12px; border-radius: 6px; border: 1px solid var(--gray-border);
-    font-size: 13px; color: var(--text); background: var(--white);
-    outline: none; transition: border-color 0.15s; font-family: inherit;
-  }
-  .form-control:focus { border-color: var(--teal); }
-  select.form-control { cursor: pointer; }
-
-  /* Action dropdown */
-  .action-btn { cursor: pointer; color: var(--text-muted); font-size: 16px; padding: 2px 6px; border-radius: 4px; }
-  .action-btn:hover { background: var(--gray-light); color: var(--text); }
+  /* Fixed costs */
+  .fixed-table { width:100%; border-collapse:collapse; }
+  .fixed-table th { text-align:left; padding:9px 16px; font-size:10px; font-weight:700; letter-spacing:0.06em; color:var(--text-muted); background:#FAFAF8; border-bottom:1px solid var(--gray-border); }
+  .fixed-table td { padding:11px 16px; font-size:12.5px; border-bottom:1px solid #F5F5F3; }
+  .fixed-table tr:last-child td { border-bottom:none; }
+  .fixed-table .total td { font-weight:700; color:var(--black); background:var(--yellow-bg); border-top:2px solid var(--yellow); }
 
   /* Toast */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--navy); color: #fff;
-    padding: 12px 18px; border-radius: 8px; font-size: 13px;
-    transform: translateY(80px); transition: transform 0.3s; z-index: 200;
-  }
-  .toast.show { transform: translateY(0); }
+  .toast { position:fixed; bottom:24px; right:24px; background:var(--black); color:#fff; padding:11px 18px; border-radius:6px; font-size:13px; border-left:3px solid var(--yellow); transform:translateY(80px); transition:transform 0.3s; z-index:200; }
+  .toast.show { transform:translateY(0); }
 
-  /* Status dropdown */
-  .status-select {
-    appearance: none; background: transparent; border: none;
-    cursor: pointer; font-size: 11px; padding: 3px 10px;
-    border-radius: 20px; outline: none;
-  }
-  .status-select.paid { background: var(--teal-bg); color: var(--teal); }
-  .status-select.pending { background: var(--amber-bg); color: var(--amber); }
-  .status-select.quote { background: var(--red-bg); color: var(--red); }
+  .loading { padding:60px; text-align:center; color:var(--text-muted); }
+  .spinner { width:22px; height:22px; border:2px solid var(--gray-border); border-top-color:var(--yellow); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 12px; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .empty { padding:60px; text-align:center; color:var(--text-muted); font-size:13px; }
 
-  /* Fixed costs table */
-  .fixed-table { width: 100%; border-collapse: collapse; }
-  .fixed-table th {
-    text-align: left; padding: 10px 16px;
-    font-size: 11px; font-weight: 600; color: var(--text-muted);
-    background: #fafaf8; border-bottom: 1px solid var(--gray-border);
-  }
-  .fixed-table td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #f1efe8; }
-  .fixed-table tr:last-child td { border-bottom: none; }
-  .fixed-table .total { font-weight: 700; color: var(--navy); background: #f4f3ef; }
-
-  @media (max-width: 900px) {
-    .sidebar { width: 180px; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .content { padding: 16px; }
-    .topbar { padding: 12px 16px; }
+  @media (max-width:900px) {
+    .sidebar { width:180px; }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .content { padding:16px; }
   }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div class="app">
-  <!-- Sidebar -->
   <nav class="sidebar">
     <div class="sidebar-logo">
-      <div class="company">會飛的手有限公司</div>
-      <div class="title">財務管理 2026</div>
+      <span class="arrow">‹</span>
+      <div class="company">HAND × ADVERT</div>
+      <div class="title">會飛的手</div>
+      <div class="subtitle">FINANCE SYSTEM 2026</div>
     </div>
     <div class="sidebar-nav">
       <div class="nav-section">總覽</div>
-      <div class="nav-item active" onclick="switchSheet('dashboard')">
-        <div class="dot"></div> 儀表板
-      </div>
-
+      <div class="nav-item active" onclick="switchSheet('dashboard',this)"><div class="dot"></div>儀表板</div>
       <div class="nav-section">海保署專案</div>
-      <div class="nav-item" onclick="switchSheet('1_海保署海洋友善_付款帳')">
-        <div class="dot"></div> 海洋友善行銷
-      </div>
-      <div class="nav-item" onclick="switchSheet('2_海保署月曆_付款帳')">
-        <div class="dot"></div> 海保署月曆
-      </div>
-
+      <div class="nav-item" onclick="switchSheet('1_海保署海洋友善_付款帳',this)"><div class="dot"></div>海洋友善行銷</div>
+      <div class="nav-item" onclick="switchSheet('2_海保署月曆_付款帳',this)"><div class="dot"></div>海保署月曆</div>
       <div class="nav-section">冠球專案</div>
-      <div class="nav-item" onclick="switchSheet('3_冠球共編曆_付款帳')">
-        <div class="dot"></div> 共編曆
-      </div>
-      <div class="nav-item" onclick="switchSheet('4_冠球利百代_付款帳')">
-        <div class="dot"></div> 利百代
-      </div>
-      <div class="nav-item" onclick="switchSheet('5_冠球SEO_付款帳')">
-        <div class="dot"></div> SEO 顧問
-      </div>
-      <div class="nav-item" onclick="switchSheet('6_冠球小型_付款帳')">
-        <div class="dot"></div> 小吃部提早延畢
-      </div>
-
+      <div class="nav-item" onclick="switchSheet('3_冠球共編曆_付款帳',this)"><div class="dot"></div>共編曆</div>
+      <div class="nav-item" onclick="switchSheet('4_冠球利百代_付款帳',this)"><div class="dot"></div>利百代</div>
+      <div class="nav-item" onclick="switchSheet('5_冠球SEO_付款帳',this)"><div class="dot"></div>SEO 顧問</div>
+      <div class="nav-item" onclick="switchSheet('6_冠球小型_付款帳',this)"><div class="dot"></div>冠球小型</div>
       <div class="nav-section">公司帳務</div>
-      <div class="nav-item" onclick="switchSheet('公司固定成本')">
-        <div class="dot"></div> 公司固定成本
-      </div>
+      <div class="nav-item" onclick="switchSheet('公司固定成本',this)"><div class="dot"></div>公司固定成本</div>
     </div>
-    <div class="sidebar-footer">
-      連接 Google Sheets ↗
-    </div>
+    <div class="sidebar-footer">HAND × ADVERT CO., LTD.</div>
   </nav>
 
-  <!-- Main -->
   <div class="main">
     <div class="topbar">
-      <div>
-        <div class="topbar-title" id="topbar-title">儀表板</div>
-        <div class="sub" id="topbar-sub">載入中...</div>
+      <div class="topbar-left">
+        <span class="topbar-tag">FINANCE</span>
+        <div>
+          <h1 id="topbar-title">儀表板</h1>
+          <div class="sub" id="topbar-sub">載入中...</div>
+        </div>
       </div>
       <div class="topbar-actions">
         <button class="btn btn-ghost btn-sm" onclick="loadCurrentSheet()">↻ 重新整理</button>
         <button class="btn btn-primary" id="add-btn" onclick="openAddModal()">+ 新增記帳</button>
       </div>
     </div>
-
     <div class="content" id="content">
-      <div class="loading"><div class="spinner"></div>載入中...</div>
+      <div class="loading"><div class="spinner"></div>連接 Google Sheets...</div>
     </div>
   </div>
 </div>
 
-<!-- Add Modal -->
+<!-- Modal -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-head">
@@ -376,64 +226,30 @@
     </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-group">
-          <label class="form-label">付款日期</label>
-          <input type="date" class="form-control" id="f-date">
-        </div>
-        <div class="form-group">
-          <label class="form-label">執行項目類別</label>
+        <div class="form-group"><label class="form-label">付款日期</label><input type="date" class="form-control" id="f-date"></div>
+        <div class="form-group"><label class="form-label">付款截止日 ⚠️</label><input type="date" class="form-control" id="f-deadline"></div>
+        <div class="form-group"><label class="form-label">執行項目類別</label>
           <select class="form-control" id="f-category">
-            <option value="設計費">設計費</option>
-            <option value="製作費">製作費</option>
-            <option value="攝影費">攝影費</option>
-            <option value="新聞稿">新聞稿</option>
-            <option value="投廣告">投廣告</option>
-            <option value="LINE訊息費">LINE訊息費</option>
-            <option value="音樂授權費">音樂授權費</option>
-            <option value="短影音製作與剪輯">短影音製作與剪輯</option>
-            <option value="其他">其他</option>
+            <option>設計費</option><option>製作費</option><option>攝影費</option><option>新聞稿</option>
+            <option>投廣告</option><option>LINE訊息費</option><option>音樂授權費</option>
+            <option>短影音製作與剪輯</option><option>其他</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">廠商名稱</label>
-          <input type="text" class="form-control" id="f-vendor" placeholder="廠商或個人姓名">
+        <div class="form-group"><label class="form-label">廠商名稱</label><input type="text" class="form-control" id="f-vendor" placeholder="廠商或個人姓名"></div>
+        <div class="form-group full"><label class="form-label">說明／用途</label><input type="text" class="form-control" id="f-desc" placeholder="工作項目描述"></div>
+        <div class="form-group"><label class="form-label">金額（NT$）</label><input type="number" class="form-control" id="f-amount" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">付款方式</label>
+          <select class="form-control" id="f-method"><option>匯款</option><option>現金</option><option>信用卡</option><option>現金 / 轉帳</option></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">金額（NT$）</label>
-          <input type="number" class="form-control" id="f-amount" placeholder="0">
+        <div class="form-group"><label class="form-label">付款人</label>
+          <select class="form-control" id="f-payer"><option>公司</option><option>老闆代墊</option></select>
         </div>
-        <div class="form-group" style="grid-column: 1 / -1;">
-          <label class="form-label">說明／用途</label>
-          <input type="text" class="form-control" id="f-desc" placeholder="工作項目描述">
+        <div class="form-group"><label class="form-label">狀態</label>
+          <select class="form-control" id="f-status"><option>✅已付</option><option>⏳待付</option><option>⏳待報價</option></select>
         </div>
-        <div class="form-group">
-          <label class="form-label">付款方式</label>
-          <select class="form-control" id="f-method">
-            <option>匯款</option>
-            <option>現金</option>
-            <option>信用卡</option>
-            <option>現金 / 轉帳</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">付款人</label>
-          <select class="form-control" id="f-payer">
-            <option>公司</option>
-            <option>老闆代墊</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">狀態</label>
-          <select class="form-control" id="f-status">
-            <option>✅已付</option>
-            <option>⏳待付</option>
-            <option>⏳待報價</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">備註</label>
-          <input type="text" class="form-control" id="f-note" placeholder="選填">
-        </div>
+        <div class="form-group"><label class="form-label">報價單連結（Drive）</label><input type="url" class="form-control" id="f-quote" placeholder="https://drive.google.com/..."></div>
+        <div class="form-group"><label class="form-label">轉帳證明連結（Drive）</label><input type="url" class="form-control" id="f-proof" placeholder="付款後貼入截圖連結"></div>
+        <div class="form-group full"><label class="form-label">備註</label><input type="text" class="form-control" id="f-note" placeholder="選填"></div>
       </div>
     </div>
     <div class="modal-foot">
@@ -447,387 +263,211 @@
 
 <script>
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzZtlWYD6xGbDsundR3hYxRoofMle1gHeToNp7WNqlGysGIa5DciZOcwhuNnxf5a3MO/exec';
-
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
 let currentSheet = 'dashboard';
-let currentData = [];
-
 const SHEET_NAMES = {
-  'dashboard': '儀表板',
-  '1_海保署海洋友善_付款帳': '海保署海洋友善行銷',
-  '2_海保署月曆_付款帳': '海保署月曆',
-  '3_冠球共編曆_付款帳': '冠球共編曆',
-  '4_冠球利百代_付款帳': '冠球利百代',
-  '5_冠球SEO_付款帳': '冠球SEO顧問',
-  '6_冠球小型_付款帳': '冠球小型',
-  '公司固定成本': '公司固定成本',
+  'dashboard':'儀表板','1_海保署海洋友善_付款帳':'海保署海洋友善',
+  '2_海保署月曆_付款帳':'海保署月曆','3_冠球共編曆_付款帳':'冠球共編曆',
+  '4_冠球利百代_付款帳':'冠球利百代','5_冠球SEO_付款帳':'冠球SEO',
+  '6_冠球小型_付款帳':'冠球小型','公司固定成本':'公司固定成本'
 };
+const PAY_SHEETS = Object.keys(SHEET_NAMES).filter(k=>k.includes('付款帳'));
 
-function getStatusClass(s) {
-  if (!s) return 'quote';
-  if (s.includes('已付')) return 'paid';
-  if (s.includes('待付')) return 'pending';
-  return 'quote';
+function sc(s){ if(!s)return'quote'; if(s.includes('已付'))return'paid'; if(s.includes('待付')&&!s.includes('報價'))return'pending'; return'quote'; }
+function fmtAmt(v){ return'NT$'+(parseInt(v)||0).toLocaleString('zh-TW'); }
+function fmtDate(v){ if(!v)return''; return String(v).substring(0,10).replace(/-/g,'/'); }
+function dueDays(d){ if(!d)return null; const dt=new Date(d); dt.setHours(0,0,0,0); return Math.round((dt-TODAY)/(864e5)); }
+
+function dueBadge(ds, paid){
+  if(paid||!ds) return ds?`<span class="due-badge ok">${fmtDate(ds)}</span>`:`<span class="due-badge empty">—</span>`;
+  const d=dueDays(ds);
+  if(d<0) return`<span class="due-badge overdue">逾期 ${Math.abs(d)} 天</span>`;
+  if(d<=3) return`<span class="due-badge due-soon">${d===0?'今天到期':d+'天後到期'}</span>`;
+  return`<span class="due-badge ok">${fmtDate(ds)}</span>`;
 }
+function linkCell(url,label){ return url?`<a href="${url}" target="_blank">${label}</a>`:`<span class="link-add">+ 上傳</span>`; }
 
-function fmtAmount(v) {
-  const n = parseInt(v) || 0;
-  return 'NT$' + n.toLocaleString('zh-TW');
-}
+async function fetch_(name){ const r=await fetch(GAS_URL+'?sheetName='+encodeURIComponent(name)); return(await r.json()).data||[]; }
+async function post_(b){ const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify(b)}); return r.json(); }
 
-function fmtDate(v) {
-  if (!v) return '';
-  if (typeof v === 'object' && v.getFullYear) {
-    return v.getFullYear() + '/' + String(v.getMonth()+1).padStart(2,'0') + '/' + String(v.getDate()).padStart(2,'0');
-  }
-  return String(v).replace('T',' ').substring(0,10);
-}
-
-async function fetchSheet(sheetName) {
-  const res = await fetch(GAS_URL + '?sheetName=' + encodeURIComponent(sheetName));
-  const json = await res.json();
-  return json.data || [];
-}
-
-async function postData(body) {
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    body: JSON.stringify(body),
-  });
-  return await res.json();
-}
-
-function switchSheet(name) {
-  currentSheet = name;
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  document.getElementById('topbar-title').textContent = SHEET_NAMES[name] || name;
-  loadCurrentSheet();
-}
-
-async function loadCurrentSheet() {
-  const content = document.getElementById('content');
-  document.getElementById('topbar-sub').textContent = '載入中...';
-  content.innerHTML = '<div class="loading"><div class="spinner"></div>連接 Google Sheets...</div>';
-
-  try {
-    if (currentSheet === 'dashboard') {
-      await renderDashboard();
-    } else if (currentSheet === '公司固定成本') {
-      await renderFixedCosts();
-    } else {
-      await renderPaymentSheet(currentSheet);
-    }
-    const now = new Date();
-    document.getElementById('topbar-sub').textContent = '最後更新：' + now.toLocaleTimeString('zh-TW');
-  } catch(e) {
-    content.innerHTML = '<div class="empty">⚠️ 無法連接 Google Sheets<br><br><small>' + e.message + '</small></div>';
-    document.getElementById('topbar-sub').textContent = '連線失敗';
-  }
-}
-
-async function renderPaymentSheet(sheetName) {
-  const data = await fetchSheet(sheetName);
-  currentData = data;
-
-  const rows = data.slice(5).filter(r => r[0] || r[1] || r[4]);
-  const content = document.getElementById('content');
-
-  const totalPaid = rows.filter(r => String(r[7]).includes('已付')).reduce((s, r) => s + (parseInt(r[4]) || 0), 0);
-  const totalPending = rows.filter(r => String(r[7]).includes('待付')).reduce((s, r) => s + (parseInt(r[4]) || 0), 0);
-  const totalQuote = rows.filter(r => String(r[7]).includes('待報價')).length;
-  const total = rows.reduce((s, r) => s + (parseInt(r[4]) || 0), 0);
-
-  let html = `
-    <div class="stats-grid">
-      <div class="stat-card green">
-        <div class="stat-label">已付款</div>
-        <div class="stat-value">${fmtAmount(totalPaid)}</div>
-        <div class="stat-sub">${rows.filter(r=>String(r[7]).includes('已付')).length} 筆</div>
-      </div>
-      <div class="stat-card amber">
-        <div class="stat-label">待付款</div>
-        <div class="stat-value">${fmtAmount(totalPending)}</div>
-        <div class="stat-sub">${rows.filter(r=>String(r[7]).includes('待付')).length} 筆</div>
-      </div>
-      <div class="stat-card red">
-        <div class="stat-label">待報價</div>
-        <div class="stat-value">${totalQuote} 筆</div>
-        <div class="stat-sub">尚未確認金額</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">總計支出</div>
-        <div class="stat-value">${fmtAmount(total)}</div>
-        <div class="stat-sub">全部記錄合計</div>
-      </div>
-    </div>
-    <div class="table-container">
-      <div class="table-header">
-        <div><span style="font-size:14px;font-weight:600;color:var(--navy)">付款記錄</span><span class="count">${rows.length} 筆</span></div>
-      </div>
-      <div class="filter-row" id="filter-row">
-        <span class="filter-chip active" onclick="filterRows('all',this)">全部</span>
-        <span class="filter-chip" onclick="filterRows('paid',this)">✅ 已付</span>
-        <span class="filter-chip" onclick="filterRows('pending',this)">⏳ 待付</span>
-        <span class="filter-chip" onclick="filterRows('quote',this)">📋 待報價</span>
-      </div>
-      <div style="overflow-x:auto;">
-      <table class="data-table" id="main-table">
-        <thead>
-          <tr>
-            <th>日期</th>
-            <th>類別</th>
-            <th>廠商</th>
-            <th>說明</th>
-            <th style="text-align:right">金額</th>
-            <th>付款方式</th>
-            <th>付款人</th>
-            <th>狀態</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
-  rows.forEach((r, i) => {
-    const status = String(r[7] || '');
-    const sc = getStatusClass(status);
-    const payer = String(r[6] || '');
-    const payerClass = payer.includes('老闆') ? 'payer-boss' : 'payer-company';
-    html += `
-      <tr data-status="${sc}">
-        <td class="date">${fmtDate(r[0])}</td>
-        <td><span class="category">${r[1] || ''}</span></td>
-        <td>${r[2] || ''}</td>
-        <td class="desc"><span title="${r[3] || ''}">${r[3] || ''}</span></td>
-        <td class="amount">${r[4] ? fmtAmount(r[4]) : ''}</td>
-        <td style="font-size:12px;color:var(--text-muted)">${r[5] || ''}</td>
-        <td><span class="payer ${payerClass}">${payer}</span></td>
-        <td class="status-cell">
-          <select class="status-select ${sc}" onchange="updateStatus(this, ${i + 5 + 1}, '${sheetName}')">
-            <option ${status.includes('已付') ? 'selected' : ''}>✅已付</option>
-            <option ${status.includes('待付') && !status.includes('報價') ? 'selected' : ''}>⏳待付</option>
-            <option ${status.includes('待報價') ? 'selected' : ''}>⏳待報價</option>
-          </select>
-        </td>
-      </tr>`;
-  });
-
-  html += `</tbody></table></div></div>`;
-  content.innerHTML = html;
-}
-
-async function renderFixedCosts() {
-  const data = await fetchSheet('公司固定成本');
-  const rows = data.slice(5).filter(r => r[0]);
-  const content = document.getElementById('content');
-
-  const total = rows.reduce((s, r) => s + (parseInt(r[1]) || 0), 0);
-
-  let html = `
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">每月固定合計</div>
-        <div class="stat-value">${fmtAmount(total)}</div>
-        <div class="stat-sub">每月固定支出</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">年度預估</div>
-        <div class="stat-value">${fmtAmount(total * 12)}</div>
-        <div class="stat-sub">×12 個月</div>
-      </div>
-    </div>
-    <div class="table-container">
-      <div class="table-header">
-        <div><span style="font-size:14px;font-weight:600;color:var(--navy)">每月固定支出</span></div>
-      </div>
-      <table class="fixed-table">
-        <thead>
-          <tr>
-            <th>項目</th>
-            <th style="text-align:right">每月金額</th>
-            <th>說明</th>
-            <th>付款方式</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
-  rows.forEach(r => {
-    html += `<tr>
-      <td style="font-weight:500">${r[0]}</td>
-      <td style="text-align:right;font-weight:600;color:var(--navy)">${fmtAmount(r[1])}</td>
-      <td style="color:var(--text-muted);font-size:12px">${r[2] || ''}</td>
-      <td style="color:var(--text-muted);font-size:12px">${r[3] || ''}</td>
-    </tr>`;
-  });
-
-  html += `
-    <tr class="total">
-      <td>每月合計</td>
-      <td style="text-align:right">${fmtAmount(total)}</td>
-      <td colspan="2"></td>
-    </tr>
-    </tbody></table></div>`;
-
-  document.getElementById('add-btn').style.display = 'none';
-  content.innerHTML = html;
-}
-
-async function renderDashboard() {
-  const content = document.getElementById('content');
-  content.innerHTML = '<div class="loading"><div class="spinner"></div>彙整所有專案資料...</div>';
-
-  const sheets = [
-    '1_海保署海洋友善_付款帳',
-    '2_海保署月曆_付款帳',
-    '3_冠球共編曆_付款帳',
-    '4_冠球利百代_付款帳',
-    '5_冠球SEO_付款帳',
-    '6_冠球小型_付款帳',
-  ];
-
-  let totalPaid = 0, totalPending = 0, totalQuote = 0, allRows = 0;
-  let sheetStats = [];
-
-  for (const name of sheets) {
-    try {
-      const data = await fetchSheet(name);
-      const rows = data.slice(5).filter(r => r[0] || r[1] || r[4]);
-      const paid = rows.filter(r=>String(r[7]).includes('已付')).reduce((s,r)=>s+(parseInt(r[4])||0),0);
-      const pending = rows.filter(r=>String(r[7]).includes('待付')).reduce((s,r)=>s+(parseInt(r[4])||0),0);
-      totalPaid += paid; totalPending += pending;
-      totalQuote += rows.filter(r=>String(r[7]).includes('待報價')).length;
-      allRows += rows.length;
-      sheetStats.push({ name, displayName: SHEET_NAMES[name], paid, pending, count: rows.length });
-    } catch(e) {}
-  }
-
-  let html = `
-    <div class="stats-grid">
-      <div class="stat-card green">
-        <div class="stat-label">已付款總計</div>
-        <div class="stat-value">${fmtAmount(totalPaid)}</div>
-        <div class="stat-sub">所有專案合計</div>
-      </div>
-      <div class="stat-card amber">
-        <div class="stat-label">待付款總計</div>
-        <div class="stat-value">${fmtAmount(totalPending)}</div>
-        <div class="stat-sub">需要處理</div>
-      </div>
-      <div class="stat-card red">
-        <div class="stat-label">待報價筆數</div>
-        <div class="stat-value">${totalQuote} 筆</div>
-        <div class="stat-sub">等廠商報價</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">總記錄數</div>
-        <div class="stat-value">${allRows}</div>
-        <div class="stat-sub">全部專案記錄</div>
-      </div>
-    </div>
-    <div class="table-container">
-      <div class="table-header">
-        <div><span style="font-size:14px;font-weight:600;color:var(--navy)">專案支出概覽</span></div>
-      </div>
-      <table class="fixed-table">
-        <thead>
-          <tr>
-            <th>專案</th>
-            <th style="text-align:right">已付款</th>
-            <th style="text-align:right">待付款</th>
-            <th style="text-align:right">記錄數</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
-  sheetStats.forEach(s => {
-    html += `<tr>
-      <td style="font-weight:500">${s.displayName}</td>
-      <td style="text-align:right;color:var(--teal);font-weight:600">${fmtAmount(s.paid)}</td>
-      <td style="text-align:right;color:var(--amber)">${fmtAmount(s.pending)}</td>
-      <td style="text-align:right;color:var(--text-muted)">${s.count}</td>
-    </tr>`;
-  });
-
-  html += `
-    <tr class="total">
-      <td>合計</td>
-      <td style="text-align:right">${fmtAmount(totalPaid)}</td>
-      <td style="text-align:right">${fmtAmount(totalPending)}</td>
-      <td style="text-align:right">${allRows}</td>
-    </tr>
-    </tbody></table></div>`;
-
-  document.getElementById('add-btn').style.display = 'none';
-  content.innerHTML = html;
-}
-
-function filterRows(type, el) {
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+function switchSheet(name,el){
+  currentSheet=name;
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
-  document.querySelectorAll('#main-table tbody tr').forEach(tr => {
-    if (type === 'all') { tr.style.display = ''; return; }
-    const s = tr.dataset.status;
-    tr.style.display = (s === type) ? '' : 'none';
+  document.getElementById('topbar-title').textContent=SHEET_NAMES[name]||name;
+  document.getElementById('add-btn').style.display=(name==='dashboard'||name==='公司固定成本')?'none':'';
+  loadCurrentSheet();
+}
+
+async function loadCurrentSheet(){
+  const c=document.getElementById('content');
+  document.getElementById('topbar-sub').textContent='連線中...';
+  c.innerHTML='<div class="loading"><div class="spinner"></div>載入中...</div>';
+  try{
+    if(currentSheet==='dashboard') await renderDashboard();
+    else if(currentSheet==='公司固定成本') await renderFixed();
+    else await renderPay(currentSheet);
+    document.getElementById('topbar-sub').textContent='更新：'+new Date().toLocaleTimeString('zh-TW');
+  }catch(e){
+    c.innerHTML=`<div class="empty">⚠️ 連線失敗<br><small>${e.message}</small></div>`;
+    document.getElementById('topbar-sub').textContent='連線失敗';
+  }
+}
+
+async function renderPay(sheet){
+  const data=await fetch_(sheet);
+  const rows=data.slice(5).filter(r=>r[0]||r[1]||r[4]);
+  const paid=rows.filter(r=>String(r[7]).includes('已付'));
+  const pending=rows.filter(r=>String(r[7]).includes('待付')&&!String(r[7]).includes('報價'));
+  const quote=rows.filter(r=>String(r[7]).includes('待報價'));
+  const tPaid=paid.reduce((s,r)=>s+(parseInt(r[4])||0),0);
+  const tPend=pending.reduce((s,r)=>s+(parseInt(r[4])||0),0);
+  const overdue=pending.filter(r=>{const d=dueDays(r[10]);return d!==null&&d<0;});
+  const soon=pending.filter(r=>{const d=dueDays(r[10]);return d!==null&&d>=0&&d<=3;});
+  const c=document.getElementById('content');
+
+  let html='';
+  if(overdue.length) html+=`<div class="alert-banner danger"><span>🔴</span><span class="alert-text">有 ${overdue.length} 筆已逾期未付款，請立即處理！</span></div>`;
+  if(soon.length) html+=`<div class="alert-banner warn"><span>⚠️</span><span class="alert-text">有 ${soon.length} 筆付款即將到期（3天內）</span></div>`;
+
+  html+=`<div class="stats-grid">
+    <div class="stat-card highlight"><div class="stat-label">待付款</div><div class="stat-value">${fmtAmt(tPend)}</div><div class="stat-sub">${pending.length} 筆待處理</div></div>
+    <div class="stat-card green"><div class="stat-label">已付款</div><div class="stat-value">${fmtAmt(tPaid)}</div><div class="stat-sub">${paid.length} 筆</div></div>
+    <div class="stat-card ${overdue.length?'red':''}"><div class="stat-label">逾期未付</div><div class="stat-value">${overdue.length} 筆</div><div class="stat-sub">${soon.length} 筆即將到期</div></div>
+    <div class="stat-card"><div class="stat-label">待報價</div><div class="stat-value">${quote.length} 筆</div><div class="stat-sub">金額未確認</div></div>
+  </div>
+  <div class="table-container">
+    <div class="table-header"><div><h2>付款記錄<span class="count">${rows.length} 筆</span></h2></div></div>
+    <div class="filter-row">
+      <span class="filter-chip active" onclick="filterRows('all',this)">全部</span>
+      <span class="filter-chip" onclick="filterRows('paid',this)">✅ 已付</span>
+      <span class="filter-chip" onclick="filterRows('pending',this)">⏳ 待付</span>
+      <span class="filter-chip" onclick="filterRows('quote',this)">📋 待報價</span>
+      ${overdue.length?`<span class="filter-chip danger" onclick="filterRows('overdue',this)">🔴 逾期 ${overdue.length}</span>`:''}
+    </div>
+    <div style="overflow-x:auto"><table class="data-table" id="main-table">
+      <thead><tr>
+        <th>日期</th><th>類別</th><th>廠商</th><th>說明</th>
+        <th style="text-align:right">金額</th><th>付款人</th>
+        <th>截止日</th><th>狀態</th><th>報價單</th><th>轉帳證明</th>
+      </tr></thead><tbody>`;
+
+  rows.forEach((r,i)=>{
+    const s=String(r[7]||''), cls=sc(s), isPaid=cls==='paid';
+    const payer=String(r[6]||'');
+    const dl=String(r[10]||'');
+    const days=dueDays(dl);
+    const isOD=!isPaid&&days!==null&&days<0;
+    const isDS=!isPaid&&days!==null&&days>=0&&days<=3;
+    html+=`<tr data-status="${cls}" data-overdue="${isOD}" class="${isOD?'overdue':isDS?'due-soon':''}">
+      <td class="date">${fmtDate(r[0])}</td>
+      <td style="font-size:11.5px;color:var(--text-muted)">${r[1]||''}</td>
+      <td style="font-weight:600">${r[2]||''}</td>
+      <td style="font-size:11.5px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r[3]||''}">${r[3]||''}</td>
+      <td class="amount">${r[4]?fmtAmt(r[4]):''}</td>
+      <td><span class="payer ${payer.includes('老闆')?'payer-boss':'payer-company'}">${payer}</span></td>
+      <td>${dueBadge(dl,isPaid)}</td>
+      <td><select class="status-select ${cls}" onchange="updateSt(this,${i+6},'${sheet}')">
+        <option ${s.includes('已付')?'selected':''}>✅已付</option>
+        <option ${s.includes('待付')&&!s.includes('報價')?'selected':''}>⏳待付</option>
+        <option ${s.includes('待報價')?'selected':''}>⏳待報價</option>
+      </select></td>
+      <td class="link-cell">${linkCell(r[9],'報價單')}</td>
+      <td class="link-cell">${linkCell(r[11],'證明')}</td>
+    </tr>`;
+  });
+  html+=`</tbody></table></div></div>`;
+  c.innerHTML=html;
+}
+
+async function renderFixed(){
+  const data=await fetch_('公司固定成本');
+  const rows=data.slice(5).filter(r=>r[0]);
+  const total=rows.reduce((s,r)=>s+(parseInt(r[1])||0),0);
+  const c=document.getElementById('content');
+  let html=`<div class="stats-grid" style="grid-template-columns:repeat(2,1fr)">
+    <div class="stat-card highlight"><div class="stat-label">每月固定合計</div><div class="stat-value">${fmtAmt(total)}</div><div class="stat-sub">固定支出</div></div>
+    <div class="stat-card"><div class="stat-label">年度預估</div><div class="stat-value">${fmtAmt(total*12)}</div><div class="stat-sub">×12 個月</div></div>
+  </div>
+  <div class="table-container"><div class="table-header"><h2>每月固定支出</h2></div>
+  <table class="fixed-table"><thead><tr><th>項目</th><th style="text-align:right">每月金額</th><th>說明</th><th>付款方式</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    html+=`<tr><td style="font-weight:600">${r[0]}</td><td style="text-align:right;font-weight:700">${fmtAmt(r[1])}</td><td style="color:var(--text-muted);font-size:12px">${r[2]||''}</td><td style="color:var(--text-muted);font-size:12px">${r[3]||''}</td></tr>`;
+  });
+  html+=`</tbody><tfoot><tr class="total"><td>每月合計</td><td style="text-align:right">${fmtAmt(total)}</td><td colspan="2"></td></tr></tfoot></table></div>`;
+  c.innerHTML=html;
+}
+
+async function renderDashboard(){
+  const c=document.getElementById('content');
+  c.innerHTML='<div class="loading"><div class="spinner"></div>彙整所有專案...</div>';
+  let tPaid=0,tPend=0,tOD=0,allOD=[];
+  let stats=[];
+  for(const name of PAY_SHEETS){
+    try{
+      const data=await fetch_(name);
+      const rows=data.slice(5).filter(r=>r[0]||r[1]||r[4]);
+      const paidR=rows.filter(r=>String(r[7]).includes('已付'));
+      const pendR=rows.filter(r=>String(r[7]).includes('待付')&&!String(r[7]).includes('報價'));
+      const paid=paidR.reduce((s,r)=>s+(parseInt(r[4])||0),0);
+      const pend=pendR.reduce((s,r)=>s+(parseInt(r[4])||0),0);
+      const odR=pendR.filter(r=>{const d=dueDays(r[10]);return d!==null&&d<0;});
+      tPaid+=paid; tPend+=pend; tOD+=odR.length;
+      odR.forEach(r=>allOD.push({s:SHEET_NAMES[name],v:r[2],d:dueDays(r[10])}));
+      stats.push({name,display:SHEET_NAMES[name],paid,pend,od:odR.length,cnt:rows.length});
+    }catch(e){}
+  }
+  let html='';
+  if(allOD.length) html+=`<div class="alert-banner danger"><span>🔴</span><span class="alert-text">全公司共 ${allOD.length} 筆逾期：${allOD.slice(0,3).map(o=>`${o.v}（${Math.abs(o.d)}天）`).join('、')}${allOD.length>3?'...':''}</span></div>`;
+
+  html+=`<div class="stats-grid">
+    <div class="stat-card highlight"><div class="stat-label">待付款總計</div><div class="stat-value">${fmtAmt(tPend)}</div><div class="stat-sub">全部專案</div></div>
+    <div class="stat-card green"><div class="stat-label">已付款總計</div><div class="stat-value">${fmtAmt(tPaid)}</div><div class="stat-sub">全部專案</div></div>
+    <div class="stat-card ${tOD?'red':''}"><div class="stat-label">逾期未付</div><div class="stat-value">${tOD} 筆</div><div class="stat-sub">立即處理</div></div>
+    <div class="stat-card"><div class="stat-label">進行中專案</div><div class="stat-value">${PAY_SHEETS.length}</div><div class="stat-sub">個專案</div></div>
+  </div>
+  <div class="table-container"><div class="table-header"><h2>專案支出概覽</h2></div>
+  <table class="fixed-table"><thead><tr><th>專案</th><th style="text-align:right">已付款</th><th style="text-align:right">待付款</th><th style="text-align:right">逾期</th><th style="text-align:right">記錄</th></tr></thead><tbody>`;
+  stats.forEach(s=>{
+    html+=`<tr><td style="font-weight:600">${s.display}</td>
+      <td style="text-align:right;color:var(--green);font-weight:700">${fmtAmt(s.paid)}</td>
+      <td style="text-align:right;color:${s.od?'var(--red)':'#8A6D00'};font-weight:${s.od?700:400}">${fmtAmt(s.pend)}</td>
+      <td style="text-align:right;color:${s.od?'var(--red)':'var(--text-muted)'};font-weight:${s.od?700:400}">${s.od?s.od+'筆':'—'}</td>
+      <td style="text-align:right;color:var(--text-muted)">${s.cnt}</td>
+    </tr>`;
+  });
+  html+=`<tr class="total"><td>合計</td><td style="text-align:right">${fmtAmt(tPaid)}</td><td style="text-align:right">${fmtAmt(tPend)}</td><td style="text-align:right;color:${tOD?'var(--red)':'var(--text-muted)'}">${tOD?tOD+'筆':'—'}</td><td></td></tr></tbody></table></div>`;
+  c.innerHTML=html;
+}
+
+function filterRows(type,el){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#main-table tbody tr').forEach(tr=>{
+    if(type==='all'){tr.style.display='';return;}
+    if(type==='overdue'){tr.style.display=tr.dataset.overdue==='true'?'':'none';return;}
+    tr.style.display=tr.dataset.status===type?'':'none';
   });
 }
 
-async function updateStatus(select, rowNum, sheetName) {
-  const val = select.value;
-  select.className = 'status-select ' + getStatusClass(val);
-  try {
-    await postData({ action: 'updateCell', sheetName, row: rowNum, col: 8, value: val });
-    showToast('✅ 狀態已更新');
-  } catch(e) {
-    showToast('⚠️ 更新失敗，請重試');
-  }
+async function updateSt(sel,row,sheet){
+  const val=sel.value; sel.className='status-select '+sc(val);
+  try{ await post_({action:'updateCell',sheetName:sheet,row,col:8,value:val}); showToast('狀態已更新'); }
+  catch(e){ showToast('⚠️ 更新失敗'); }
 }
 
-function openAddModal() {
-  if (currentSheet === 'dashboard' || currentSheet === '公司固定成本') return;
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-date').value = today;
-  document.getElementById('modal').classList.add('open');
+function openAddModal(){ if(currentSheet==='dashboard'||currentSheet==='公司固定成本')return; document.getElementById('f-date').value=new Date().toISOString().split('T')[0]; document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+async function submitAdd(){
+  const row=[document.getElementById('f-date').value,document.getElementById('f-category').value,document.getElementById('f-vendor').value,document.getElementById('f-desc').value,parseInt(document.getElementById('f-amount').value)||0,document.getElementById('f-method').value,document.getElementById('f-payer').value,document.getElementById('f-status').value,document.getElementById('f-note').value,document.getElementById('f-quote').value,document.getElementById('f-deadline').value,document.getElementById('f-proof').value];
+  try{ await post_({sheetName:currentSheet,row}); closeModal(); showToast('✅ 記錄已新增'); setTimeout(()=>loadCurrentSheet(),1000); }
+  catch(e){ showToast('⚠️ 新增失敗'); }
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 
-async function submitAdd() {
-  const row = [
-    document.getElementById('f-date').value,
-    document.getElementById('f-category').value,
-    document.getElementById('f-vendor').value,
-    document.getElementById('f-desc').value,
-    parseInt(document.getElementById('f-amount').value) || 0,
-    document.getElementById('f-method').value,
-    document.getElementById('f-payer').value,
-    document.getElementById('f-status').value,
-    document.getElementById('f-note').value,
-    ''
-  ];
-
-  try {
-    await postData({ sheetName: currentSheet, row });
-    closeModal();
-    showToast('✅ 記錄已新增到 Google Sheets');
-    setTimeout(() => loadCurrentSheet(), 1000);
-  } catch(e) {
-    showToast('⚠️ 新增失敗：' + e.message);
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// Init
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('topbar-title').style.cssText = 'font-size:18px;font-weight:600;color:var(--navy)';
-  document.getElementById('topbar-title').textContent = '儀表板';
-  loadCurrentSheet();
-});
+document.addEventListener('DOMContentLoaded',()=>{ document.getElementById('add-btn').style.display='none'; loadCurrentSheet(); });
 </script>
 </body>
 </html>
