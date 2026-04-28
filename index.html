@@ -83,8 +83,14 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 
 /* ── CONTENT ─── */
 .ct{padding:20px 22px;flex:1;overflow-y:auto;}
-.ct > *{max-width:1280px;}
+.ct-inner{max-width:1400px;margin:0 auto;}
 .ld{padding:70px;text-align:center;color:var(--ink4);}
+
+/* ── 2-COL GRID（同畫面兩個 block 並排） ─── */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;margin-bottom:12px;}
+.grid2 > *{margin-bottom:0;min-width:0;}
+.col-full{grid-column:1/-1;}
+@media (max-width:980px){.grid2{grid-template-columns:1fr;}}
 .ring{width:24px;height:24px;border:2px solid var(--paper3);border-top-color:var(--y);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 14px;}
 @keyframes sp{to{transform:rotate(360deg)}}
 
@@ -151,6 +157,20 @@ td.num{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;white-
 td.dt{font-size:12px;color:var(--ink4);white-space:nowrap;}
 tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;border-top:2px solid var(--paper3)!important;}
 
+/* 付款記錄表格：固定欄寬，避免在窄畫面下欄位被拉開 */
+table.pay-table{table-layout:fixed;}
+table.pay-table th:nth-child(1),table.pay-table td:nth-child(1){width:84px;}
+table.pay-table th:nth-child(2),table.pay-table td:nth-child(2){width:90px;}
+table.pay-table th:nth-child(3),table.pay-table td:nth-child(3){width:120px;}
+table.pay-table th:nth-child(4),table.pay-table td:nth-child(4){width:auto;}
+table.pay-table th:nth-child(5),table.pay-table td:nth-child(5){width:90px;}
+table.pay-table th:nth-child(6),table.pay-table td:nth-child(6){width:80px;}
+table.pay-table th:nth-child(7),table.pay-table td:nth-child(7){width:90px;}
+table.pay-table th:nth-child(8),table.pay-table td:nth-child(8){width:100px;}
+table.pay-table th:nth-child(9),table.pay-table td:nth-child(9){width:70px;}
+table.pay-table th:nth-child(10),table.pay-table td:nth-child(10){width:70px;}
+table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
 /* ── CHIPS ─── */
 .chip{display:inline-flex;align-items:center;font-size:11px;padding:2px 8px;border-radius:2px;font-weight:600;}
 .chip.pd{background:var(--gl);color:var(--gr);}
@@ -205,12 +225,12 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;borde
 .fg-nm{font-size:13px;font-weight:700;}
 .fg-pct{font-size:11px;color:var(--ink4);}
 .fg-total{margin-left:auto;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
-.fg-item{display:grid;grid-template-columns:1fr 110px 1fr 100px;align-items:center;gap:10px;padding:7px 14px;border-bottom:1px solid var(--paper2);}
+.fg-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
 .fg-item:last-child{border-bottom:none;}
 .fg-item:hover{background:rgba(246,195,28,.03);}
 .fi-nm{font-size:13px;font-weight:500;color:var(--ink2);}
-.fi-am{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.01em;}
-.fi-ds{font-size:11px;color:var(--ink4);line-height:1.4;}
+.fi-am{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.01em;flex-shrink:0;}
+.fi-ds{font-size:11px;color:var(--ink4);line-height:1.4;margin-top:2px;}
 .fi-mt{font-size:11px;color:var(--ink4);text-align:right;}
 .fi-cat-head{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;}
 
@@ -461,10 +481,17 @@ const $sc=s=>!s?'qt':s.includes('已付')?'pd':s.includes('待付')&&!s.includes
 const $pf=p=>p>100?'fill-re':p>85?'fill-am':'fill-y';
 // Filter out template placeholder rows
 const SKIP_WORDS=['(請','請新增','合計','小計','類別範','老闆代墊','執行項目類'];
+const SUBHEADER_PATTERNS=[/^存在日曆\s*SEO\s*$/,/^包裝研究所\s*SEO\s*$/,/^海保署/,/^冠球/,/^利百代/,/^月曆/,/^海洋友善/];
 const $valid=r=>{
-  if(!r[0]||String(r[0]).trim().length===0)return false;
-  const s=String(r[0]);
-  return !SKIP_WORDS.some(w=>s.includes(w));
+  // 改為以「廠商欄(C)」為主判斷：A 欄日期可空白（待估價/待付情況），但廠商欄一定要有
+  const vendor=String(r[2]||'').trim();
+  if(!vendor)return false;
+  if(SKIP_WORDS.some(w=>vendor.includes(w)))return false;
+  if(SUBHEADER_PATTERNS.some(p=>p.test(vendor)))return false;
+  // 同時也過濾 A 欄出現 SKIP_WORDS（例如 sub-header 寫在 A 欄）
+  const dateCol=String(r[0]||'');
+  if(dateCol&&SKIP_WORDS.some(w=>dateCol.includes(w)))return false;
+  return true;
 };
 
 function $due(dl,paid){
@@ -554,7 +581,7 @@ async function rDB(){
     </tr>`;
   });
   h+=`<tfoot><tr><td>合計</td><td class="num" style="color:var(--gr)">${$m(tP)}</td><td class="num" style="color:var(--am)">${$m(tPn)}</td><td></td><td class="num" style="color:${tOD?'var(--re)':'var(--ink4)'}">${tOD?tOD+'筆':'—'}</td><td></td></tr></tfoot></tbody></table></div></div>`;
-  document.getElementById('ct').innerHTML=h;
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
 // ═══ PROJECT ══════════════════════════════
@@ -612,6 +639,12 @@ async function rProj(key){
     <div class="kc ${od.length?'re':''}"><div class="kl">逾期未付</div><div class="kv">${od.length} 筆</div><div class="ks">${soon.length} 筆即將到期</div></div>
     <div class="kc"><div class="kl">待報價</div><div class="kv">${qR.length} 筆</div><div class="ks">金額未確認</div></div>
   </div>`;
+  // ── 成本結構 + 客戶收款進度（同畫面並排顯示）
+  const _showCost = projTotal>0||costItems.length>0;
+  const _showReceipt = receiptRows.length>0;
+  const _pair = _showCost && _showReceipt;
+  if(_pair) h+=`<div class="grid2">`;
+
 
   // 成本結構
   if(projTotal>0||costItems.length>0){
@@ -621,6 +654,25 @@ async function rProj(key){
     costItems.forEach(c=>h+=`<div class="ci"><div class="ci-nm">${c.nm}</div><div class="ci-am">${$m(c.am)}</div><div class="ci-pct">${c.pct} ${c.ds}</div></div>`);
     h+=`</div></div>`;
   }
+
+  // 客戶收款進度
+  if(receiptRows.length>0){
+    const totS=receiptRows.reduce((s,r)=>s+r.amount,0);
+    const totR=receiptRows.reduce((s,r)=>s+r.actual,0);
+    const pct=$p(totR,totS);
+    h+=`<div class="card"><div class="ch"><h3>客戶收款進度</h3><span class="meta">已收 ${$m(totR)} / ${$m(totS)} (${pct}%)</span></div>
+    <div style="padding:6px 14px 10px;border-bottom:1px solid var(--paper3)">
+      <div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div class="prog"><div class="prog-fill fill-gr" style="width:${pct}%"></div></div></div><span style="font-size:12px;color:var(--ink4)">${pct}%</span></div>
+    </div>
+    <div class="rr-head"><span>期數/說明</span><span style="text-align:right">應收金額</span><span>預計收款日</span><span style="text-align:right">實際到帳</span><span>狀態</span></div>`;
+    receiptRows.forEach(r=>{
+      const sc=r.st.includes('已收')?'rc':'pr';
+      h+=`<div class="rr-row"><span style="font-weight:600">${r.desc}</span><span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right">${$m(r.amount)}</span><span style="font-size:12px;color:var(--ink4)">${$d(r.date)}</span><span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right;color:${r.actual>0?'var(--gr)':'var(--ink4)'}">${r.actual>0?$m(r.actual):'—'}</span><span><span class="chip ${sc}">${r.st}</span></span></div>`;
+    });
+    h+=`</div>`;
+  }
+  if(_pair) h+=`</div>`;
+
 
   // 執行預算追蹤
   if(budgetRows.length>0){
@@ -653,27 +705,10 @@ async function rProj(key){
     h+=`<div class="br-row" style="background:var(--paper2);font-weight:700"><span>合計</span><span></span><span class="br-num">${$m(totB)}</span><span class="br-num pos">${$m(totA)}</span><span class="br-num ${totR<0?'neg':''}">${$m(totR)}</span><span></span><span></span></div></div>`;
   }
 
-  // 客戶收款進度
-  if(receiptRows.length>0){
-    const totS=receiptRows.reduce((s,r)=>s+r.amount,0);
-    const totR=receiptRows.reduce((s,r)=>s+r.actual,0);
-    const pct=$p(totR,totS);
-    h+=`<div class="card"><div class="ch"><h3>客戶收款進度</h3><span class="meta">已收 ${$m(totR)} / ${$m(totS)} (${pct}%)</span></div>
-    <div style="padding:6px 14px 10px;border-bottom:1px solid var(--paper3)">
-      <div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div class="prog"><div class="prog-fill fill-gr" style="width:${pct}%"></div></div></div><span style="font-size:12px;color:var(--ink4)">${pct}%</span></div>
-    </div>
-    <div class="rr-head"><span>期數/說明</span><span style="text-align:right">應收金額</span><span>預計收款日</span><span style="text-align:right">實際到帳</span><span>狀態</span></div>`;
-    receiptRows.forEach(r=>{
-      const sc=r.st.includes('已收')?'rc':'pr';
-      h+=`<div class="rr-row"><span style="font-weight:600">${r.desc}</span><span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right">${$m(r.amount)}</span><span style="font-size:12px;color:var(--ink4)">${$d(r.date)}</span><span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right;color:${r.actual>0?'var(--gr)':'var(--ink4)'}">${r.actual>0?$m(r.actual):'—'}</span><span><span class="chip ${sc}">${r.st}</span></span></div>`;
-    });
-    h+=`</div>`;
-  }
-
   // 付款記錄
   h+=`<div class="card"><div class="ch"><h3>付款記錄</h3><div style="display:flex;align-items:center;gap:8px"><span class="meta">${rows.length} 筆</span>${PKS.includes(cur)&&role!=='readonly'?`<button class="btn btn-y btn-sm" onclick="openModal('pay')">+ 新增記帳</button>`:''}</div></div>
   <div class="fr"><span class="fc on" onclick="filt('all',this)">全部 (${rows.length})</span><span class="fc" onclick="filt('pd',this)">✅ 已付 (${pR.length})</span><span class="fc" onclick="filt('pn',this)">⏳ 待付 (${pnR.length})</span><span class="fc" onclick="filt('qt',this)">📋 待報價 (${qR.length})</span>${od.length?`<span class="fc fc-red" onclick="filt('od',this)">🔴 逾期 (${od.length})</span>`:''}</div>
-  <div class="tw"><table id="pt"><thead><tr><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>轉帳證明</th></tr></thead><tbody>`;
+  <div class="tw"><table class="pay-table" id="pt"><thead><tr><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>轉帳證明</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
     const s=String(r[7]||''),sc=$sc(s),ip=sc==='pd';
     const py=String(r[6]||''),dl=String(r[10]||'');
@@ -689,7 +724,7 @@ async function rProj(key){
     </tr>`;
   });
   h+=`</tbody></table></div></div>`;
-  document.getElementById('ct').innerHTML=h;
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
   window._curRows=rows;window._curKey=key;
 }
 
@@ -810,13 +845,25 @@ async function rFixed(){
     h+=`</div></div>`;
   }
 
-  grouped.filter(g=>g.items.length>0).forEach(g=>{
-    const gTot=g.items.reduce((s,r)=>s+(parseInt(r[1])||0),0);
-    const pct=$p(gTot,parseInt(total)||1);
-    h+=`<div class="card"><div class="fg-head"><div class="fg-dot" style="background:${g.color}"></div><span class="fg-nm">${g.nm}</span><span class="fg-pct">${pct}% of total</span><span class="fg-total">${$m(gTot)}</span></div>`;
-    g.items.forEach(r=>h+=`<div class="fg-item"><div class="fi-nm">${r[0]}</div><div class="fi-am">${$m(r[1])}</div><div class="fi-ds">${r[2]||''}</div><div class="fi-mt">${r[3]||''}</div></div>`);
+  // 4 類分組 2x2 並排
+  const _groups = grouped.filter(g=>g.items.length>0);
+  if(_groups.length>0){
+    h+=`<div class="grid2">`;
+    _groups.forEach(g=>{
+      const gTot=g.items.reduce((s,r)=>s+(parseInt(r[1])||0),0);
+      const pct=$p(gTot,parseInt(total)||1);
+      h+=`<div class="card"><div class="fg-head"><div class="fg-dot" style="background:${g.color}"></div><span class="fg-nm">${g.nm}</span><span class="fg-pct">${pct}% of total</span><span class="fg-total">${$m(gTot)}</span></div>`;
+      g.items.forEach(r=>h+=`<div class="fg-item">
+        <div style="min-width:0;flex:1">
+          <div class="fi-nm">${r[0]}</div>
+          ${(r[2]||r[3])?`<div class="fi-ds">${[r[2],r[3]].filter(Boolean).join(' · ')}</div>`:''}
+        </div>
+        <div class="fi-am">${$m(r[1])}</div>
+      </div>`);
+      h+=`</div>`;
+    });
     h+=`</div>`;
-  });
+  }
 
   if(annRows.length>0){
     h+=`<div class="card"><div class="ch"><h3>年度 / 一次性費用</h3></div>
@@ -824,7 +871,7 @@ async function rFixed(){
     annRows.forEach(r=>h+=`<tr><td style="font-weight:500">${r[0]}</td><td class="num">${$m(r[1])}</td><td class="dt">${$d(r[2])}</td><td style="font-size:12px;color:var(--ink4)">${r[3]||''}</td><td><span class="chip ${$sc(String(r[6]||''))}">${r[6]||'—'}</span></td></tr>`);
     h+=`</tbody></table></div></div>`;
   }
-  document.getElementById('ct').innerHTML=h;
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
 // ═══ ADVANCES ═════════════════════════════
@@ -851,7 +898,7 @@ async function rAdvances(){
     h+=`<tr class="${ip?'':'rds'}"><td class="dt">${$d(r[0])}</td><td style="font-size:12px;color:var(--ink4)">${r[1]||''}</td><td style="font-size:13px">${r[2]||''}</td><td class="num">${$m(r[3])}</td><td style="font-size:12px;color:var(--ink4)">${r[4]||''}</td><td class="dt">${$d(r[5])}</td><td><span class="chip ${ip?'pd':'pn'}">${r[6]||'—'}</span></td></tr>`;
   });
   h+=`</tbody></table></div></div>`;
-  document.getElementById('ct').innerHTML=h;
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
 // ═══ REMINDER ═════════════════════════════
@@ -894,12 +941,10 @@ async function rRemind(){
 
     // SEO 內容稿費
     {cat:'SEO', name:'Wonda 存在日曆 SEO 稿費', amount:4000, payer:'公司', note:'每月 2 篇 × NT$2,000'},
-    {cat:'SEO', name:'Wonda 包裝研究所 SEO 稿費', amount:2000, payer:'公司', note:'每月 1 篇 × NT$2,000'},
-    {cat:'SEO', name:'Remie SEO 內容', amount:0, payer:'公司', note:'⏳ 篇數／金額待確認'},
-    {cat:'SEO', name:'Davina 官網維護費', amount:0, payer:'公司', note:'⏳ 是否每月／金額待確認'},
+    {cat:'SEO', name:'Wonda 包裝研究所 SEO 稿費', amount:4000, payer:'公司', note:'每月 2 篇 × NT$2,000'},
 
     // 社群
-    {cat:'社群', name:'Amy 小編 社群發文', amount:0, payer:'公司', note:'⏳ 金額待確認'},
+    {cat:'社群', name:'Amy 小編 社群發文', amount:20000, payer:'公司', note:'每月固定支付'},
 
     // 工具訂閱（老闆代墊，信用卡自動扣）
     {cat:'工具', name:'Google Workspace', amount:550, payer:'老闆代墊', note:'信用卡自動扣'},
@@ -923,44 +968,43 @@ async function rRemind(){
     h+=`<div class="al am">⚠️ 目前是每月 ${dayOfMonth} 號，薪資支付期（1-8號），請確認是否已付款</div>`;
   }
 
-  // 依類別分組顯示
+  // 依類別分組顯示（2x2 並排，每張卡內部單欄）
   const cats = ['薪資','SEO','社群','工具'];
+  h+=`<div class="grid2">`;
   cats.forEach(cat=>{
     const items = MONTHLY_FIXED.filter(x=>x.cat===cat);
     if(!items.length) return;
     const catTotal = items.reduce((s,x)=>s+x.amount,0);
     const meta = CAT_META[cat];
-    h+=`<div class="card" style="margin-bottom:10px">
+    h+=`<div class="card">
       <div class="fg-head" style="border-left:3px solid ${meta.color}">
         <span style="font-size:14px">${meta.icon}</span>
         <span class="fg-nm">${cat}</span>
         <span class="fg-pct">${items.length} 項</span>
         <span class="fg-total">${$m(catTotal)}</span>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0">`;
-    items.forEach((x,i)=>{
+      </div>`;
+    items.forEach(x=>{
       const isPlaceholder = x.amount===0;
-      h+=`<div style="padding:10px 14px;border-bottom:1px solid var(--paper2);${i%2===0?'border-right:1px solid var(--paper2);':''}">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-          <div style="min-width:0;flex:1">
-            <div style="font-size:13px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.name}</div>
-            <div style="font-size:11px;color:var(--ink4);margin-top:2px">${x.note}</div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>
-            <div style="font-size:10px;color:var(--ink4);margin-top:2px">${x.payer}</div>
-          </div>
+      h+=`<div style="padding:9px 14px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div style="min-width:0;flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">${x.name}</div>
+          <div style="font-size:11px;color:var(--ink4);margin-top:1px">${x.note}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>
+          <div style="font-size:10px;color:var(--ink4);margin-top:1px">${x.payer}</div>
         </div>
       </div>`;
     });
-    h+=`</div></div>`;
+    h+=`</div>`;
   });
+  h+=`</div>`;
 
   h+=`<div style="font-size:11px;color:var(--ink4);margin-top:8px;padding:8px 12px;background:var(--paper2);border-radius:var(--r5)">
     💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。標示「待確認」的項目請告知 Claude 補上正確金額。
   </div>`;
 
-  document.getElementById('ct').innerHTML=h;
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
 // ═══ VENDORS ══════════════════════════════
@@ -993,7 +1037,7 @@ async function rVendors(){
     h+=`<div class="vd-row"><span class="vd-nm">${v.name}</span><div class="vd-tags">${[...v.projs].map(p=>`<span class="vd-tag">${p.substring(0,4)}</span>`).join('')}</div><span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right">${$m(v.total)}</span><span style="font-variant-numeric:tabular-nums;text-align:right;color:var(--gr)">${$m(v.paid)}</span><span style="font-variant-numeric:tabular-nums;text-align:right;color:${v.pend?'var(--am)':'var(--ink4)'}">${v.pend?$m(v.pend):'—'}</span></div>`;
   });
   h+=`</div>`;
-  document.getElementById('ct').innerHTML=h;
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
 // ═══ FILTERS / STATUS ═════════════════════
