@@ -83,11 +83,11 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 
 /* ── CONTENT ─── */
 .ct{padding:20px 22px;flex:1;overflow-y:auto;}
-.ct-inner{max-width:1400px;margin:0 auto;}
+.ct-inner{max-width:1080px;margin:0 auto;}
 .ld{padding:70px;text-align:center;color:var(--ink4);}
 
 /* ── 2-COL GRID（同畫面兩個 block 並排） ─── */
-.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start;margin-bottom:12px;}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start;margin-bottom:14px;}
 .grid2 > *{margin-bottom:0;min-width:0;}
 .col-full{grid-column:1/-1;}
 @media (max-width:980px){.grid2{grid-template-columns:1fr;}}
@@ -124,18 +124,18 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 .fill-gr{background:#16A34A;}
 
 /* ── CARD ─── */
-.card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:12px;}
-.ch{padding:11px 15px;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between;background:var(--paper2);}
-.ch h3{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
-.ch .meta{font-size:12px;color:var(--ink4);}
+.card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(17,17,16,.04),0 0 0 0 rgba(17,17,16,0);transition:box-shadow .2s;}
+.card:hover{box-shadow:0 2px 8px rgba(17,17,16,.06);}
+.ch{padding:14px 18px;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,var(--paper),var(--paper) 90%,var(--paper2));}
+.ch h3{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.015em;}
+.ch .meta{font-size:12px;color:var(--ink3);font-weight:500;}
 
-/* ── SECTION LABEL ─── */
-.sl{display:flex;align-items:center;gap:8px;margin:14px 0 8px;}
-.sl::before{content:'';width:3px;height:14px;background:var(--y);border-radius:2px;flex-shrink:0;}
-.sl h4{font-size:13px;font-weight:700;}
-.sl .sm{margin-left:auto;font-size:12px;color:var(--ink4);}
+/* 區段大標：更明顯的視覺層次（用於頁面分區，如「每月固定應付清單」） */
+.sl{display:flex;align-items:center;gap:10px;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink);}
+.sl::before{content:'';width:4px;height:16px;background:var(--y);border-radius:2px;flex-shrink:0;}
+.sl h4{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
+.sl .sm{font-size:12px;color:var(--ink3);font-weight:500;margin-left:auto;}
 
-/* ── COST STRUCTURE ─── */
 /* ── COST STRUCTURE（清單式，適合窄欄） ─── */
 .cost-list{padding:4px 0;}
 .cost-list .ci{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--paper2);}
@@ -164,17 +164,28 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;borde
 
 /* 付款記錄表格：固定欄寬，避免在窄畫面下欄位被拉開 */
 table.pay-table{table-layout:fixed;}
-table.pay-table th:nth-child(1),table.pay-table td:nth-child(1){width:84px;}
-table.pay-table th:nth-child(2),table.pay-table td:nth-child(2){width:90px;}
-table.pay-table th:nth-child(3),table.pay-table td:nth-child(3){width:120px;}
-table.pay-table th:nth-child(4),table.pay-table td:nth-child(4){width:auto;}
-table.pay-table th:nth-child(5),table.pay-table td:nth-child(5){width:90px;}
-table.pay-table th:nth-child(6),table.pay-table td:nth-child(6){width:80px;}
-table.pay-table th:nth-child(7),table.pay-table td:nth-child(7){width:90px;}
-table.pay-table th:nth-child(8),table.pay-table td:nth-child(8){width:100px;}
-table.pay-table th:nth-child(9),table.pay-table td:nth-child(9){width:70px;}
-table.pay-table th:nth-child(10),table.pay-table td:nth-child(10){width:70px;}
+table.pay-table th:nth-child(1),table.pay-table td:nth-child(1){width:108px;}  /* 日期：YYYY/MM/DD */
+table.pay-table th:nth-child(2),table.pay-table td:nth-child(2){width:108px;}  /* 類別 */
+table.pay-table th:nth-child(3),table.pay-table td:nth-child(3){width:120px;}  /* 廠商 */
+table.pay-table th:nth-child(4),table.pay-table td:nth-child(4){width:auto;}    /* 說明：吃剩餘空間 */
+table.pay-table th:nth-child(5),table.pay-table td:nth-child(5){width:90px;}    /* 金額 */
+table.pay-table th:nth-child(6),table.pay-table td:nth-child(6){width:62px;}    /* 付款人 */
+table.pay-table th:nth-child(7),table.pay-table td:nth-child(7){width:84px;}    /* 截止日 */
+table.pay-table th:nth-child(8),table.pay-table td:nth-child(8){width:108px;}   /* 狀態 */
+table.pay-table th:nth-child(9),table.pay-table td:nth-child(9){width:60px;}    /* 報價單 */
+table.pay-table th:nth-child(10),table.pay-table td:nth-child(10){width:60px;}  /* 證明 */
+table.pay-table th:nth-child(11),table.pay-table td:nth-child(11){width:42px;}  /* 編輯 */
 table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* Row 編輯按鈕（hover 顯示） */
+/* 編輯按鈕（永久可見） */
+.row-edit{background:var(--paper2);border:1px solid var(--paper3);cursor:pointer;padding:3px 7px;color:var(--ink2);font-size:13px;border-radius:var(--r3);transition:all .15s;}
+.row-edit:hover{background:var(--y);border-color:var(--yd);color:var(--ink);}
+
+/* 付款記錄整列：admin 模式可點擊編輯 */
+.is-admin table.pay-table tbody tr{cursor:pointer;}
+.is-admin .rr-row{cursor:pointer;}
+.lk a,.row-edit{cursor:pointer;}
 
 /* ── CHIPS ─── */
 .chip{display:inline-flex;align-items:center;font-size:11px;padding:2px 8px;border-radius:2px;font-weight:600;}
@@ -208,7 +219,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fc.fc-red.on{background:var(--re);color:#fff;}
 
 /* ── BUDGET ROWS ─── */
-.br-head,.br-row{display:grid;grid-template-columns:1fr 100px 100px 100px 110px 80px;align-items:center;gap:14px;padding:9px 16px;border-bottom:1px solid var(--paper2);}
+.br-head,.br-row{display:grid;grid-template-columns:minmax(180px,300px) 88px 88px 88px 100px 70px;align-items:center;gap:14px;padding:9px 16px;border-bottom:1px solid var(--paper2);justify-content:start;}
 .br-row:hover{background:rgba(246,195,28,.04);}
 .br-nm{font-size:13px;font-weight:500;color:var(--ink2);display:flex;align-items:center;gap:8px;min-width:0;}
 .br-nm-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -218,12 +229,12 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:13px;}
 .br-num.pos{color:var(--gr);}
 .br-num.neg{color:var(--re);}
-.br-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
+.br-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);padding-top:8px;padding-bottom:8px;}
 .br-row:last-child{border-bottom:none;}
 .br-edit{display:flex;gap:4px;}
 
 /* ── RECEIPT ROWS ─── */
-.rr-head,.rr-row{display:grid;grid-template-columns:minmax(160px,260px) 110px 110px 110px 80px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
+.rr-head,.rr-row{display:grid;grid-template-columns:minmax(56px,90px) 78px 80px 78px 60px 44px 24px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--paper2);justify-content:start;}
 .rr-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 .rr-row:last-child{border-bottom:none;}
 .rr-row:hover{background:rgba(246,195,28,.03);}
@@ -261,7 +272,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .rm-due{font-size:12px;color:var(--ink4);}
 
 /* ── VENDOR ─── */
-.vd-row{display:grid;grid-template-columns:minmax(140px,180px) 1fr 100px 100px 100px;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--paper2);}
+.vd-row{display:grid;grid-template-columns:minmax(120px,160px) minmax(160px,1fr) 90px 90px 90px;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--paper2);}
 .vd-row.hd{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 .vd-row:last-child{border-bottom:none;}
 .vd-row:hover{background:rgba(246,195,28,.03);}
@@ -270,7 +281,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .vd-tag{font-size:10px;padding:1px 5px;border-radius:2px;background:var(--paper3);color:var(--ink3);}
 
 /* ── ADVANCES ─── */
-.adv-row{display:grid;grid-template-columns:90px minmax(120px,160px) minmax(180px,1fr) 100px 90px 100px 90px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
+.adv-row{display:grid;grid-template-columns:80px minmax(100px,140px) minmax(160px,1fr) 90px 80px 90px 80px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
 .adv-row.hd{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 
 /* ── MODAL ─── */
@@ -392,7 +403,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
           <select class="fi" id="p6"><option>公司</option><option>老闆代墊</option></select>
         </div>
         <div class="fp"><label class="fl">狀態</label>
-          <select class="fi" id="p7"><option>✅已付</option><option>⏳待付</option><option>⏳待報價</option></select>
+          <select class="fi" id="p7"><option>✅已付</option><option>⏳待付</option><option>📋待估價</option><option>📋待報價</option></select>
         </div>
         <div class="fp"><label class="fl">報價單連結</label><input type="url" class="fi" id="p8" placeholder="https://drive.google.com/..."></div>
         <div class="fp"><label class="fl">轉帳證明連結</label><input type="url" class="fi" id="p11"></div>
@@ -400,6 +411,28 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
       </div>
     </div>
     <div class="mf"><button class="btn btn-o" onclick="closeModal('pay')">取消</button><button class="btn btn-y" onclick="submitPay()">新增記錄</button></div>
+  </div>
+</div>
+
+<!-- 編輯收款進度 Modal -->
+<div class="ov" id="ov-receipt">
+  <div class="md" style="max-width:520px">
+    <div class="mh"><h3>更新收款記錄</h3><span class="mx" onclick="closeModal('receipt')">×</span></div>
+    <div class="mb">
+      <div style="background:var(--paper2);padding:10px 14px;border-radius:var(--r5);margin-bottom:14px">
+        <div style="font-size:11px;color:var(--ink4);margin-bottom:2px">期數/說明</div>
+        <div id="rc-desc" style="font-size:14px;font-weight:600"></div>
+        <div style="font-size:11px;color:var(--ink4);margin-top:4px">應收金額：<span id="rc-amount" style="font-weight:600;color:var(--ink2)"></span></div>
+      </div>
+      <div class="fg">
+        <div class="fp"><label class="fl">實際到帳金額 NT$</label><input type="number" class="fi" id="rc-actual" placeholder="輸入收到的金額"></div>
+        <div class="fp"><label class="fl">狀態</label>
+          <select class="fi" id="rc-st"><option>✅已收</option><option>⏳待收</option></select>
+        </div>
+        <div class="fp full"><label class="fl">發票連結（Google Drive 或雲端連結）</label><input type="url" class="fi" id="rc-invoice" placeholder="https://drive.google.com/..."></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn btn-o" onclick="closeModal('receipt')">取消</button><button class="btn btn-y" onclick="submitReceiptEdit()">儲存</button></div>
   </div>
 </div>
 
@@ -486,7 +519,17 @@ const $m=v=>'NT$'+(parseInt(v)||0).toLocaleString('zh-TW');
 const $d=v=>v?String(v).substring(0,10).replace(/-/g,'/'):' ';
 const $dd=d=>{if(!d)return null;const t=new Date(d);t.setHours(0,0,0,0);return Math.round((t-T0)/864e5);};
 const $p=(a,b)=>b>0?Math.min(100,Math.round(a/b*100)):0;
-const $sc=s=>!s?'qt':s.includes('已付')?'pd':s.includes('待付')&&!s.includes('報價')?'pn':'qt';
+const $sc=s=>{
+  if(!s||!String(s).trim())return 'qt';
+  const t=String(s);
+  if(t.includes('已付'))return 'pd';
+  if(t.includes('已收'))return 'rc';
+  if(t.includes('待估價'))return 'qt';
+  if(t.includes('待報價'))return 'qt';
+  if(t.includes('待付'))return 'pn';
+  if(t.includes('待收'))return 'pr';
+  return 'qt';
+};
 const $pf=p=>p>100?'fill-re':p>85?'fill-am':'fill-y';
 // Filter out template placeholder rows
 const SKIP_WORDS=['(請','請新增','合計','小計','類別範','老闆代墊','執行項目類'];
@@ -513,8 +556,16 @@ function $due(dl,paid){
 function $lk(url,lbl){return url&&url.startsWith('http')?`<a href="${url}" target="_blank">${lbl}</a>`:`<span style="color:var(--paper3)">—</span>`;}
 function $st(s,row,sheet){
   const c=$sc(s);
-  if(role==='staff')return`<span class="chip ${c}">${s||'—'}</span>`;
-  return`<select class="ss ${c}" onchange="upSt(this,${row},'${sheet}')"><option ${s.includes('已付')?'selected':''}>✅已付</option><option ${s.includes('待付')&&!s.includes('報價')?'selected':''}>⏳待付</option><option ${s.includes('待報價')?'selected':''}>⏳待報價</option></select>`;
+  const t=String(s||'').trim();
+  const isEmpty = !t;
+  if(role==='staff')return`<span class="chip ${c}">${t||'—'}</span>`;
+  return`<select class="ss ${c}" onchange="upSt(this,${row},'${sheet}')">
+    <option value="" ${isEmpty?'selected':''}>— 未設定 —</option>
+    <option ${t.includes('已付')?'selected':''}>✅已付</option>
+    <option ${t.includes('待付')&&!t.includes('估價')&&!t.includes('報價')?'selected':''}>⏳待付</option>
+    <option ${t.includes('待估價')?'selected':''}>📋待估價</option>
+    <option ${t.includes('待報價')?'selected':''}>📋待報價</option>
+  </select>`;
 }
 
 // ═══ NAV ══════════════════════════════════
@@ -597,9 +648,9 @@ async function rDB(){
 async function rProj(key){
   const [ov,pay]=await Promise.all([gs(key+'_總覽').catch(()=>[]),gs(key+'_付款帳').catch(()=>[])]);
   const rows=pay.slice(5).filter($valid);
-  const pR=rows.filter(r=>String(r[7]).includes('已付'));
-  const pnR=rows.filter(r=>String(r[7]).includes('待付')&&!String(r[7]).includes('報價'));
-  const qR=rows.filter(r=>String(r[7]).includes('待報價'));
+  const pR=rows.filter(r=>$sc(r[7])==='pd');
+  const pnR=rows.filter(r=>$sc(r[7])==='pn');
+  const qR=rows.filter(r=>$sc(r[7])==='qt');
   const tP=pR.reduce((s,r)=>s+(parseInt(r[4])||0),0);
   const tPn=pnR.reduce((s,r)=>s+(parseInt(r[4])||0),0);
   const od=pnR.filter(r=>{const d=$dd(r[10]);return d!==null&&d<0;});
@@ -632,7 +683,7 @@ async function rProj(key){
       for(let i=rcStart;i<ov.length;i++){
         const r=ov[i];
         if(!r||!r[0]||String(r[0]).includes('合計')||String(r[0]).includes('▌'))continue;
-        if(r[1])receiptRows.push({desc:String(r[0]),amount:parseInt(r[1])||0,date:String(r[2]||''),actual:parseInt(r[3])||0,st:String(r[4]||'')});
+        if(r[1])receiptRows.push({rowNum:i+1,desc:String(r[0]),amount:parseInt(r[1])||0,date:String(r[2]||''),actual:parseInt(r[3])||0,st:String(r[4]||''),invoice:String(r[5]||'')});
       }
     }
   }
@@ -675,14 +726,23 @@ async function rProj(key){
     const totS=receiptRows.reduce((s,r)=>s+r.amount,0);
     const totR=receiptRows.reduce((s,r)=>s+r.actual,0);
     const pct=$p(totR,totS);
-    h+=`<div class="card"><div class="ch"><h3>客戶收款進度</h3><span class="meta">已收 ${$m(totR)} / ${$m(totS)} (${pct}%)</span></div>
+    h+=`<div class="card"><div class="ch"><h3>客戶收款進度</h3><div style="display:flex;align-items:center;gap:10px"><span class="meta">已收 ${$m(totR)} / ${$m(totS)} (${pct}%)</span>${role==='admin'?`<span style="font-size:11px;color:var(--ink4);background:var(--paper2);padding:3px 8px;border-radius:var(--r3)">💡 點 ✏️ 標記已收款</span>`:''}</div></div>
     <div style="padding:6px 14px 10px;border-bottom:1px solid var(--paper3)">
       <div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div class="prog"><div class="prog-fill fill-gr" style="width:${pct}%"></div></div></div><span style="font-size:12px;color:var(--ink4)">${pct}%</span></div>
     </div>
-    <div class="rr-head"><span>期數/說明</span><span style="text-align:right">應收金額</span><span>預計收款日</span><span style="text-align:right">實際到帳</span><span>狀態</span></div>`;
-    receiptRows.forEach(r=>{
+    <div class="rr-head"><span>期數/說明</span><span style="text-align:right">應收金額</span><span>預計收款日</span><span style="text-align:right">實際到帳</span><span>狀態</span><span>發票</span><span></span></div>`;
+    receiptRows.forEach((r,idx)=>{
       const sc=r.st.includes('已收')?'rc':'pr';
-      h+=`<div class="rr-row"><span style="font-weight:600">${r.desc}</span><span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right">${$m(r.amount)}</span><span style="font-size:12px;color:var(--ink4)">${$d(r.date)}</span><span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right;color:${r.actual>0?'var(--gr)':'var(--ink4)'}">${r.actual>0?$m(r.actual):'—'}</span><span><span class="chip ${sc}">${r.st}</span></span></div>`;
+      const invLk=r.invoice&&r.invoice.startsWith('http')?`<a href="${r.invoice}" target="_blank" style="font-size:12px">📄</a>`:`<span style="color:var(--paper3)">—</span>`;
+      h+=`<div class="rr-row">
+        <span style="font-weight:600">${r.desc}</span>
+        <span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right">${$m(r.amount)}</span>
+        <span style="font-size:12px;color:var(--ink4)">${$d(r.date)}</span>
+        <span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right;color:${r.actual>0?'var(--gr)':'var(--ink4)'}">${r.actual>0?$m(r.actual):'—'}</span>
+        <span><span class="chip ${sc}">${r.st}</span></span>
+        <span style="text-align:center">${invLk}</span>
+        <span>${role==='admin'?`<button class="row-edit" onclick="editReceiptRow('${key}',${r.rowNum},${idx})" title="編輯">✏️</button>`:''}</span>
+      </div>`;
     });
     h+=`</div>`;
   }
@@ -723,9 +783,9 @@ async function rProj(key){
   }
 
   // 付款記錄
-  h+=`<div class="card"><div class="ch"><h3>付款記錄</h3><div style="display:flex;align-items:center;gap:8px"><span class="meta">${rows.length} 筆</span>${PKS.includes(cur)&&role!=='readonly'?`<button class="btn btn-y btn-sm" onclick="openModal('pay')">+ 新增記帳</button>`:''}</div></div>
+  h+=`<div class="card"><div class="ch"><h3>付款記錄</h3><div style="display:flex;align-items:center;gap:8px"><span class="meta">${rows.length} 筆</span>${role==='admin'?`<span style="font-size:11px;color:var(--ink4);background:var(--paper2);padding:3px 8px;border-radius:var(--r3)">💡 點 ✏️ 編輯／補報價單</span>`:''}${PKS.includes(cur)&&role!=='readonly'?`<button class="btn btn-y btn-sm" onclick="openModal('pay')">+ 新增記帳</button>`:''}</div></div>
   <div class="fr"><span class="fc on" onclick="filt('all',this)">全部 (${rows.length})</span><span class="fc" onclick="filt('pd',this)">✅ 已付 (${pR.length})</span><span class="fc" onclick="filt('pn',this)">⏳ 待付 (${pnR.length})</span><span class="fc" onclick="filt('qt',this)">📋 待報價 (${qR.length})</span>${od.length?`<span class="fc fc-red" onclick="filt('od',this)">🔴 逾期 (${od.length})</span>`:''}</div>
-  <div class="tw"><table class="pay-table" id="pt"><thead><tr><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>轉帳證明</th></tr></thead><tbody>`;
+  <div class="tw"><table class="pay-table" id="pt"><thead><tr><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>證明</th><th></th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
     const s=String(r[7]||''),sc=$sc(s),ip=sc==='pd';
     const py=String(r[6]||''),dl=String(r[10]||'');
@@ -738,11 +798,12 @@ async function rProj(key){
       <td><span class="payer ${py.includes('老闆')?'py-bo':'py-co'}">${py}</span></td>
       <td>${$due(dl,ip)}</td><td>${$st(s,i+6,key+'_付款帳')}</td>
       <td class="lk">${$lk(r[9],'報價單')}</td><td class="lk">${$lk(r[11],'證明')}</td>
+      <td><button class="row-edit" onclick="editPayRow(${i})" title="編輯">✏️</button></td>
     </tr>`;
   });
   h+=`</tbody></table></div></div>`;
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
-  window._curRows=rows;window._curKey=key;
+  window._curRows=rows;window._curKey=key;window._curReceipts=receiptRows;
 }
 
 // ═══ BUDGET INLINE EDIT ═══════════════════
@@ -1092,11 +1153,16 @@ async function upSt(sel,row,sheet){
 }
 
 // ═══ MODALS ═══════════════════════════════
+let _editingPayIdx = null; // null=新增模式，數字=該筆在 _curRows 的 index
+
 function openModal(type){
   if(type==='pay'){
+    _editingPayIdx = null;
     document.getElementById('p0').value=new Date().toISOString().split('T')[0];
     ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11'].forEach(id=>{const el=document.getElementById(id);if(el.tagName!=='SELECT')el.value='';});
     document.getElementById('p7').value='⏳待付';
+    document.querySelector('#ov-pay .mh h3').textContent='新增付款記錄';
+    document.querySelector('#ov-pay .mf .btn-y').textContent='新增記錄';
   } else {
     document.getElementById('a0').value=new Date().toISOString().split('T')[0];
     ['a1','a2','a3','a5','a7'].forEach(id=>document.getElementById(id).value='');
@@ -1104,15 +1170,99 @@ function openModal(type){
   }
   document.getElementById('ov-'+type).classList.add('on');
 }
-function closeModal(type){document.getElementById('ov-'+type).classList.remove('on');}
+function closeModal(type){document.getElementById('ov-'+type).classList.remove('on');_editingPayIdx=null;if(type==='receipt')_editingReceipt=null;}
+
+// 編輯付款記錄列
+function editPayRow(idx){
+  if(!window._curRows||!window._curRows[idx])return;
+  const r=window._curRows[idx];
+  _editingPayIdx=idx;
+  // prefill
+  const toDateInput=v=>{if(!v)return'';const s=String(v).substring(0,10).replace(/\//g,'-');return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:'';};
+  const setVal=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v||'';};
+  setVal('p0',toDateInput(r[0]));
+  setVal('p1',r[1]);
+  setVal('p2',r[2]);
+  setVal('p3',r[3]);
+  setVal('p4',r[4]);
+  setVal('p5',r[5]||'匯款');
+  setVal('p6',r[6]||'公司');
+  // 狀態：如果 raw value 不在 4 個 option 中（例如純文字），直接設值；否則 select 會 fallback 到第一個
+  const stEl=document.getElementById('p7');
+  const stRaw=String(r[7]||'⏳待付');
+  let matched=false;
+  Array.from(stEl.options).forEach(o=>{if(o.value===stRaw){stEl.value=stRaw;matched=true;}});
+  if(!matched){
+    if(stRaw.includes('已付'))stEl.value='✅已付';
+    else if(stRaw.includes('待估價'))stEl.value='📋待估價';
+    else if(stRaw.includes('待報價'))stEl.value='📋待報價';
+    else if(stRaw.includes('待付'))stEl.value='⏳待付';
+  }
+  setVal('p8',r[9]); // 報價單連結 (col J = idx 9)
+  setVal('p9',r[8]); // 備註 (col I = idx 8)
+  setVal('p10',toDateInput(r[10]));
+  setVal('p11',r[11]);
+  document.querySelector('#ov-pay .mh h3').textContent='編輯付款記錄';
+  document.querySelector('#ov-pay .mf .btn-y').textContent='儲存修改';
+  document.getElementById('ov-pay').classList.add('on');
+}
+
+// 編輯收款進度列（admin only）
+let _editingReceipt = null; // {key, sheetRow}
+function editReceiptRow(key,sheetRow,idx){
+  if(role!=='admin')return;
+  const r=window._curReceipts&&window._curReceipts[idx];
+  if(!r)return;
+  _editingReceipt={key,sheetRow};
+  document.getElementById('rc-desc').textContent=r.desc;
+  document.getElementById('rc-amount').textContent='NT$'+r.amount.toLocaleString('zh-TW');
+  document.getElementById('rc-actual').value=r.actual||'';
+  const stEl=document.getElementById('rc-st');
+  stEl.value=r.st&&r.st.includes('已收')?'✅已收':'⏳待收';
+  document.getElementById('rc-invoice').value=r.invoice||'';
+  document.getElementById('ov-receipt').classList.add('on');
+}
+
+async function submitReceiptEdit(){
+  if(!_editingReceipt)return;
+  const {key,sheetRow}=_editingReceipt;
+  const sheet=key+'_總覽';
+  const actual=parseInt(document.getElementById('rc-actual').value)||0;
+  const st=document.getElementById('rc-st').value;
+  const invoice=document.getElementById('rc-invoice').value.trim();
+  cdel(sheet);
+  try{
+    // 更新 D=實際到帳(col 4), E=狀態(col 5), F=發票連結(col 6)
+    await Promise.all([
+      post({action:'updateCell',sheetName:sheet,row:sheetRow,col:4,value:actual}),
+      post({action:'updateCell',sheetName:sheet,row:sheetRow,col:5,value:st}),
+      post({action:'updateCell',sheetName:sheet,row:sheetRow,col:6,value:invoice}),
+    ]);
+    closeModal('receipt');
+    _editingReceipt=null;
+    toast('✅ 收款記錄已更新');
+    setTimeout(render,800);
+  }catch(e){toast('⚠️ 更新失敗: '+e.message);}
+}
 
 async function submitPay(){
   const sheet=PKS.includes(cur)?cur+'_付款帳':null;
   if(!sheet){toast('⚠️ 請先選擇一個專案');return;}
   const row=[document.getElementById('p0').value,document.getElementById('p1').value,document.getElementById('p2').value,document.getElementById('p3').value,parseInt(document.getElementById('p4').value)||0,document.getElementById('p5').value,document.getElementById('p6').value,document.getElementById('p7').value,document.getElementById('p9').value,document.getElementById('p8').value,document.getElementById('p10').value,document.getElementById('p11').value];
   cdel(sheet);
-  try{await post({sheetName:sheet,row});closeModal('pay');toast('✅ 記錄已新增');setTimeout(render,800);}
-  catch(e){toast('⚠️ 新增失敗: '+e.message);}
+  try{
+    if(_editingPayIdx!=null){
+      // 編輯模式：在 sheet 上的 row number = _editingPayIdx + 6（前 5 列是 header）
+      const sheetRow=_editingPayIdx+6;
+      // 並行 updateCell（每欄一個 request）
+      const updates=row.map((val,col)=>post({action:'updateCell',sheetName:sheet,row:sheetRow,col:col+1,value:val}));
+      await Promise.all(updates);
+      closeModal('pay');toast('✅ 記錄已更新');setTimeout(render,800);
+    } else {
+      await post({sheetName:sheet,row});
+      closeModal('pay');toast('✅ 記錄已新增');setTimeout(render,800);
+    }
+  }catch(e){toast('⚠️ 失敗: '+e.message);}
 }
 
 async function submitAdvance(){
