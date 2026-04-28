@@ -299,7 +299,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;borde
     <nav class="sb-nav">
       <div class="ns">總覽</div>
       <div class="ni on" data-k="db" onclick="go(this)"><div class="d"></div>儀表板</div>
-      <div class="ni" data-k="remind" onclick="go(this)"><div class="d"></div>本月結帳提醒 <span class="bd" id="rdBd" style="display:none">!</span></div>
+      <div class="ni" data-k="remind" onclick="go(this)"><div class="d"></div>結帳提醒 & 月付清單 <span class="bd" id="rdBd" style="display:none">!</span></div>
       <div class="ni" data-k="vendors" onclick="go(this)"><div class="d"></div>廠商清單</div>
 
       <div class="ns">海保署</div>
@@ -883,6 +883,52 @@ async function rRemind(){
     return s;
   };
   h+=grp('🔴 已逾期',od,'urg')+grp('⚠️ 3 天內到期',urg,'urg')+grp('📅 14 天內到期',soon,'soon');
+
+  // === 每月固定應付項目 ===
+  const MONTHLY_FIXED = [
+    {name:'老闆薪水（陳昕秀）', amount:55000, payer:'公司帳戶', note:'每月8號前'},
+    {name:'專案PM薪水（Renn）', amount:29000, payer:'公司帳戶', note:'每月8號前'},
+    {name:'設計師薪水（兼職）', amount:15000, payer:'公司帳戶', note:'每月8號前'},
+    {name:'Wonda 存在日曆SEO稿費', amount:4000, payer:'公司', note:'每月月初確認篇數'},
+    {name:'Wonda 包裝研究所SEO稿費', amount:2000, payer:'公司', note:'每月月初確認篇數'},
+    {name:'待確認小編 每月社群發文', amount:0, payer:'公司', note:'⏳ 金額待確認'},
+    {name:'Google Workspace', amount:550, payer:'老闆代墊', note:'信用卡自動扣'},
+    {name:'ChatGPT', amount:690, payer:'老闆代墊', note:'信用卡自動扣'},
+    {name:'Claude', amount:600, payer:'老闆代墊', note:'信用卡自動扣'},
+    {name:'Seameet', amount:320, payer:'老闆代墊', note:'信用卡自動扣'},
+  ];
+  const monthlyTotal = MONTHLY_FIXED.reduce((s,x)=>s+x.amount,0);
+  const now2=new Date();
+  const dayOfMonth = now2.getDate();
+  
+  h+=`<div class="sl" style="margin-top:20px"><h4>📅 每月固定應付清單</h4><span class="sm">${now2.getMonth()+1}月 / 合計 ${$m(monthlyTotal)}</span></div>`;
+  
+  if(dayOfMonth>=1&&dayOfMonth<=8){
+    h+=`<div class="al am">⚠️ 目前是每月 ${dayOfMonth} 號，薪資支付期（1-8號），請確認是否已付款</div>`;
+  }
+  
+  h+=`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">`;
+  MONTHLY_FIXED.forEach(x=>{
+    const isPayroll=x.name.includes('薪水');
+    const isTool=x.payer.includes('老闆');
+    h+=`<div style="background:var(--paper2);border-radius:var(--r5);padding:11px 14px;border:1px solid var(--paper3);border-left:3px solid ${isPayroll?'var(--bl)':isTool?'#7C3AED':'var(--y)'}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">${x.name}</div>
+          <div style="font-size:11px;color:var(--ink4);margin-top:2px">${x.note}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:${x.amount===0?'var(--am)':'var(--ink)'}">${x.amount>0?$m(x.amount):'待確認'}</div>
+          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${x.payer}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  h+=`</div>
+  <div style="font-size:11px;color:var(--ink4);margin-top:8px;padding:8px 12px;background:var(--paper2);border-radius:var(--r5)">
+    💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。如需修改清單項目，請告知 Claude 更新程式碼。
+  </div>`;
+
   document.getElementById('ct').innerHTML=h;
 }
 
