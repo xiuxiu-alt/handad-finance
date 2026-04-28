@@ -83,6 +83,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 
 /* ── CONTENT ─── */
 .ct{padding:20px 22px;flex:1;overflow-y:auto;}
+.ct > *{max-width:1280px;}
 .ld{padding:70px;text-align:center;color:var(--ink4);}
 .ring{width:24px;height:24px;border:2px solid var(--paper3);border-top-color:var(--y);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 14px;}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -182,7 +183,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;borde
 .fc.fc-red.on{background:var(--re);color:#fff;}
 
 /* ── BUDGET ROWS ─── */
-.br-head,.br-row{display:grid;grid-template-columns:160px 1fr 100px 100px 90px 80px auto;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--paper2);}
+.br-head,.br-row{display:grid;grid-template-columns:minmax(140px,200px) 1fr 100px 100px 90px 80px auto;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--paper2);}
 .br-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 .br-row:last-child{border-bottom:none;}
 .br-row:hover{background:rgba(246,195,28,.03);}
@@ -193,7 +194,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;borde
 .br-edit{display:flex;gap:4px;}
 
 /* ── RECEIPT ROWS ─── */
-.rr-head,.rr-row{display:grid;grid-template-columns:1fr 110px 110px 110px 80px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
+.rr-head,.rr-row{display:grid;grid-template-columns:minmax(160px,260px) 110px 110px 110px 80px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
 .rr-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 .rr-row:last-child{border-bottom:none;}
 .rr-row:hover{background:rgba(246,195,28,.03);}
@@ -231,7 +232,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;borde
 .rm-due{font-size:12px;color:var(--ink4);}
 
 /* ── VENDOR ─── */
-.vd-row{display:grid;grid-template-columns:160px 1fr 100px 100px 100px;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--paper2);}
+.vd-row{display:grid;grid-template-columns:minmax(140px,180px) 1fr 100px 100px 100px;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--paper2);}
 .vd-row.hd{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 .vd-row:last-child{border-bottom:none;}
 .vd-row:hover{background:rgba(246,195,28,.03);}
@@ -240,7 +241,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;borde
 .vd-tag{font-size:10px;padding:1px 5px;border-radius:2px;background:var(--paper3);color:var(--ink3);}
 
 /* ── ADVANCES ─── */
-.adv-row{display:grid;grid-template-columns:100px 1fr 1fr 100px 90px 100px 90px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
+.adv-row{display:grid;grid-template-columns:90px minmax(120px,160px) minmax(180px,1fr) 100px 90px 100px 90px;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
 .adv-row.hd{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 
 /* ── MODAL ─── */
@@ -884,19 +885,34 @@ async function rRemind(){
   };
   h+=grp('🔴 已逾期',od,'urg')+grp('⚠️ 3 天內到期',urg,'urg')+grp('📅 14 天內到期',soon,'soon');
 
-  // === 每月固定應付項目 ===
+  // === 每月固定應付項目（依類別分組） ===
   const MONTHLY_FIXED = [
-    {name:'老闆薪水（陳昕秀）', amount:55000, payer:'公司帳戶', note:'每月8號前'},
-    {name:'專案PM薪水（Renn）', amount:29000, payer:'公司帳戶', note:'每月8號前'},
-    {name:'設計師薪水（兼職）', amount:15000, payer:'公司帳戶', note:'每月8號前'},
-    {name:'Wonda 存在日曆SEO稿費', amount:4000, payer:'公司', note:'每月月初確認篇數'},
-    {name:'Wonda 包裝研究所SEO稿費', amount:2000, payer:'公司', note:'每月月初確認篇數'},
-    {name:'待確認小編 每月社群發文', amount:0, payer:'公司', note:'⏳ 金額待確認'},
-    {name:'Google Workspace', amount:550, payer:'老闆代墊', note:'信用卡自動扣'},
-    {name:'ChatGPT', amount:690, payer:'老闆代墊', note:'信用卡自動扣'},
-    {name:'Claude', amount:600, payer:'老闆代墊', note:'信用卡自動扣'},
-    {name:'Seameet', amount:320, payer:'老闆代墊', note:'信用卡自動扣'},
+    // 員工薪資（每月 8 號前支付）
+    {cat:'薪資', name:'老闆薪水（陳昕秀）', amount:55000, payer:'公司', note:'每月8號前'},
+    {cat:'薪資', name:'專案PM薪水（Renn 鄭琇仁）', amount:29800, payer:'公司', note:'每月8號前'},
+    {cat:'薪資', name:'設計師薪水（兼職）', amount:15000, payer:'公司', note:'每月8號前'},
+
+    // SEO 內容稿費
+    {cat:'SEO', name:'Wonda 存在日曆 SEO 稿費', amount:4000, payer:'公司', note:'每月 2 篇 × NT$2,000'},
+    {cat:'SEO', name:'Wonda 包裝研究所 SEO 稿費', amount:2000, payer:'公司', note:'每月 1 篇 × NT$2,000'},
+    {cat:'SEO', name:'Remie SEO 內容', amount:0, payer:'公司', note:'⏳ 篇數／金額待確認'},
+    {cat:'SEO', name:'Davina 官網維護費', amount:0, payer:'公司', note:'⏳ 是否每月／金額待確認'},
+
+    // 社群
+    {cat:'社群', name:'Amy 小編 社群發文', amount:0, payer:'公司', note:'⏳ 金額待確認'},
+
+    // 工具訂閱（老闆代墊，信用卡自動扣）
+    {cat:'工具', name:'Google Workspace', amount:550, payer:'老闆代墊', note:'信用卡自動扣'},
+    {cat:'工具', name:'ChatGPT Plus', amount:690, payer:'老闆代墊', note:'信用卡自動扣'},
+    {cat:'工具', name:'Claude Max', amount:600, payer:'老闆代墊', note:'信用卡自動扣'},
+    {cat:'工具', name:'Seameet', amount:320, payer:'老闆代墊', note:'信用卡自動扣'},
   ];
+  const CAT_META = {
+    '薪資':{color:'var(--bl)', icon:'👥'},
+    'SEO':{color:'#7C3AED', icon:'📝'},
+    '社群':{color:'#DC2626', icon:'📱'},
+    '工具':{color:'#065F46', icon:'🔧'},
+  };
   const monthlyTotal = MONTHLY_FIXED.reduce((s,x)=>s+x.amount,0);
   const now2=new Date();
   const dayOfMonth = now2.getDate();
@@ -906,27 +922,42 @@ async function rRemind(){
   if(dayOfMonth>=1&&dayOfMonth<=8){
     h+=`<div class="al am">⚠️ 目前是每月 ${dayOfMonth} 號，薪資支付期（1-8號），請確認是否已付款</div>`;
   }
-  
-  h+=`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">`;
-  MONTHLY_FIXED.forEach(x=>{
-    const isPayroll=x.name.includes('薪水');
-    const isTool=x.payer.includes('老闆');
-    h+=`<div style="background:var(--paper2);border-radius:var(--r5);padding:11px 14px;border:1px solid var(--paper3);border-left:3px solid ${isPayroll?'var(--bl)':isTool?'#7C3AED':'var(--y)'}">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">${x.name}</div>
-          <div style="font-size:11px;color:var(--ink4);margin-top:2px">${x.note}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:${x.amount===0?'var(--am)':'var(--ink)'}">${x.amount>0?$m(x.amount):'待確認'}</div>
-          <div style="font-size:10px;color:var(--ink4);margin-top:2px">${x.payer}</div>
-        </div>
+
+  // 依類別分組顯示
+  const cats = ['薪資','SEO','社群','工具'];
+  cats.forEach(cat=>{
+    const items = MONTHLY_FIXED.filter(x=>x.cat===cat);
+    if(!items.length) return;
+    const catTotal = items.reduce((s,x)=>s+x.amount,0);
+    const meta = CAT_META[cat];
+    h+=`<div class="card" style="margin-bottom:10px">
+      <div class="fg-head" style="border-left:3px solid ${meta.color}">
+        <span style="font-size:14px">${meta.icon}</span>
+        <span class="fg-nm">${cat}</span>
+        <span class="fg-pct">${items.length} 項</span>
+        <span class="fg-total">${$m(catTotal)}</span>
       </div>
-    </div>`;
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0">`;
+    items.forEach((x,i)=>{
+      const isPlaceholder = x.amount===0;
+      h+=`<div style="padding:10px 14px;border-bottom:1px solid var(--paper2);${i%2===0?'border-right:1px solid var(--paper2);':''}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div style="min-width:0;flex:1">
+            <div style="font-size:13px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.name}</div>
+            <div style="font-size:11px;color:var(--ink4);margin-top:2px">${x.note}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:2px">${x.payer}</div>
+          </div>
+        </div>
+      </div>`;
+    });
+    h+=`</div></div>`;
   });
-  h+=`</div>
-  <div style="font-size:11px;color:var(--ink4);margin-top:8px;padding:8px 12px;background:var(--paper2);border-radius:var(--r5)">
-    💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。如需修改清單項目，請告知 Claude 更新程式碼。
+
+  h+=`<div style="font-size:11px;color:var(--ink4);margin-top:8px;padding:8px 12px;background:var(--paper2);border-radius:var(--r5)">
+    💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。標示「待確認」的項目請告知 Claude 補上正確金額。
   </div>`;
 
   document.getElementById('ct').innerHTML=h;
