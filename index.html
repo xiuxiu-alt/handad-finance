@@ -136,13 +136,18 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 .sl .sm{margin-left:auto;font-size:12px;color:var(--ink4);}
 
 /* ── COST STRUCTURE ─── */
-.cost-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:14px;}
-.ci{padding:11px 13px;background:var(--paper2);border-radius:var(--r5);border:1px solid var(--paper3);}
-.ci.total{background:var(--y);border-color:var(--yd);}
-.ci-nm{font-size:11px;color:var(--ink3);line-height:1.35;margin-bottom:5px;}
-.ci.total .ci-nm{color:rgba(17,17,16,.55);}
-.ci-am{font-size:16px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;}
-.ci-pct{font-size:11px;color:var(--ink4);margin-top:2px;}
+/* ── COST STRUCTURE（清單式，適合窄欄） ─── */
+.cost-list{padding:4px 0;}
+.cost-list .ci{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--paper2);}
+.cost-list .ci:last-child{border-bottom:none;}
+.cost-list .ci.total{background:linear-gradient(90deg,rgba(255,201,25,.12),rgba(255,201,25,.04));border-bottom:1px solid var(--yd);font-weight:700;}
+.cost-list .ci-left{display:flex;flex-direction:column;min-width:0;flex:1;}
+.cost-list .ci-nm{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3;}
+.cost-list .ci-ds{font-size:11px;color:var(--ink4);line-height:1.3;margin-top:2px;}
+.cost-list .ci-right{display:flex;align-items:baseline;gap:8px;flex-shrink:0;}
+.cost-list .ci-am{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.cost-list .ci.total .ci-am{font-size:17px;}
+.cost-list .ci-pct{font-size:11px;color:var(--ink4);font-variant-numeric:tabular-nums;min-width:42px;text-align:right;}
 
 /* ── TABLES ─── */
 .tw{overflow-x:auto;}
@@ -203,14 +208,18 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fc.fc-red.on{background:var(--re);color:#fff;}
 
 /* ── BUDGET ROWS ─── */
-.br-head,.br-row{display:grid;grid-template-columns:minmax(140px,200px) 1fr 100px 100px 90px 80px auto;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--paper2);}
+.br-head,.br-row{display:grid;grid-template-columns:1fr 100px 100px 100px 110px 80px;align-items:center;gap:14px;padding:9px 16px;border-bottom:1px solid var(--paper2);}
+.br-row:hover{background:rgba(246,195,28,.04);}
+.br-nm{font-size:13px;font-weight:500;color:var(--ink2);display:flex;align-items:center;gap:8px;min-width:0;}
+.br-nm-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.br-edit-btn{background:none;border:none;cursor:pointer;padding:2px 4px;color:var(--ink4);font-size:12px;opacity:0;transition:opacity .15s;flex-shrink:0;}
+.br-row:hover .br-edit-btn{opacity:1;}
+.br-edit-btn:hover{color:var(--ink);}
+.br-num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:13px;}
+.br-num.pos{color:var(--gr);}
+.br-num.neg{color:var(--re);}
 .br-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 .br-row:last-child{border-bottom:none;}
-.br-row:hover{background:rgba(246,195,28,.03);}
-.br-nm{font-size:13px;}
-.br-num{font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;text-align:right;}
-.br-num.neg{color:var(--re);}
-.br-num.pos{color:var(--gr);}
 .br-edit{display:flex;gap:4px;}
 
 /* ── RECEIPT ROWS ─── */
@@ -649,9 +658,15 @@ async function rProj(key){
   // 成本結構
   if(projTotal>0||costItems.length>0){
     h+=`<div class="card"><div class="ch"><h3>成本結構</h3><span class="meta">專案總金額 ${$m(projTotal)}</span></div>
-    <div class="cost-grid">
-      <div class="ci total"><div class="ci-nm">專案總金額</div><div class="ci-am">${$m(projTotal)}</div><div class="ci-pct">100%</div></div>`;
-    costItems.forEach(c=>h+=`<div class="ci"><div class="ci-nm">${c.nm}</div><div class="ci-am">${$m(c.am)}</div><div class="ci-pct">${c.pct} ${c.ds}</div></div>`);
+    <div class="cost-list">
+      <div class="ci total">
+        <div class="ci-left"><div class="ci-nm">專案總金額</div></div>
+        <div class="ci-right"><div class="ci-am">${$m(projTotal)}</div><div class="ci-pct">100%</div></div>
+      </div>`;
+    costItems.forEach(c=>h+=`<div class="ci">
+      <div class="ci-left"><div class="ci-nm">${c.nm}</div>${c.ds?`<div class="ci-ds">${c.ds}</div>`:''}</div>
+      <div class="ci-right"><div class="ci-am">${$m(c.am)}</div><div class="ci-pct">${c.pct}</div></div>
+    </div>`);
     h+=`</div></div>`;
   }
 
@@ -687,22 +702,24 @@ async function rProj(key){
     <div style="padding:6px 14px 10px;border-bottom:1px solid var(--paper3)">
       <div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div class="prog"><div class="prog-fill ${$pf(pct)}" style="width:${pct}%"></div></div></div><span style="font-size:12px;color:var(--ink4)">${pct}%</span></div>
     </div>
-    <div class="br-head"><span>執行項目</span><span></span><span style="text-align:right">預算</span><span style="text-align:right">已支出</span><span style="text-align:right">剩餘</span><span style="text-align:right">使用率</span><span>狀態</span></div>`;
+    <div class="br-head"><span>執行項目</span><span style="text-align:right">預算</span><span style="text-align:right">已支出</span><span style="text-align:right">剩餘</span><span style="text-align:right">使用率</span><span>狀態</span></div>`;
     budgetRows.forEach(r=>{
       const rp=$p(r.actual,r.budget);
       const stc=r.st.includes('超支')?'od':r.st.includes('用罄')?'pd':r.st.includes('結餘')?'pn':'qt';
       h+=`<div class="br-row" id="br-${r.rowNum}">
-        <span class="br-nm">${r.nm}</span>
-        ${role==='admin'?`<span><button class="btn btn-o btn-sm" onclick="editBudgetRow('${key}',${r.rowNum},'${r.nm}',${r.budget})">✏️</button></span>`:'<span></span>'}
+        <span class="br-nm" title="${r.nm}">
+          <span class="br-nm-text">${r.nm}</span>
+          ${role==='admin'?`<button class="br-edit-btn" onclick="editBudgetRow('${key}',${r.rowNum},'${r.nm.replace(/'/g,"\\'")}',${r.budget})" title="編輯">✏️</button>`:''}
+        </span>
         <span class="br-num">${$m(r.budget)}</span>
         <span class="br-num pos">${$m(r.actual)}</span>
         <span class="br-num ${r.remain<0?'neg':''}">${$m(r.remain)}</span>
-        <span style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div style="width:50px"><div class="prog"><div class="prog-fill ${$pf(rp)}" style="width:${Math.min(100,rp)}%"></div></div></div><span style="font-size:12px;color:var(--ink4);width:30px;text-align:right">${rp}%</span></div></span>
+        <span style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div style="width:50px"><div class="prog"><div class="prog-fill ${$pf(rp)}" style="width:${Math.min(100,rp)}%"></div></div></div><span style="font-size:11px;color:var(--ink4);width:32px;text-align:right">${rp}%</span></div></span>
         <span><span class="chip ${stc}" style="font-size:11px">${r.st}</span></span>
       </div>`;
     });
     const totR=budgetRows.reduce((s,r)=>s+r.remain,0);
-    h+=`<div class="br-row" style="background:var(--paper2);font-weight:700"><span>合計</span><span></span><span class="br-num">${$m(totB)}</span><span class="br-num pos">${$m(totA)}</span><span class="br-num ${totR<0?'neg':''}">${$m(totR)}</span><span></span><span></span></div></div>`;
+    h+=`<div class="br-row" style="background:var(--paper2);font-weight:700"><span class="br-nm"><span class="br-nm-text">合計</span></span><span class="br-num">${$m(totB)}</span><span class="br-num pos">${$m(totA)}</span><span class="br-num ${totR<0?'neg':''}">${$m(totR)}</span><span></span><span></span></div></div>`;
   }
 
   // 付款記錄
@@ -733,6 +750,7 @@ function editBudgetRow(key,rowNum,nm,budget){
   const row=document.getElementById('br-'+rowNum);
   if(!row)return;
   const first=row.querySelector('.br-nm');
+  first.style.display='block';
   first.innerHTML=`<input class="ie-input" id="ie-nm" value="${nm}" style="width:140px"><br>
     <div style="display:flex;gap:5px;margin-top:4px">
       <input class="ie-input" id="ie-bud" type="number" value="${budget}" placeholder="預算" style="width:100px">
@@ -933,8 +951,10 @@ async function rRemind(){
   h+=grp('🔴 已逾期',od,'urg')+grp('⚠️ 3 天內到期',urg,'urg')+grp('📅 14 天內到期',soon,'soon');
 
   // === 每月固定應付項目（依類別分組） ===
-  const MONTHLY_FIXED = [
-    // 員工薪資（每月 8 號前支付）
+  // 注意：薪資類別只給 admin 看；同仁模式會自動隱藏整個薪資 block
+  const isAdmin = role==='admin';
+  const MONTHLY_FIXED_ALL = [
+    // 員工薪資（每月 8 號前支付）—— admin only
     {cat:'薪資', name:'老闆薪水（陳昕秀）', amount:55000, payer:'公司', note:'每月8號前'},
     {cat:'薪資', name:'專案PM薪水（Renn 鄭琇仁）', amount:29800, payer:'公司', note:'每月8號前'},
     {cat:'薪資', name:'設計師薪水（兼職）', amount:15000, payer:'公司', note:'每月8號前'},
@@ -952,6 +972,7 @@ async function rRemind(){
     {cat:'工具', name:'Claude Max', amount:600, payer:'老闆代墊', note:'信用卡自動扣'},
     {cat:'工具', name:'Seameet', amount:320, payer:'老闆代墊', note:'信用卡自動扣'},
   ];
+  const MONTHLY_FIXED = isAdmin ? MONTHLY_FIXED_ALL : MONTHLY_FIXED_ALL.filter(x=>x.cat!=='薪資');
   const CAT_META = {
     '薪資':{color:'var(--bl)', icon:'👥'},
     'SEO':{color:'#7C3AED', icon:'📝'},
@@ -964,7 +985,7 @@ async function rRemind(){
   
   h+=`<div class="sl" style="margin-top:20px"><h4>📅 每月固定應付清單</h4><span class="sm">${now2.getMonth()+1}月 / 合計 ${$m(monthlyTotal)}</span></div>`;
   
-  if(dayOfMonth>=1&&dayOfMonth<=8){
+  if(isAdmin && dayOfMonth>=1&&dayOfMonth<=8){
     h+=`<div class="al am">⚠️ 目前是每月 ${dayOfMonth} 號，薪資支付期（1-8號），請確認是否已付款</div>`;
   }
 
