@@ -669,7 +669,11 @@ async function rDB(){
 // ═══ PROJECT ══════════════════════════════
 async function rProj(key){
   const [ov,pay]=await Promise.all([gs(key+'_總覽').catch(()=>[]),gs(key+'_付款帳').catch(()=>[])]);
-  const rows=pay.slice(5).filter($valid);
+  // 給每個 row 標記真實的 sheet row number（避免 filter 過後 index 偏移）
+  const rows=pay.slice(5).map((r,i)=>{
+    if(r&&Array.isArray(r))r.__sheetRow=i+6;  // sheet row 從 1 開始，前 5 列是 header，所以 +6
+    return r;
+  }).filter($valid);
   const pR=rows.filter(r=>$sc(r[7])==='pd');
   const pnR=rows.filter(r=>$sc(r[7])==='pn');
   const qR=rows.filter(r=>$sc(r[7])==='qt');
@@ -1280,7 +1284,9 @@ async function deletePayRow(){
   if(!confirm('確定要刪除這筆付款記錄嗎？此操作無法復原。'))return;
   const sheet=PKS.includes(cur)?cur+'_付款帳':null;
   if(!sheet)return;
-  const sheetRow=_editingPayIdx+6;
+  // 用 row 自身儲存的真實 sheet row（避免 filter 偏移寫到錯的列）
+  const editingRow=window._curRows&&window._curRows[_editingPayIdx];
+  const sheetRow=editingRow&&editingRow.__sheetRow?editingRow.__sheetRow:(_editingPayIdx+6);
   cdel(sheet);
   try{
     // 把 12 個欄位全部清空（軟刪除，下次載入時會被 $valid 過濾掉）
@@ -1397,8 +1403,9 @@ async function submitPay(){
   cdel(sheet);
   try{
     if(_editingPayIdx!=null){
-      // 編輯模式：不支援分期，直接更新單列
-      const sheetRow=_editingPayIdx+6;
+      // 編輯模式：用 row 自身儲存的真實 sheet row（避免 filter 偏移）
+      const editingRow=window._curRows&&window._curRows[_editingPayIdx];
+      const sheetRow=editingRow&&editingRow.__sheetRow?editingRow.__sheetRow:(_editingPayIdx+6);
       const row=buildRow(baseDate,baseDesc,baseDeadline,baseStatus);
       const updates=row.map((val,col)=>post({action:'updateCell',sheetName:sheet,row:sheetRow,col:col+1,value:val}));
       await Promise.all(updates);
@@ -1413,20 +1420,25 @@ async function submitPay(){
       } else {
         // 分 N 期：建立 N 筆，每期日期 = 付款日 + i 個月
         if(!confirm(`即將建立 ${n} 筆付款記錄（從 ${baseDate} 起，每月一次），確定嗎？`))return;
-        const tasks=[];
-        for(let i=0;i<n;i++){
-          const d=addMonths(baseDate,i);
-          const dl=baseDeadline?addMonths(baseDeadline,i):'';
-          const desc=`${baseDesc}（${i+1}/${n}）`;
-          // 第一期維持原狀態，其餘設為待付
-          const st=i===0?baseStatus:'⏳待付';
-          tasks.push(post({sheetName:sheet,row:buildRow(d,desc,dl,st)}));
+        // 真正的序列執行：每筆都 await 完成才送下一筆
+        let success=0;
+        try{
+          for(let i=0;i<n;i++){
+            const d=addMonths(baseDate,i);
+            const dl=baseDeadline?addMonths(baseDeadline,i):'';
+            const desc=`${baseDesc}（${i+1}/${n}）`;
+            const st=i===0?baseStatus:'⏳待付';
+            // 顯示進度
+            toast(`寫入中... ${i+1}/${n}`);
+            await post({sheetName:sheet,row:buildRow(d,desc,dl,st)});
+            success++;
+          }
+          closeModal('pay');
+          toast(`✅ 已建立 ${success} 筆分期記錄`);
+          setTimeout(render,1200);
+        }catch(e){
+          toast(`⚠️ 寫入到第 ${success+1} 筆失敗: ${e.message}（前 ${success} 筆已成功）`);
         }
-        // 序列執行（避免 Apps Script 並發衝突）
-        for(const t of tasks){await t;}
-        closeModal('pay');
-        toast(`✅ 已建立 ${n} 筆分期記錄`);
-        setTimeout(render,800);
       }
     }
   }catch(e){toast('⚠️ 失敗: '+e.message);}
