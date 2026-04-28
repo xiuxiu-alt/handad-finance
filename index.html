@@ -102,7 +102,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 .kc.yl{background:var(--y);border-color:var(--yd);}
 .kl{font-size:10px;color:var(--ink3);letter-spacing:.05em;text-transform:uppercase;font-weight:600;margin-bottom:5px;}
 .kc.yl .kl{color:rgba(17,17,16,.5);}
-.kv{font-size:22px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1;}
+.kv{font-size:22px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1;letter-spacing:-.02em;}
 .ks{font-size:12px;color:var(--ink4);margin-top:3px;}
 .kc.yl .kv,.kc.yl .ks{color:var(--ink);}
 .kc.re .kv{color:var(--re);}
@@ -119,7 +119,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── CARD ─── */
 .card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:12px;}
 .ch{padding:11px 15px;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between;background:var(--paper2);}
-.ch h3{font-size:13px;font-weight:700;}
+.ch h3{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
 .ch .meta{font-size:12px;color:var(--ink4);}
 
 /* ── SECTION LABEL ─── */
@@ -141,14 +141,14 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
 th{text-align:left;padding:7px 11px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);background:var(--paper2);border-bottom:1px solid var(--paper3);white-space:nowrap;}
-td{padding:9px 11px;font-size:13px;border-bottom:1px solid var(--paper2);vertical-align:middle;}
+td{padding:7px 11px;font-size:13px;border-bottom:1px solid var(--paper2);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(246,195,28,.04);}
 tr.rod td{background:rgba(185,28,28,.04);}
 tr.rds td{background:rgba(146,64,14,.04);}
 td.num{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;white-space:nowrap;}
 td.dt{font-size:12px;color:var(--ink4);white-space:nowrap;}
-tfoot td{font-weight:700;background:var(--paper2)!important;}
+tfoot td{font-weight:700;background:var(--paper2)!important;font-size:13px;border-top:2px solid var(--paper3)!important;}
 
 /* ── CHIPS ─── */
 .chip{display:inline-flex;align-items:center;font-size:11px;padding:2px 8px;border-radius:2px;font-weight:600;}
@@ -182,7 +182,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;}
 .fc.fc-red.on{background:var(--re);color:#fff;}
 
 /* ── BUDGET ROWS ─── */
-.br-head,.br-row{display:grid;grid-template-columns:160px 1fr 100px 100px 90px 80px auto;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
+.br-head,.br-row{display:grid;grid-template-columns:160px 1fr 100px 100px 90px 80px auto;align-items:center;gap:8px;padding:7px 14px;border-bottom:1px solid var(--paper2);}
 .br-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
 .br-row:last-child{border-bottom:none;}
 .br-row:hover{background:rgba(246,195,28,.03);}
@@ -203,14 +203,15 @@ tfoot td{font-weight:700;background:var(--paper2)!important;}
 .fg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .fg-nm{font-size:13px;font-weight:700;}
 .fg-pct{font-size:11px;color:var(--ink4);}
-.fg-total{margin-left:auto;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;}
-.fg-item{display:grid;grid-template-columns:1fr 110px 1fr 100px;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--paper2);}
+.fg-total{margin-left:auto;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.fg-item{display:grid;grid-template-columns:1fr 110px 1fr 100px;align-items:center;gap:10px;padding:7px 14px;border-bottom:1px solid var(--paper2);}
 .fg-item:last-child{border-bottom:none;}
 .fg-item:hover{background:rgba(246,195,28,.03);}
-.fi-nm{font-size:13px;font-weight:500;}
-.fi-am{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;}
-.fi-ds{font-size:12px;color:var(--ink4);}
-.fi-mt{font-size:12px;color:var(--ink4);text-align:right;}
+.fi-nm{font-size:13px;font-weight:500;color:var(--ink2);}
+.fi-am{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.01em;}
+.fi-ds{font-size:11px;color:var(--ink4);line-height:1.4;}
+.fi-mt{font-size:11px;color:var(--ink4);text-align:right;}
+.fi-cat-head{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;}
 
 /* ── BE (BREAK EVEN) ─── */
 .be-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;}
@@ -333,7 +334,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;}
         <button class="btn btn-o btn-sm" onclick="render()">↻ 重整</button>
         <button class="btn btn-o btn-sm" id="csvBtn" onclick="exportCSV()" style="display:none">↓ CSV</button>
         <button class="btn btn-o btn-sm" id="advBtn" onclick="openModal('advances')" style="display:none">+ 新增代墊款</button>
-        <button class="btn btn-y btn-sm" id="addBtn" onclick="openModal('pay')" style="display:none">+ 新增記帳</button>
+        <button class="btn btn-y btn-sm" id="addBtn" onclick="openModal('pay')" style="display:none;opacity:0;pointer-events:none">+ 新增記帳</button>
       </div>
     </div>
     <div class="ct" id="ct"><div class="ld"><div class="ring"></div>載入中...</div></div>
@@ -349,7 +350,7 @@ tfoot td{font-weight:700;background:var(--paper2)!important;}
         <div class="fp"><label class="fl">付款日期</label><input type="date" class="fi" id="p0"></div>
         <div class="fp"><label class="fl">截止日期 ⚠️</label><input type="date" class="fi" id="p10"></div>
         <div class="fp"><label class="fl">類別</label>
-          <select class="fi" id="p1"><option>設計費</option><option>製作費</option><option>攝影費</option><option>新聞稿</option><option>投廣告</option><option>LINE訊息費</option><option>音樂授權費</option><option>短影音製作與剪輯</option><option>存在日曆SEO內容</option><option>包裝研究所SEO內容</option><option>其他</option></select>
+          <select class="fi" id="p1"><option>設計費</option><option>製作費</option><option>攝影費</option><option>新聞稿</option><option>投廣告</option><option>LINE訊息費</option><option>音樂授權費</option><option>短影音製作與剪輯</option><option>存在日曆SEO內容</option><option>包裝研究所SEO內容</option><option>員工薪資（PM/設計）</option><option>其他</option></select>
         </div>
         <div class="fp"><label class="fl">廠商名稱</label><input type="text" class="fi" id="p2" placeholder="廠商或個人姓名"></div>
         <div class="fp full"><label class="fl">說明</label><input type="text" class="fi" id="p3" placeholder="工作項目描述"></div>
@@ -458,7 +459,12 @@ const $p=(a,b)=>b>0?Math.min(100,Math.round(a/b*100)):0;
 const $sc=s=>!s?'qt':s.includes('已付')?'pd':s.includes('待付')&&!s.includes('報價')?'pn':'qt';
 const $pf=p=>p>100?'fill-re':p>85?'fill-am':'fill-y';
 // Filter out template placeholder rows
-const $valid=r=>r[0]&&!String(r[0]).includes('(請')&&!String(r[0]).includes('請新增')&&String(r[0]).trim().length>0;
+const SKIP_WORDS=['(請','請新增','合計','小計','類別範','老闆代墊','執行項目類'];
+const $valid=r=>{
+  if(!r[0]||String(r[0]).trim().length===0)return false;
+  const s=String(r[0]);
+  return !SKIP_WORDS.some(w=>s.includes(w));
+};
 
 function $due(dl,paid){
   if(paid||!dl||dl==='undefined'||dl===' ')return dl&&dl!==' '?`<span class="due ok">${$d(dl)}</span>`:`<span class="due em">—</span>`;
@@ -482,8 +488,8 @@ function go(el){
   el.classList.add('on');
   document.getElementById('tt').textContent=PNS[cur]||cur;
   const isproj=PKS.includes(cur);
-  document.getElementById('addBtn').style.display=isproj?'':'none';
-  document.getElementById('csvBtn').style.display=isproj?'':'none';
+  // addBtn now embedded in 付款記錄 section
+  document.getElementById('csvBtn').style.display=isproj?'':'none'; // keep CSV in topbar
   document.getElementById('advBtn').style.display=(cur==='advances'&&role==='admin')?'':'none';
   render();
 }
@@ -664,7 +670,7 @@ async function rProj(key){
   }
 
   // 付款記錄
-  h+=`<div class="card"><div class="ch"><h3>付款記錄</h3><span class="meta">${rows.length} 筆</span></div>
+  h+=`<div class="card"><div class="ch"><h3>付款記錄</h3><div style="display:flex;align-items:center;gap:8px"><span class="meta">${rows.length} 筆</span>${PKS.includes(cur)&&role!=='readonly'?`<button class="btn btn-y btn-sm" onclick="openModal('pay')">+ 新增記帳</button>`:''}</div></div>
   <div class="fr"><span class="fc on" onclick="filt('all',this)">全部 (${rows.length})</span><span class="fc" onclick="filt('pd',this)">✅ 已付 (${pR.length})</span><span class="fc" onclick="filt('pn',this)">⏳ 待付 (${pnR.length})</span><span class="fc" onclick="filt('qt',this)">📋 待報價 (${qR.length})</span>${od.length?`<span class="fc fc-red" onclick="filt('od',this)">🔴 逾期 (${od.length})</span>`:''}</div>
   <div class="tw"><table id="pt"><thead><tr><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>轉帳證明</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
@@ -914,6 +920,18 @@ async function rVendors(){
 }
 
 // ═══ FILTERS / STATUS ═════════════════════
+function filtMonth(months,el){
+  document.querySelectorAll('.fr .fc').forEach(f=>f.classList.remove('on'));
+  el.classList.add('on');
+  const cutoff = months===0?null:new Date(Date.now()-months*30*864e5);
+  document.querySelectorAll('#pt tbody tr').forEach(tr=>{
+    if(!cutoff){tr.style.display='';return;}
+    const dt=tr.querySelector('td')?.textContent?.replace(/\//g,'-');
+    if(!dt||dt.trim()===''||dt.trim()==='-'){tr.style.display='';return;}
+    tr.style.display = new Date(dt)>=cutoff?'':'none';
+  });
+}
+
 function filt(type,el){
   document.querySelectorAll('.fr .fc').forEach(f=>f.classList.remove('on'));
   el.classList.add('on');
