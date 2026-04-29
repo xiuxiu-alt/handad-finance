@@ -526,6 +526,16 @@ function boot(u){
   setTimeout(()=>{const s=document.getElementById('splash');s.classList.add('out');setTimeout(()=>s.style.display='none',380);},1400);
   app.classList.add('on');
   render();
+  // 背景預載所有專案資料（不阻塞 UI），讓使用者點專案時秒開
+  setTimeout(()=>{
+    PKS.forEach((k,i)=>{
+      // 錯開時間避免一次打 12 個 request
+      setTimeout(()=>{
+        gs(k+'_總覽').catch(()=>{});
+        gs(k+'_付款帳').catch(()=>{});
+      }, i*400);
+    });
+  }, 1500);
 }
 
 // ═══ CACHE ════════════════════════════════
@@ -1289,7 +1299,7 @@ function editReceiptRow(key,sheetRow,idx){
   document.getElementById('ov-receipt').classList.add('on');
 }
 
-// 刪除付款記錄列（軟刪除：清空所有欄位）
+// 刪除付款記錄列（軟刪除：用 clearRow 一次清空整列，比 12 次 updateCell 快 12 倍）
 async function deletePayRow(){
   if(_editingPayIdx==null){toast('⚠️ 請先選擇要刪除的記錄');return;}
   if(!confirm('確定要刪除這筆付款記錄嗎？此操作無法復原。'))return;
@@ -1297,19 +1307,16 @@ async function deletePayRow(){
   if(!sheet)return;
   const editingRow=window._curRows&&window._curRows[_editingPayIdx];
   const sheetRow=editingRow&&editingRow.__sheetRow?editingRow.__sheetRow:(_editingPayIdx+6);
-  // 鎖按鈕避免重複觸發
   const delBtn=document.getElementById('payDelBtn');
   if(delBtn){delBtn.disabled=true;delBtn.textContent='🔄 刪除中...';}
   cdel(sheet);
+  toast('刪除中...');
   try{
-    // 序列清空 12 個欄位（並行送會被 Apps Script 擋成 Failed to fetch）
-    for(let col=1;col<=12;col++){
-      toast(`刪除中... ${col}/12`);
-      await post({action:'updateCell',sheetName:sheet,row:sheetRow,col,value:''});
-    }
+    // 一次 API call 清空整列（後端 clearRow action）
+    await post({action:'clearRow',sheetName:sheet,row:sheetRow});
     closeModal('pay');
     toast('✅ 記錄已刪除');
-    setTimeout(render,800);
+    setTimeout(render,500);
   }catch(e){
     toast('⚠️ 刪除失敗: '+e.message);
   }finally{
@@ -1445,16 +1452,13 @@ async function submitPay(){
   cdel(sheet);
   try{
     if(_editingPayIdx!=null){
-      // 編輯模式：用 row 自身儲存的真實 sheet row（避免 filter 偏移）
+      // 編輯模式：用 updateRow 一次寫入整列（比 12 次 updateCell 快 12 倍）
       const editingRow=window._curRows&&window._curRows[_editingPayIdx];
       const sheetRow=editingRow&&editingRow.__sheetRow?editingRow.__sheetRow:(_editingPayIdx+6);
       const row=buildRow(baseDate,baseDesc,baseDeadline,baseStatus);
-      // 序列更新（並行會被 Apps Script 擋）
-      for(let col=0;col<row.length;col++){
-        toast(`儲存中... ${col+1}/${row.length}`);
-        await post({action:'updateCell',sheetName:sheet,row:sheetRow,col:col+1,value:row[col]});
-      }
-      closeModal('pay');toast('✅ 記錄已更新');setTimeout(render,800);
+      toast('儲存中...');
+      await post({action:'updateRow',sheetName:sheet,row:sheetRow,values:row});
+      closeModal('pay');toast('✅ 記錄已更新');setTimeout(render,500);
     } else {
       // 新增模式：檢查是否要分期展開
       const n=getExpandCount();
