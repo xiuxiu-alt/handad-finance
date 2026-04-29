@@ -237,6 +237,16 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-row:last-child{border-bottom:none;}
 .br-edit{display:flex;gap:4px;}
 
+/* ── GROUP HEADERS（可摺疊分組） ─── */
+.rr-group-head{display:flex;align-items:center;gap:10px;padding:11px 16px;background:linear-gradient(to right,rgba(255,201,25,.12),rgba(255,201,25,.04));border-bottom:1px solid var(--paper3);cursor:pointer;user-select:none;transition:background .15s;}
+.rr-group-head:hover{background:linear-gradient(to right,rgba(255,201,25,.18),rgba(255,201,25,.06));}
+.rr-group-head.collapsed{background:var(--paper2);}
+.rr-gh-arrow{font-size:10px;color:var(--ink3);width:14px;display:inline-block;}
+.rr-gh-icon{font-size:14px;}
+.rr-gh-name{font-size:14px;font-weight:700;color:var(--ink);}
+.rr-gh-count{font-size:11px;color:var(--ink4);background:var(--paper);padding:2px 8px;border-radius:10px;font-weight:600;}
+.rr-gh-total{margin-left:auto;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink);}
+
 /* ── RECEIPT ROWS ─── */
 .rr-head,.rr-row{display:grid;grid-template-columns:1fr 110px 110px 110px 90px 60px 40px;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--paper2);}
 .rr-head{background:linear-gradient(to bottom,var(--paper2),#EEEDE7);font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink3);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--paper3);}
@@ -691,6 +701,9 @@ async function rDB(){
 
 // ═══ PROJECT ══════════════════════════════
 async function rProj(key){
+  // 切換專案頁時重置篩選器
+  _curStatusFilter='all';
+  _curMonthFilter='';
   const [ov,pay]=await Promise.all([gs(key+'_總覽').catch(()=>[]),gs(key+'_付款帳').catch(()=>[])]);
   // 給每個 row 標記真實的 sheet row number（避免 filter 過後 index 偏移）
   const rows=pay.slice(5).map((r,i)=>{
@@ -798,21 +811,56 @@ async function rProj(key){
     h+=`<div class="card"><div class="ch"><h3>客戶收款進度</h3><div style="display:flex;align-items:center;gap:10px"><span class="meta">已收 ${$m(totR)} / ${$m(totS)} (${pct}%)</span>${role==='admin'?`<span style="font-size:11px;color:var(--ink4);background:var(--paper2);padding:3px 8px;border-radius:var(--r3)">💡 點 ✏️ 標記已收款</span>`:''}</div></div>
     <div style="padding:6px 14px 10px;border-bottom:1px solid var(--paper3)">
       <div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div class="prog"><div class="prog-fill fill-gr" style="width:${pct}%"></div></div></div><span style="font-size:12px;color:var(--ink4)">${pct}%</span></div>
-    </div>
-    <div class="rr-head"><span>期數/說明</span><span style="text-align:right">應收金額</span><span>預計收款日</span><span style="text-align:right">實際到帳</span><span>狀態</span><span>發票</span><span></span></div>`;
-    receiptRows.forEach((r,idx)=>{
+    </div>`;
+    h+=`<div class="rr-head"><span>期數/說明</span><span style="text-align:right">應收金額</span><span>預計收款日</span><span style="text-align:right">實際到帳</span><span>狀態</span><span>發票</span><span></span></div>`;
+    
+    // 分組：已收 vs 待收
+    const _pendingR = receiptRows.filter(r=>!r.st.includes('已收'));
+    const _paidR = receiptRows.filter(r=>r.st.includes('已收'));
+    
+    const _renderRRow = (r,idx)=>{
       const sc=r.st.includes('已收')?'rc':'pr';
       const invLk=r.invoice&&r.invoice.startsWith('http')?`<a href="${r.invoice}" target="_blank" style="font-size:12px">📄</a>`:`<span style="color:var(--paper3)">—</span>`;
-      h+=`<div class="rr-row">
+      return `<div class="rr-row">
         <span style="font-weight:600">${r.desc}</span>
         <span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right">${$m(r.amount)}</span>
         <span style="font-size:12px;color:var(--ink4)">${$d(r.date)}</span>
         <span style="font-variant-numeric:tabular-nums;font-weight:700;text-align:right;color:${r.actual>0?'var(--gr)':'var(--ink4)'}">${r.actual>0?$m(r.actual):'—'}</span>
         <span><span class="chip ${sc}">${r.st}</span></span>
         <span style="text-align:center">${invLk}</span>
-        <span>${role==='admin'?`<button class="row-edit" onclick="editReceiptRow('${key}',${r.rowNum},${idx})" title="編輯">✏️</button>`:''}</span>
+        <span>${role==='admin'?`<button class="row-edit" onclick="editReceiptRow('${key}',${r.rowNum},${receiptRows.indexOf(r)})" title="編輯">✏️</button>`:''}</span>
       </div>`;
-    });
+    };
+    
+    // 待收區（預設展開）
+    if(_pendingR.length>0){
+      const pendTotal=_pendingR.reduce((s,r)=>s+r.amount,0);
+      h+=`<div class="rr-group-head" onclick="toggleGroup('rrec-pending')">
+        <span class="rr-gh-arrow" id="rrec-pending-arrow">▼</span>
+        <span class="rr-gh-icon">⏳</span>
+        <span class="rr-gh-name">待收</span>
+        <span class="rr-gh-count">${_pendingR.length} 筆</span>
+        <span class="rr-gh-total">${$m(pendTotal)}</span>
+      </div>
+      <div id="rrec-pending-body">`;
+      _pendingR.forEach(r=>h+=_renderRRow(r));
+      h+=`</div>`;
+    }
+    
+    // 已收區（預設折疊）
+    if(_paidR.length>0){
+      const paidTotal=_paidR.reduce((s,r)=>s+r.actual,0);
+      h+=`<div class="rr-group-head collapsed" onclick="toggleGroup('rrec-paid')">
+        <span class="rr-gh-arrow" id="rrec-paid-arrow">▶</span>
+        <span class="rr-gh-icon" style="color:var(--gr)">✅</span>
+        <span class="rr-gh-name">已收</span>
+        <span class="rr-gh-count">${_paidR.length} 筆</span>
+        <span class="rr-gh-total" style="color:var(--gr)">${$m(paidTotal)}</span>
+      </div>
+      <div id="rrec-paid-body" style="display:none">`;
+      _paidR.forEach(r=>h+=_renderRRow(r));
+      h+=`</div>`;
+    }
     h+=`</div>`;
   }
   if(_pair) h+=`</div>`;
@@ -852,14 +900,56 @@ async function rProj(key){
   }
 
   // 付款記錄
+  // 從 rows 中抽出所有出現過的月份（用於下拉選單）
+  const _months = new Set();
+  rows.forEach(r=>{
+    const d = String(r[0]||'');
+    if(d){
+      const m = d.match(/(\d{4})[-/](\d{1,2})/);
+      if(m){
+        _months.add(`${m[1]}-${m[2].padStart(2,'0')}`);
+      }
+    }
+  });
+  const _monthList = Array.from(_months).sort();
+  const _curMonth = new Date();
+  const _curMonthKey = `${_curMonth.getFullYear()}-${String(_curMonth.getMonth()+1).padStart(2,'0')}`;
+
   h+=`<div class="card"><div class="ch"><h3>付款記錄</h3><div style="display:flex;align-items:center;gap:8px"><span class="meta">${rows.length} 筆</span>${role==='admin'?`<span style="font-size:11px;color:var(--ink4);background:var(--paper2);padding:3px 8px;border-radius:var(--r3)">💡 點 ✏️ 編輯／補報價單</span>`:''}${PKS.includes(cur)&&role!=='readonly'?`<button class="btn btn-y btn-sm" onclick="openModal('pay')">+ 新增記帳</button>`:''}</div></div>
-  <div class="fr"><span class="fc on" onclick="filt('all',this)">全部 (${rows.length})</span><span class="fc" onclick="filt('pd',this)">✅ 已付 (${pR.length})</span><span class="fc" onclick="filt('pn',this)">⏳ 待付 (${pnR.length})</span><span class="fc" onclick="filt('qt',this)">📋 待報價 (${qR.length})</span>${od.length?`<span class="fc fc-red" onclick="filt('od',this)">🔴 逾期 (${od.length})</span>`:''}</div>
+  <div class="fr" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="fc on" onclick="filt('all',this)">全部 (${rows.length})</span>
+    <span class="fc" onclick="filt('pd',this)">✅ 已付 (${pR.length})</span>
+    <span class="fc" onclick="filt('pn',this)">⏳ 待付 (${pnR.length})</span>
+    <span class="fc" onclick="filt('qt',this)">📋 待報價 (${qR.length})</span>
+    ${od.length?`<span class="fc fc-red" onclick="filt('od',this)">🔴 逾期 (${od.length})</span>`:''}
+    ${_monthList.length>1?`
+      <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+        <span style="font-size:12px;color:var(--ink4)">📅 月份</span>
+        <select id="payMonthFilter" onchange="filtMonth(this.value)" style="font-size:13px;padding:5px 8px;border:1px solid var(--paper3);border-radius:var(--r3);background:var(--paper);cursor:pointer">
+          <option value="">全部月份</option>
+          ${_monthList.map(m=>{
+            const [y,mo]=m.split('-');
+            const cnt=rows.filter(r=>{
+              const d=String(r[0]||'');
+              return d.startsWith(`${y}-${mo}`)||d.startsWith(`${y}/${mo}`)||d.startsWith(`${y}/${parseInt(mo)}`);
+            }).length;
+            const isCur=m===_curMonthKey?' ⭐':'';
+            return `<option value="${m}">${y}年${parseInt(mo)}月 (${cnt})${isCur}</option>`;
+          }).join('')}
+        </select>
+      </div>
+    `:''}
+  </div>
   <div class="tw"><table class="pay-table" id="pt"><thead><tr><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>證明</th><th></th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
     const s=String(r[7]||''),sc=$sc(s),ip=sc==='pd';
     const py=String(r[6]||''),dl=String(r[10]||'');
     const dd=$dd(dl),isOD=!ip&&dd!==null&&dd<0,isDS=!ip&&dd!==null&&dd>=0&&dd<=3;
-    h+=`<tr data-sc="${sc}" data-od="${isOD}" class="${isOD?'rod':isDS?'rds':''}">
+    // 抽取月份標籤（YYYY-MM）給篩選用
+    const dateStr=String(r[0]||'');
+    const mMatch=dateStr.match(/(\d{4})[-/](\d{1,2})/);
+    const monthTag=mMatch?`${mMatch[1]}-${mMatch[2].padStart(2,'0')}`:'';
+    h+=`<tr data-sc="${sc}" data-od="${isOD}" data-month="${monthTag}" class="${isOD?'rod':isDS?'rds':''}">
       <td class="dt">${$d(r[0])}</td><td style="font-size:12px;color:var(--ink4)">${r[1]||''}</td>
       <td style="font-weight:600">${r[2]||''}</td>
       <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r[3]||''}">${r[3]||''}</td>
@@ -1192,26 +1282,38 @@ async function rVendors(){
 }
 
 // ═══ FILTERS / STATUS ═════════════════════
-function filtMonth(months,el){
-  document.querySelectorAll('.fr .fc').forEach(f=>f.classList.remove('on'));
-  el.classList.add('on');
-  const cutoff = months===0?null:new Date(Date.now()-months*30*864e5);
+let _curStatusFilter = 'all';  // 目前狀態篩選
+let _curMonthFilter = '';      // 目前月份篩選（YYYY-MM；空字串=全部）
+
+function _applyFilters(){
   document.querySelectorAll('#pt tbody tr').forEach(tr=>{
-    if(!cutoff){tr.style.display='';return;}
-    const dt=tr.querySelector('td')?.textContent?.replace(/\//g,'-');
-    if(!dt||dt.trim()===''||dt.trim()==='-'){tr.style.display='';return;}
-    tr.style.display = new Date(dt)>=cutoff?'':'none';
+    let show = true;
+    // 狀態篩選
+    if(_curStatusFilter!=='all'){
+      if(_curStatusFilter==='od'){
+        show = tr.dataset.od==='true';
+      } else {
+        show = tr.dataset.sc===_curStatusFilter;
+      }
+    }
+    // 月份篩選
+    if(show && _curMonthFilter){
+      show = tr.dataset.month===_curMonthFilter;
+    }
+    tr.style.display = show ? '' : 'none';
   });
 }
 
 function filt(type,el){
   document.querySelectorAll('.fr .fc').forEach(f=>f.classList.remove('on'));
-  el.classList.add('on');
-  document.querySelectorAll('#pt tbody tr').forEach(tr=>{
-    if(type==='all'){tr.style.display='';return;}
-    if(type==='od'){tr.style.display=tr.dataset.od==='true'?'':'none';return;}
-    tr.style.display=tr.dataset.sc===type?'':'none';
-  });
+  if(el)el.classList.add('on');
+  _curStatusFilter = type;
+  _applyFilters();
+}
+
+function filtMonth(monthKey){
+  _curMonthFilter = monthKey || '';
+  _applyFilters();
 }
 
 async function upSt(sel,row,sheet){
@@ -1519,6 +1621,21 @@ function exportCSV(){
 
 // ═══ TOAST ════════════════════════════════
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800);}
+
+// 摺疊分組（收款進度、付款記錄）
+function toggleGroup(id){
+  const body=document.getElementById(id+'-body');
+  const arrow=document.getElementById(id+'-arrow');
+  const head=arrow?.parentElement;
+  if(!body||!arrow)return;
+  const isOpen=body.style.display!=='none';
+  body.style.display=isOpen?'none':'';
+  arrow.textContent=isOpen?'▶':'▼';
+  if(head){
+    if(isOpen)head.classList.add('collapsed');
+    else head.classList.remove('collapsed');
+  }
+}
 </script>
 </body>
 </html>
