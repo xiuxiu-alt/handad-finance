@@ -554,7 +554,9 @@ async function gs(name){
 }
 async function post(body){
   const r=await fetch(GAS,{method:'POST',body:JSON.stringify(body)});
-  return r.json();
+  const j=await r.json();
+  if(j&&j.error)throw new Error(j.error);
+  return j;
 }
 
 // ═══ HELPERS ══════════════════════════════
@@ -1447,8 +1449,8 @@ async function submitPay(){
   const baseDesc=document.getElementById('p3').value;
   const baseAmount=parseInt(document.getElementById('p4').value)||0;
   const baseDeadline=document.getElementById('p10').value;
-  const baseStatus=document.getElementById('p7').value;
-  const buildRow=(date,desc,deadline,status)=>[date,document.getElementById('p1').value,document.getElementById('p2').value,desc,baseAmount,document.getElementById('p5').value,document.getElementById('p6').value,status,document.getElementById('p9').value,document.getElementById('p8').value,deadline,document.getElementById('p11').value];
+  const baseStatus=document.getElementById('p7').value || '⏳待付';
+  const buildRow=(date,desc,deadline,status)=>[date,document.getElementById('p1').value,document.getElementById('p2').value,desc,baseAmount,document.getElementById('p5').value,document.getElementById('p6').value,(status||'⏳待付'),document.getElementById('p9').value,document.getElementById('p8').value,deadline,document.getElementById('p11').value];
   cdel(sheet);
   try{
     if(_editingPayIdx!=null){
