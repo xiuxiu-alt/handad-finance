@@ -128,7 +128,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── CARD ─── */
 .card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(17,17,16,.04),0 0 0 0 rgba(17,17,16,0);transition:box-shadow .2s;}
 .card:hover{box-shadow:0 2px 8px rgba(17,17,16,.06);}
-.ch{padding:14px 18px;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,var(--paper),var(--paper) 90%,var(--paper2));}
+.ch{padding:14px 18px;border-bottom:2px solid var(--paper3);display:flex;align-items:center;justify-content:space-between;background:#F5F2E8;}
 .ch h3{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.015em;}
 .ch .meta{font-size:12px;color:var(--ink3);font-weight:500;}
 
@@ -154,7 +154,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── TABLES ─── */
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
-th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink3);background:linear-gradient(to bottom,var(--paper2),#EEEDE7);border-bottom:2px solid var(--paper3);white-space:nowrap;}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);background:#E8E4D5;border-bottom:2px solid var(--ink4);white-space:nowrap;}
 td{padding:9px 12px;font-size:14px;border-bottom:1px solid var(--paper2);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(246,195,28,.04);}
@@ -233,7 +233,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;}
 .br-num.pos{color:var(--gr);}
 .br-num.neg{color:var(--re);}
-.br-head{background:linear-gradient(to bottom,var(--paper2),#EEEDE7);font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink3);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--paper3);}
+.br-head{background:#E8E4D5;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--ink4);}
 .br-row:last-child{border-bottom:none;}
 .br-edit{display:flex;gap:4px;}
 
@@ -249,7 +249,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* ── RECEIPT ROWS ─── */
 .rr-head,.rr-row{display:grid;grid-template-columns:1fr 110px 110px 110px 90px 60px 40px;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--paper2);}
-.rr-head{background:linear-gradient(to bottom,var(--paper2),#EEEDE7);font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink3);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--paper3);}
+.rr-head{background:#E8E4D5;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--ink4);}
 /* 客戶收款進度 zebra stripe（加深反差） */
 .rr-row:nth-child(even){background:rgba(255,201,25,.08);}
 .rr-row:last-child{border-bottom:none;}
@@ -260,7 +260,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-row:hover{background:rgba(255,201,25,.16);}
 
 /* ── FIXED COST GROUPS ─── */
-.fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(to right,var(--paper2),var(--paper));border-bottom:2px solid var(--paper3);}
+.fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:#F5F2E8;border-bottom:2px solid var(--paper3);}
 .fg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px var(--paper);}
 .fg-nm{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
 .fg-pct{font-size:11px;color:var(--ink4);background:var(--paper2);padding:2px 8px;border-radius:10px;font-weight:600;}
@@ -412,7 +412,28 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
         <div class="fp"><label class="fl">付款日期</label><input type="date" class="fi" id="p0" oninput="onExpandChange()"></div>
         <div class="fp"><label class="fl">截止日期 ⚠️</label><input type="date" class="fi" id="p10"></div>
         <div class="fp"><label class="fl">類別</label>
-          <select class="fi" id="p1"><option>設計費</option><option>製作費</option><option>攝影費</option><option>新聞稿</option><option>投廣告</option><option>LINE訊息費</option><option>音樂授權費</option><option>短影音製作與剪輯</option><option>存在日曆SEO內容</option><option>包裝研究所SEO內容</option><option>員工薪資（PM/設計）</option><option>其他</option></select>
+          <input type="text" class="fi" id="p1" list="catList" placeholder="選擇或輸入新類別" autocomplete="off">
+          <datalist id="catList">
+            <option>設計費</option>
+            <option>製作費</option>
+            <option>攝影費</option>
+            <option>新聞稿</option>
+            <option>投廣告</option>
+            <option>LINE訊息費</option>
+            <option>音樂授權費</option>
+            <option>短影音製作與剪輯</option>
+            <option>存在日曆SEO內容</option>
+            <option>包裝研究所SEO內容</option>
+            <option>社群編輯</option>
+            <option>社群發文</option>
+            <option>KOL合作</option>
+            <option>影片製作</option>
+            <option>員工薪資（PM/設計）</option>
+            <option>網站維護</option>
+            <option>印刷費</option>
+            <option>物流配送</option>
+            <option>其他</option>
+          </datalist>
         </div>
         <div class="fp"><label class="fl">廠商名稱</label><input type="text" class="fi" id="p2" placeholder="廠商或個人姓名"></div>
         <div class="fp full"><label class="fl">說明</label><input type="text" class="fi" id="p3" placeholder="工作項目描述" oninput="onExpandChange()"></div>
@@ -761,11 +782,9 @@ async function rProj(key){
     <div class="kc ${od.length?'re':''}"><div class="kl">逾期未付</div><div class="kv">${od.length} 筆</div><div class="ks">${soon.length} 筆即將到期</div></div>
     <div class="kc"><div class="kl">待報價</div><div class="kv">${qR.length} 筆</div><div class="ks">金額未確認</div></div>
   </div>`;
-  // ── 成本結構 + 客戶收款進度（同畫面並排顯示）
+  // ── 成本結構 + 客戶收款進度（各自全寬，避免欄位被擠掉）
   const _showCost = projTotal>0||costItems.length>0;
   const _showReceipt = receiptRows.length>0;
-  const _pair = _showCost && _showReceipt;
-  if(_pair) h+=`<div class="grid2">`;
 
 
   // 成本結構
@@ -863,9 +882,6 @@ async function rProj(key){
     }
     h+=`</div>`;
   }
-  if(_pair) h+=`</div>`;
-
-
   // 執行預算追蹤
   if(budgetRows.length>0){
     const totB=budgetRows.reduce((s,r)=>s+r.budget,0);
@@ -1032,8 +1048,31 @@ async function submitNewBudget(key,insertRow){
 // ═══ FIXED COSTS ══════════════════════════
 async function rFixed(){
   const data=await gs('公司固定成本');
-  const rows=data.slice(5).filter(r=>r[0]&&!String(r[0]).includes('📌')&&!String(r[0]).includes('合計')&&!String(r[0]).includes('▌')&&String(r[0]).trim());
-  const total=data.slice(5).find(r=>String(r[0]||'').includes('合計'))?.[1]||rows.reduce((s,r)=>s+(parseInt(r[1])||0),0);
+  
+  // 只讀取主區段（每月固定支出），遇到「其中：老闆每月代墊金額」這類 sub-header 後就停止
+  // 這樣可避免「老闆代墊」項目被讀兩次（既出現在主區段也出現在參考區段）
+  const mainRows = [];
+  for(let i=5;i<data.length;i++){
+    const r = data[i];
+    const cell0 = String(r[0]||'');
+    // 偵測到「其中」「代墊金額」這類 sub-header 就跳出
+    if(cell0.includes('其中')||cell0.includes('代墊金額彙總')||cell0.includes('代墊金額合計')){
+      break;
+    }
+    // 偵測到「損益平衡線」「年度費」也跳出（這些是另一區段）
+    if(cell0.includes('損益平衡')||(cell0.includes('年度')&&cell0.includes('費'))){
+      break;
+    }
+    // 過濾標題列、合計列、空列
+    if(!r[0])continue;
+    if(cell0.includes('📌'))continue;
+    if(cell0.includes('合計'))continue;
+    if(cell0.includes('▌'))continue;
+    if(!cell0.trim())continue;
+    mainRows.push(r);
+  }
+  const rows = mainRows;
+  const total = rows.reduce((s,r)=>s+(parseInt(r[1])||0),0);
 
   // Break even
   let beRows=[];
