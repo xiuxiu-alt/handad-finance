@@ -154,7 +154,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── TABLES ─── */
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
-th{text-align:left;padding:7px 11px;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);background:var(--paper2);border-bottom:1px solid var(--paper3);white-space:nowrap;}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink3);background:linear-gradient(to bottom,var(--paper2),#EEEDE7);border-bottom:2px solid var(--paper3);white-space:nowrap;}
 td{padding:9px 12px;font-size:14px;border-bottom:1px solid var(--paper2);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(246,195,28,.04);}
@@ -166,8 +166,8 @@ tfoot td{font-weight:700;background:var(--paper2)!important;font-size:14px;borde
 
 /* 付款記錄表格：固定欄寬 + 條紋背景（zebra stripe） */
 table.pay-table{table-layout:fixed;}
-table.pay-table tbody tr:nth-child(even) td{background:rgba(255,201,25,.04);}
-table.pay-table tbody tr:hover td{background:rgba(255,201,25,.10)!important;}
+table.pay-table tbody tr:nth-child(even) td{background:rgba(255,201,25,.08);}
+table.pay-table tbody tr:hover td{background:rgba(255,201,25,.16)!important;}
 table.pay-table th:nth-child(1),table.pay-table td:nth-child(1){width:108px;}  /* 日期：YYYY/MM/DD */
 table.pay-table th:nth-child(2),table.pay-table td:nth-child(2){width:108px;}  /* 類別 */
 table.pay-table th:nth-child(3),table.pay-table td:nth-child(3){width:120px;}  /* 廠商 */
@@ -233,20 +233,21 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;}
 .br-num.pos{color:var(--gr);}
 .br-num.neg{color:var(--re);}
-.br-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);padding-top:8px;padding-bottom:8px;}
+.br-head{background:linear-gradient(to bottom,var(--paper2),#EEEDE7);font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink3);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--paper3);}
 .br-row:last-child{border-bottom:none;}
 .br-edit{display:flex;gap:4px;}
 
 /* ── RECEIPT ROWS ─── */
-.rr-head,.rr-row{display:grid;grid-template-columns:minmax(56px,90px) 78px 80px 78px 60px 44px 24px;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid var(--paper2);justify-content:start;}
-.rr-head{background:var(--paper2);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink4);}
-/* 客戶收款進度 zebra stripe */
-.rr-row:nth-child(even){background:rgba(255,201,25,.04);}
+.rr-head,.rr-row{display:grid;grid-template-columns:1fr 110px 110px 110px 90px 60px 40px;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--paper2);}
+.rr-head{background:linear-gradient(to bottom,var(--paper2),#EEEDE7);font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink3);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--paper3);}
+/* 客戶收款進度 zebra stripe（加深反差） */
+.rr-row:nth-child(even){background:rgba(255,201,25,.08);}
 .rr-row:last-child{border-bottom:none;}
-.rr-row:hover{background:rgba(255,201,25,.10);}
+.rr-row:hover{background:rgba(255,201,25,.16);}
 
-/* 預算追蹤 zebra stripe */
-.br-row:nth-child(even){background:rgba(255,201,25,.04);}
+/* 預算追蹤 zebra stripe（加深反差） */
+.br-row:nth-child(even){background:rgba(255,201,25,.08);}
+.br-row:hover{background:rgba(255,201,25,.16);}
 
 /* ── FIXED COST GROUPS ─── */
 .fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:linear-gradient(to right,var(--paper2),var(--paper));border-bottom:2px solid var(--paper3);}
@@ -257,8 +258,8 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 .fg-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;border-bottom:1px solid var(--paper2);}
 .fg-item:last-child{border-bottom:none;}
-.fg-item:nth-child(even){background:rgba(255,201,25,.03);}
-.fg-item:hover{background:rgba(255,201,25,.10);}
+.fg-item:nth-child(even){background:rgba(255,201,25,.07);}
+.fg-item:hover{background:rgba(255,201,25,.16);}
 .fi-nm{font-size:14px;font-weight:600;color:var(--ink);}
 .fi-am{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;letter-spacing:-.01em;flex-shrink:0;color:var(--ink);}
 .fi-ds{font-size:12px;color:var(--ink4);line-height:1.4;margin-top:3px;}
