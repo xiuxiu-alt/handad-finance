@@ -128,7 +128,9 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── CARD ─── */
 .card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(17,17,16,.04),0 0 0 0 rgba(17,17,16,0);transition:box-shadow .2s;}
 .card:hover{box-shadow:0 2px 8px rgba(17,17,16,.06);}
-.ch{padding:14px 18px;border-bottom:2px solid #6B6553;display:flex;align-items:center;justify-content:space-between;background:#C9C5B5;color:var(--ink);}
+.ch{padding:14px 18px;border-bottom:2px solid #1a1816;display:flex;align-items:center;justify-content:space-between;background:#2D2926;color:#FAF8F2;}
+.ch h3{color:#FAF8F2;}
+.ch .meta{color:#C9C5B5;}
 .ch h3{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.015em;}
 .ch .meta{font-size:12px;color:var(--ink3);font-weight:500;}
 
@@ -154,7 +156,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── TABLES ─── */
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
-th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink);background:#B8B4A4;border-bottom:2px solid #4D4738;white-space:nowrap;}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);background:#E8E4D5;border-bottom:2px solid #8C8676;white-space:nowrap;}
 td{padding:9px 12px;font-size:14px;border-bottom:1px solid var(--paper2);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(246,195,28,.04);}
@@ -233,14 +235,14 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;}
 .br-num.pos{color:var(--gr);}
 .br-num.neg{color:var(--re);}
-.br-head{background:#B8B4A4;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink);padding-top:11px;padding-bottom:11px;border-bottom:2px solid #4D4738;}
+.br-head{background:#E8E4D5;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);padding-top:11px;padding-bottom:11px;border-bottom:2px solid #8C8676;}
 .br-row:last-child{border-bottom:none;}
 .br-edit{display:flex;gap:4px;}
 
 /* ── GROUP HEADERS（可摺疊分組） ─── */
-.rr-group-head{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#E8E4D5;border-bottom:1px solid #8C8676;cursor:pointer;user-select:none;transition:background .15s;}
-.rr-group-head:hover{background:#DBD6C4;}
-.rr-group-head.collapsed{background:#D4D0C0;}
+.rr-group-head{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#C9C5B5;border-bottom:1px solid #6B6553;cursor:pointer;user-select:none;transition:background .15s;}
+.rr-group-head:hover{background:#B8B4A4;}
+.rr-group-head.collapsed{background:#D4D0C0;border-bottom:1px solid #A8A290;}
 .rr-gh-arrow{font-size:10px;color:var(--ink3);width:14px;display:inline-block;}
 .rr-gh-icon{font-size:14px;}
 .rr-gh-name{font-size:14px;font-weight:700;color:var(--ink);}
@@ -249,7 +251,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* ── RECEIPT ROWS ─── */
 .rr-head,.rr-row{display:grid;grid-template-columns:1fr 110px 110px 110px 90px 60px 40px;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--paper2);}
-.rr-head{background:#B8B4A4;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink);padding-top:11px;padding-bottom:11px;border-bottom:2px solid #4D4738;}
+.rr-head{background:#E8E4D5;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);padding-top:11px;padding-bottom:11px;border-bottom:2px solid #8C8676;}
 /* 客戶收款進度 zebra stripe（加深反差） */
 .rr-row:nth-child(even){background:rgba(255,201,25,.08);}
 .rr-row:last-child{border-bottom:none;}
@@ -260,7 +262,9 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-row:hover{background:rgba(255,201,25,.16);}
 
 /* ── FIXED COST GROUPS ─── */
-.fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:#C9C5B5;border-bottom:2px solid #6B6553;}
+.fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:#2D2926;color:#FAF8F2;border-bottom:2px solid #1a1816;}
+.fg-head .fg-name,.fg-head h3,.fg-head span{color:#FAF8F2;}
+.fg-head .fg-amt{color:#FFC919;}
 .fg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px var(--paper);}
 .fg-nm{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
 .fg-pct{font-size:11px;color:var(--ink4);background:var(--paper2);padding:2px 8px;border-radius:10px;font-weight:600;}
@@ -377,6 +381,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
       <div class="ns adm-section">公司帳務</div>
       <div class="ni adm-only" data-k="fixed" onclick="go(this)"><div class="d"></div>公司固定成本</div>
       <div class="ni adm-only" data-k="advances" onclick="go(this)"><div class="d"></div>老闆代墊款</div>
+      <div class="ni adm-only" data-k="staff" onclick="go(this)"><div class="d"></div>同仁填寫紀錄</div>
     </nav>
     <div class="sb-ft">
       <button class="lo-btn" onclick="netlifyIdentity.logout()">登出 →</button>
@@ -539,7 +544,7 @@ const CACHE_MS = 8 * 60 * 1000;
 
 const PROJ = {'1_海保署海洋友善':'海洋友善行銷','2_海保署月曆':'海保署月曆','3_冠球共編曆':'冠球共編曆','4_冠球利百代':'冠球利百代','5_冠球SEO':'冠球SEO顧問','6_冠球小型':'冠球小型'};
 const PKS = Object.keys(PROJ);
-const PNS = {db:'儀表板',remind:'本月結帳提醒',vendors:'廠商清單',fixed:'公司固定成本',advances:'老闆代墊款',...Object.fromEntries(Object.entries(PROJ))};
+const PNS = {db:'儀表板',remind:'本月結帳提醒',vendors:'廠商清單',fixed:'公司固定成本',advances:'老闆代墊款',staff:'同仁填寫紀錄',...Object.fromEntries(Object.entries(PROJ))};
 
 let cur='db', role=null;
 const T0=new Date(); T0.setHours(0,0,0,0);
@@ -673,6 +678,7 @@ async function render(){
     else if(cur==='vendors')await rVendors();
     else if(cur==='fixed')await rFixed();
     else if(cur==='advances')await rAdvances();
+    else if(cur==='staff')await rStaffRecords();
     else await rProj(cur);
     document.getElementById('ts').textContent='更新 '+new Date().toLocaleTimeString('zh-TW');
   }catch(e){
@@ -1292,7 +1298,63 @@ async function rAdvances(){
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
-// ═══ REMINDER ═════════════════════════════
+// ═══ STAFF RECORDS（同仁填寫紀錄）═════════
+async function rStaffRecords(){
+  document.getElementById('advBtn').style.display='none';
+  // 並行抓三個 sheet
+  const [designerData,otData,leaveData]=await Promise.all([
+    gs('同仁_設計師月費').catch(()=>[]),
+    gs('同仁_PM加班費').catch(()=>[]),
+    gs('同仁_PM請假紀錄').catch(()=>[])
+  ]);
+  // 解析（假設第一列為標題）
+  const parseRows=(data)=>data.slice(1).filter(r=>r&&r[0]);
+  const designers=parseRows(designerData);
+  const overtimes=parseRows(otData);
+  const leaves=parseRows(leaveData);
+  
+  const totDesigner=designers.reduce((s,r)=>s+(parseInt(r[4])||0),0);
+  const totOT=overtimes.reduce((s,r)=>s+(parseInt(r[5])||0),0);
+  const totLeave=leaves.reduce((s,r)=>s+(parseInt(r[5])||0),0);
+  
+  let h=`<div class="kpi-row cols3">
+    <div class="kc"><div class="kl">設計師費用</div><div class="kv">${$m(totDesigner)}</div><div class="ks">${designers.length} 筆</div></div>
+    <div class="kc"><div class="kl">PM 加班費</div><div class="kv">${$m(totOT)}</div><div class="ks">${overtimes.length} 筆</div></div>
+    <div class="kc"><div class="kl">PM 請假扣薪</div><div class="kv">${$m(totLeave)}</div><div class="ks">${leaves.length} 筆</div></div>
+  </div>
+  <div class="al" style="background:rgba(255,201,25,.1);border-color:rgba(255,201,25,.4);color:var(--ink2)">
+    📝 同仁填寫網址：<strong style="color:var(--ink)">https://finance.handad.com.tw/staff.html</strong>　密碼：<code style="background:var(--paper2);padding:2px 8px;border-radius:4px">handad2026</code>
+  </div>`;
+  
+  // 設計師月費
+  h+=`<div class="card"><div class="ch"><h3>👨‍🎨 設計師月費</h3><span class="meta">${designers.length} 筆 · 合計 ${$m(totDesigner)}</span></div>
+  <div class="tw"><table><thead><tr><th>填寫日期</th><th>姓名</th><th>月份</th><th>項目</th><th style="text-align:right">金額</th><th>備註</th></tr></thead><tbody>`;
+  if(designers.length===0)h+=`<tr><td colspan="6" style="text-align:center;color:var(--ink4);padding:20px">尚無紀錄</td></tr>`;
+  else designers.slice().reverse().forEach(r=>{
+    h+=`<tr><td class="dt">${$d(r[0])}</td><td style="font-weight:600">${r[1]||''}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td class="num">${$m(r[4])}</td><td style="font-size:12px;color:var(--ink4)">${r[5]||''}</td></tr>`;
+  });
+  h+=`</tbody></table></div></div>`;
+  
+  // PM 加班費
+  h+=`<div class="card"><div class="ch"><h3>⏰ PM 加班費</h3><span class="meta">${overtimes.length} 筆 · 合計 ${$m(totOT)}</span></div>
+  <div class="tw"><table><thead><tr><th>填寫日期</th><th>姓名</th><th>月份</th><th>加班類別</th><th>時數</th><th style="text-align:right">金額</th><th>備註</th></tr></thead><tbody>`;
+  if(overtimes.length===0)h+=`<tr><td colspan="7" style="text-align:center;color:var(--ink4);padding:20px">尚無紀錄</td></tr>`;
+  else overtimes.slice().reverse().forEach(r=>{
+    h+=`<tr><td class="dt">${$d(r[0])}</td><td style="font-weight:600">${r[1]||''}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''} 小時</td><td class="num">${$m(r[5])}</td><td style="font-size:12px;color:var(--ink4)">${r[6]||''}</td></tr>`;
+  });
+  h+=`</tbody></table></div></div>`;
+  
+  // PM 請假紀錄
+  h+=`<div class="card"><div class="ch"><h3>🏖 PM 請假紀錄</h3><span class="meta">${leaves.length} 筆 · 扣薪合計 ${$m(totLeave)}</span></div>
+  <div class="tw"><table><thead><tr><th>填寫日期</th><th>姓名</th><th>月份</th><th>假別</th><th>天數</th><th style="text-align:right">扣薪金額</th><th>備註</th></tr></thead><tbody>`;
+  if(leaves.length===0)h+=`<tr><td colspan="7" style="text-align:center;color:var(--ink4);padding:20px">尚無紀錄</td></tr>`;
+  else leaves.slice().reverse().forEach(r=>{
+    h+=`<tr><td class="dt">${$d(r[0])}</td><td style="font-weight:600">${r[1]||''}</td><td>${r[2]||''}</td><td>${r[3]||''}</td><td>${r[4]||''} 天</td><td class="num">${$m(r[5])}</td><td style="font-size:12px;color:var(--ink4)">${r[6]||''}</td></tr>`;
+  });
+  h+=`</tbody></table></div></div>`;
+  
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
+}
 async function rRemind(){
   const results=await Promise.all(PKS.map(k=>gs(k+'_付款帳').catch(()=>[])));
   let items=[];
