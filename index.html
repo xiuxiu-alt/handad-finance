@@ -1336,6 +1336,7 @@ async function rAdvances(){
   }
   
   // ━━━ 從專案付款記錄帶出（付款人=老闆代墊） ━━━━━━━━━━━━
+  // 欄位 schema: 0日期 / 1類別 / 2廠商 / 3說明 / 4金額 / 5付款方式 / 6付款人 / 7狀態
   const projAdvData = await Promise.all(PKS.map(k=>gs(k+'_付款帳').catch(()=>[])));
   const projAdv = [];
   let _scanCount = 0; // 診斷用：總共掃了多少列
@@ -1345,7 +1346,8 @@ async function rAdvances(){
       if(!r || !$valid(r)) return;
       _scanCount++;
       // 寬鬆比對：trim + includes 防空白/全形/錯字
-      const payer = String(r[5]||'').trim();
+      // 付款人欄是 r[6]（不是 r[5]，r[5] 是付款方式）
+      const payer = String(r[6]||'').trim();
       if(!payer.includes('老闆代墊')) return;
       projAdv.push({
         date: r[0],
