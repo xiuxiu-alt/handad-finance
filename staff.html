@@ -1594,50 +1594,83 @@ async function rRemind(){
   };
   h+=grp('🔴 已逾期',od,'urg')+grp('⚠️ 3 天內到期',urg,'urg')+grp('📅 14 天內到期',soon,'soon');
 
-  // === 每月固定應付項目（依類別分組） ===
+  // === 每月固定應付項目（月報式：依頻率動態篩本月）===
   // 注意：薪資類別只給 admin 看；同仁模式會自動隱藏整個薪資 block
+  // 此頁同仁版 nav 沒有入口（dead code），保留結構與 index.html 一致以便未來開放
   const isAdmin = role==='admin';
+  const now2 = new Date();
+  const curMonth = now2.getMonth()+1;
+  const dayOfMonth = now2.getDate();
+  const curYM_str = `${now2.getFullYear()}-${String(curMonth).padStart(2,'0')}`;
+
   const MONTHLY_FIXED_ALL = [
-    // 員工薪資（每月 8 號前支付）—— admin only
-    {cat:'薪資', name:'老闆薪水（陳昕秀）', amount:55000, payer:'公司', note:'每月8號前'},
-    {cat:'薪資', name:'專案PM薪水（Renn 鄭琇仁）', amount:29800, payer:'公司', note:'每月8號前'},
-    {cat:'薪資', name:'設計師薪水（兼職）', amount:15000, payer:'公司', note:'每月8號前'},
+    // ─── 每月薪資 ───
+    {cat:'薪資', name:'老闆薪水（陳昕秀）', amount:55000, payer:'公司', freq:'monthly', autoDebit:false, note:'每月8號前'},
+    {cat:'薪資', name:'專案PM薪水（Renn 鄭琇仁）', amount:29800, payer:'公司', freq:'monthly', autoDebit:false, note:'每月8號前'},
+    {cat:'薪資', name:'設計師薪水（兼職）', amount:0, payer:'公司', freq:'monthly', autoDebit:false, dynamic:'designer', note:'每月8號前 · 動態讀同仁_設計師月費當月加總'},
 
-    // SEO 內容稿費
-    {cat:'SEO', name:'Wonda 存在日曆 SEO 稿費', amount:4000, payer:'公司', note:'每月 2 篇 × NT$2,000'},
-    {cat:'SEO', name:'Wonda 包裝研究所 SEO 稿費', amount:4000, payer:'公司', note:'每月 2 篇 × NT$2,000'},
+    // ─── 每月外包稿費 ───
+    {cat:'SEO', name:'Wonda 存在日曆 SEO 稿費', amount:4000, payer:'公司', freq:'monthly', autoDebit:false, note:'每月 2 篇 × NT$2,000'},
+    {cat:'SEO', name:'Wonda 包裝研究所 SEO 稿費', amount:4000, payer:'公司', freq:'monthly', autoDebit:false, note:'每月 2 篇 × NT$2,000'},
+    {cat:'社群', name:'Amy 小編 社群發文', amount:20000, payer:'公司', freq:'monthly', autoDebit:false, note:'每月固定支付'},
 
-    // 社群
-    {cat:'社群', name:'Amy 小編 社群發文', amount:20000, payer:'公司', note:'每月固定支付'},
+    // ─── 政府 / 法定（不同頻率）───
+    {cat:'政府', name:'勞保+就業保險（Renn）', amount:3969, payer:'公司', freq:'monthly', autoDebit:false, note:'每月繳款書到再付'},
+    {cat:'政府', name:'健保（Renn）', amount:1428, payer:'公司', freq:'monthly', autoDebit:false, note:'每月繳款書到再付'},
+    {cat:'政府', name:'營業稅', amount:0, payer:'公司', freq:'bimonthly', months:[1,3,5,7,9,11], autoDebit:false, note:'雙月 15 號前申報（金額待確認）'},
+    {cat:'政府', name:'停車費', amount:0, payer:'公司', freq:'quarterly', months:[1,4,7,10], autoDebit:false, note:'每季一次（金額待確認）'},
+    {cat:'政府', name:'會計費', amount:0, payer:'公司', freq:'yearly', months:[3], autoDebit:false, note:'年繳（月份與金額待確認）'},
 
-    // 工具訂閱（老闆代墊，信用卡自動扣）
-    {cat:'工具', name:'Google Workspace', amount:550, payer:'老闆代墊', note:'信用卡自動扣'},
-    {cat:'工具', name:'ChatGPT Plus', amount:690, payer:'老闆代墊', note:'信用卡自動扣'},
-    {cat:'工具', name:'Claude Max', amount:600, payer:'老闆代墊', note:'信用卡自動扣'},
-    {cat:'工具', name:'Seameet', amount:320, payer:'老闆代墊', note:'信用卡自動扣'},
+    // ─── 自動扣款（純資訊）───
+    {cat:'工具', name:'Google Workspace', amount:550, payer:'老闆代墊', freq:'monthly', autoDebit:true, note:'信用卡自動扣'},
+    {cat:'工具', name:'ChatGPT Plus', amount:690, payer:'老闆代墊', freq:'monthly', autoDebit:true, note:'信用卡自動扣'},
+    {cat:'工具', name:'Claude Max', amount:600, payer:'老闆代墊', freq:'monthly', autoDebit:true, note:'信用卡自動扣'},
+    {cat:'工具', name:'Seameet', amount:320, payer:'老闆代墊', freq:'monthly', autoDebit:true, note:'信用卡自動扣'},
   ];
-  const MONTHLY_FIXED = isAdmin ? MONTHLY_FIXED_ALL : MONTHLY_FIXED_ALL.filter(x=>x.cat!=='薪資');
+
+  const isItemThisMonth = (it) => {
+    if(it.freq === 'monthly') return true;
+    if(['bimonthly','quarterly','yearly'].includes(it.freq)) return (it.months||[]).includes(curMonth);
+    return false;
+  };
+  const itemsThisMonth = MONTHLY_FIXED_ALL.filter(isItemThisMonth);
+  const MONTHLY_FIXED = isAdmin ? itemsThisMonth : itemsThisMonth.filter(x => x.cat !== '薪資');
+
   const CAT_META = {
     '薪資':{color:'var(--bl)', icon:'👥'},
     'SEO':{color:'#7C3AED', icon:'📝'},
     '社群':{color:'#DC2626', icon:'📱'},
+    '政府':{color:'#92400E', icon:'🏛️'},
     '工具':{color:'#065F46', icon:'🔧'},
   };
-  const monthlyTotal = MONTHLY_FIXED.reduce((s,x)=>s+x.amount,0);
-  const now2=new Date();
-  const dayOfMonth = now2.getDate();
-  
-  h+=`<div class="sl" style="margin-top:20px"><h4>📅 每月固定應付清單</h4><span class="sm">${now2.getMonth()+1}月 / 合計 ${$m(monthlyTotal)}</span></div>`;
-  
+
+  // 動態：讀同仁_設計師月費當月加總
+  const designerData = await gs('同仁_設計師月費').catch(()=>[]);
+  const designerDynamic = designerData.slice(1)
+    .filter(r => r && String(r[2]||'').startsWith(curYM_str))
+    .reduce((s, r) => s + (parseInt(r[4])||0), 0);
+  MONTHLY_FIXED.forEach(x => {
+    if(x.dynamic === 'designer') x.amount = designerDynamic;
+  });
+
+  const manualItems = MONTHLY_FIXED.filter(x => !x.autoDebit);
+  const autoItems = MONTHLY_FIXED.filter(x => x.autoDebit);
+  const manualTotal = manualItems.reduce((s,x)=>s+x.amount, 0);
+  const autoTotal = autoItems.reduce((s,x)=>s+x.amount, 0);
+
+  h+=`<div class="sl" style="margin-top:20px"><h4>📅 每月固定應付清單</h4><span class="sm">${curMonth}月 / 手動 ${$m(manualTotal)} · 自動扣 ${$m(autoTotal)}</span></div>`;
+
   if(isAdmin && dayOfMonth>=1&&dayOfMonth<=8){
     h+=`<div class="al am">⚠️ 目前是每月 ${dayOfMonth} 號，薪資支付期（1-8號），請確認是否已付款</div>`;
   }
 
-  // 依類別分組顯示（2x2 並排，每張卡內部單欄）
-  const cats = ['薪資','SEO','社群','工具'];
+  // 手動轉帳區
+  h+=`<div class="sl" style="margin-top:18px;margin-bottom:6px"><h4>📌 本月需要轉帳</h4><span class="sm">${manualItems.length} 筆 · 合計 ${$m(manualTotal)}</span></div>`;
+
+  const manualCats = ['薪資','SEO','社群','政府'];
   h+=`<div class="grid2">`;
-  cats.forEach(cat=>{
-    const items = MONTHLY_FIXED.filter(x=>x.cat===cat);
+  manualCats.forEach(cat=>{
+    const items = manualItems.filter(x=>x.cat===cat);
     if(!items.length) return;
     const catTotal = items.reduce((s,x)=>s+x.amount,0);
     const meta = CAT_META[cat];
@@ -1650,9 +1683,10 @@ async function rRemind(){
       </div>`;
     items.forEach(x=>{
       const isPlaceholder = x.amount===0;
+      const freqBadge = x.freq==='bimonthly'?'雙月':x.freq==='quarterly'?'每季':x.freq==='yearly'?'每年':'';
       h+=`<div style="padding:9px 14px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;justify-content:space-between;gap:10px">
         <div style="min-width:0;flex:1">
-          <div style="font-size:13px;font-weight:600;color:var(--ink)">${x.name}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink)">${x.name}${freqBadge?`<span style="font-size:10px;color:#92400E;background:#FEF3C7;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:500">${freqBadge}</span>`:''}</div>
           <div style="font-size:11px;color:var(--ink4);margin-top:1px">${x.note}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
@@ -1665,8 +1699,33 @@ async function rRemind(){
   });
   h+=`</div>`;
 
+  // 自動扣款區
+  if(autoItems.length){
+    h+=`<div class="sl" style="margin-top:18px;margin-bottom:6px"><h4>🔄 本月自動扣款</h4><span class="sm">${autoItems.length} 筆 · 合計 ${$m(autoTotal)} · 純資訊備忘</span></div>`;
+    h+=`<div class="card" style="opacity:.85">
+      <div class="fg-head" style="border-left:3px solid ${CAT_META['工具'].color}">
+        <span style="font-size:14px">${CAT_META['工具'].icon}</span>
+        <span class="fg-nm">工具訂閱</span>
+        <span class="fg-pct" style="color:var(--ink4);font-size:11px;font-weight:500">信用卡自動扣，無需動作</span>
+        <span class="fg-total">${$m(autoTotal)}</span>
+      </div>`;
+    autoItems.forEach(x=>{
+      h+=`<div style="padding:9px 14px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div style="min-width:0;flex:1">
+          <div style="font-size:13px;font-weight:500;color:var(--ink2)">${x.name}</div>
+          <div style="font-size:11px;color:var(--ink4);margin-top:1px">${x.note}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink2)">${$m(x.amount)}</div>
+          <div style="font-size:10px;color:var(--ink4);margin-top:1px">${x.payer}</div>
+        </div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
   h+=`<div style="font-size:11px;color:var(--ink4);margin-top:8px;padding:8px 12px;background:var(--paper2);border-radius:var(--r5)">
-    💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。標示「待確認」的項目請告知 Claude 補上正確金額。
+    💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。「待確認」的項目（營業稅/停車費/會計費）請告知 Claude 補上正確金額。設計師薪水自動讀取「同仁_設計師月費」當月加總。
   </div>`;
 
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
