@@ -1512,6 +1512,7 @@ async function rRemind(){
     else mPending+=x.amount;
   });
   const mAuto = autoItems.reduce((s,x)=>s+x.amount, 0);
+  const monthlyTotal = mPaid + mPending + mAuto;  // 給後段「本月支出小計」用
 
   h+=`<div class="sl" style="margin-top:20px"><h4>📅 每月固定應付清單</h4><span class="sm">${curMonth}月 / 待付 ${$m(mPending)} · 自動扣 ${$m(mAuto)}</span></div>`;
 
