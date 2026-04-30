@@ -1492,12 +1492,22 @@ async function rRemind(){
   };
 
   // 讀月付狀態紀錄（從 sheet）— 篩切換後的月份
+  // 防呆：sheet A 欄可能被自動解析為日期物件，回來變 ISO 字串，需要正規化
+  const normalizeYM = (val) => {
+    if(!val) return '';
+    const s = String(val);
+    if(/^\d{4}-\d{2}$/.test(s)) return s;           // 純字串 "2026-04"
+    if(/^\d{4}-\d{2}-/.test(s)) return s.substring(0,7);  // ISO "2026-04-01T..."
+    const d = new Date(s);
+    if(!isNaN(d.getTime())) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    return s;
+  };
   const monthStatusData = await gs('月付狀態紀錄').catch(()=>[]);
   const monthStatus = {};  // {itemName: {paid:bool, paidDate:str, sheetRow:int}}
   monthStatusData.slice(1).forEach((r,i)=>{
     if(!r||!r[0])return;
-    if(String(r[0])!==viewYM)return;
-    monthStatus[String(r[1]||'')] = {
+    if(normalizeYM(r[0])!==viewYM)return;
+    monthStatus[String(r[1]||'').trim()] = {
       paid: String(r[2]||'').includes('已付'),
       paidDate: r[3]||'',
       sheetRow: i+2
@@ -2218,13 +2228,25 @@ async function toggleMonthlyPaid(itemName, markPaid){
   })();
   cdel('月付狀態紀錄');
   
+  // 防呆：sheet A 欄可能被自動解析為日期，正規化成 YYYY-MM
+  const normalizeYM = (val) => {
+    if(!val) return '';
+    const s = String(val);
+    if(/^\d{4}-\d{2}$/.test(s)) return s;
+    if(/^\d{4}-\d{2}-/.test(s)) return s.substring(0,7);
+    const d = new Date(s);
+    if(!isNaN(d.getTime())) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    return s;
+  };
+  
   try{
     // 找該月該項目是否已存在 row
     const data=await gs('月付狀態紀錄').catch(()=>[]);
     let foundRow=null;
+    const targetName = itemName.trim();
     for(let i=1;i<data.length;i++){
       const r=data[i];
-      if(r&&String(r[0])===ym&&String(r[1]||'')===itemName){
+      if(r && normalizeYM(r[0])===ym && String(r[1]||'').trim()===targetName){
         foundRow=i+1;
         break;
       }
