@@ -396,6 +396,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
       <div class="ns adm-section">公司帳務</div>
       <div class="ni adm-only" data-k="fixed" onclick="go(this)"><div class="d"></div>公司固定成本</div>
+      <div class="ni adm-only" data-k="tax" onclick="go(this)"><div class="d"></div>稅務費用</div>
       <div class="ni adm-only" data-k="advances" onclick="go(this)"><div class="d"></div>老闆代墊款</div>
       <div class="ni adm-only" data-k="staff" onclick="go(this)"><div class="d"></div>同仁填寫紀錄</div>
     </nav>
@@ -560,7 +561,7 @@ const CACHE_MS = 8 * 60 * 1000;
 
 const PROJ = {'1_海保署海洋友善':'海洋友善行銷','2_海保署月曆':'海保署月曆','3_冠球共編曆':'冠球共編曆','4_冠球利百代':'冠球利百代','5_冠球SEO':'冠球SEO顧問','6_冠球小型':'冠球小型'};
 const PKS = Object.keys(PROJ);
-const PNS = {db:'儀表板',remind:'本月結帳提醒',vendors:'廠商清單',fixed:'公司固定成本',advances:'老闆代墊款',staff:'同仁填寫紀錄',...Object.fromEntries(Object.entries(PROJ))};
+const PNS = {db:'儀表板',remind:'本月結帳提醒',vendors:'廠商清單',fixed:'公司固定成本',tax:'稅務費用',advances:'老闆代墊款',staff:'同仁填寫紀錄',...Object.fromEntries(Object.entries(PROJ))};
 
 let cur='db', role=null;
 const T0=new Date(); T0.setHours(0,0,0,0);
@@ -672,7 +673,7 @@ function $st(s,row,sheet){
 
 // ═══ NAV ══════════════════════════════════
 function go(el){
-  if(role==='staff'&&['fixed','advances'].includes(el.dataset.k))return;
+  if(role==='staff'&&['fixed','tax','advances'].includes(el.dataset.k))return;
   cur=el.dataset.k;
   document.querySelectorAll('.ni').forEach(i=>i.classList.remove('on'));
   el.classList.add('on');
@@ -693,6 +694,7 @@ async function render(){
     else if(cur==='remind')await rRemind();
     else if(cur==='vendors')await rVendors();
     else if(cur==='fixed')await rFixed();
+    else if(cur==='tax')await rTax();
     else if(cur==='advances')await rAdvances();
     else if(cur==='staff')await rStaffRecords();
     else await rProj(cur);
@@ -1388,6 +1390,131 @@ async function rAdvances(){
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
+// ═══ TAX（稅務費用 read-only 展示頁）═══════════
+async function rTax(){
+  document.getElementById('advBtn').style.display='none';
+  cdel('稅務費用');
+  const taxData = await gs('稅務費用').catch(()=>[]);
+
+  // 解析（schema 同 rRemind）
+  const businessRows = []; // 營業稅
+  const accountingRows = []; // 會計費
+  for(let i=5; i<Math.min(taxData.length, 12); i++){
+    const r = taxData[i];
+    if(!r || !r[0]) continue;
+    const a = String(r[0]);
+    if(a.includes('合計') || a.includes('▌')) break;
+    if(!a.includes('年')) continue;
+    businessRows.push({period:a, dueDate:r[1]||'', sales:r[2]||0, amount:r[3]||0, paidDate:r[4]||'', method:r[5]||'', status:r[6]||'', note:r[7]||''});
+  }
+  for(let i=15; i<taxData.length; i++){
+    const r = taxData[i];
+    if(!r || !r[0]) continue;
+    const a = String(r[0]).trim();
+    if(a.includes('合計') || a.includes('▌') || a.includes('總計')) break;
+    if(!/^\d{4}$/.test(a)) continue;
+    accountingRows.push({year:a, item:r[1]||'', amount:r[2]||0, paidDate:r[3]||'', method:r[4]||'', status:r[5]||'', note:r[6]||''});
+  }
+
+  const curYear = new Date().getFullYear();
+  const _toInt = v => parseInt(String(v||'').replace(/[^0-9.-]/g,'')) || 0;
+
+  // 年度合計（用 dueDate 所在年判斷營業稅；用 paidDate / year 判斷會計費）
+  const yearBusinessTotal = businessRows.reduce((s,r)=>{
+    const d = new Date(r.dueDate);
+    if(isNaN(d.getTime())) return s;
+    return d.getFullYear()===curYear ? s + _toInt(r.amount) : s;
+  }, 0);
+  const yearAccountingTotal = accountingRows.reduce((s,r)=>{
+    return parseInt(r.year)===curYear ? s + _toInt(r.amount) : s;
+  }, 0);
+  const yearTotal = yearBusinessTotal + yearAccountingTotal;
+
+  // 已繳/待繳 統計
+  const businessPaid = businessRows.filter(r => String(r.status||'').includes('已繳')||String(r.status||'').includes('已付')).length;
+  const businessPending = businessRows.length - businessPaid;
+
+  let h = '';
+
+  // KPI
+  h += `<div class="kpi-row cols3">
+    <div class="kc"><div class="kl">${curYear} 年度 營業稅</div><div class="kv">${$m(yearBusinessTotal)}</div><div class="ks">已繳 ${businessPaid} / ${businessRows.length} 期</div></div>
+    <div class="kc"><div class="kl">${curYear} 年度 會計代辦費</div><div class="kv">${$m(yearAccountingTotal)}</div><div class="ks">${accountingRows.filter(r=>parseInt(r.year)===curYear).length>0?'已建立':'尚未建立'}</div></div>
+    <div class="kc yl"><div class="kl">${curYear} 年度 稅務費用合計</div><div class="kv">${$m(yearTotal)}</div><div class="ks">不計入每月固定成本</div></div>
+  </div>`;
+
+  // 提示
+  h += `<div class="al bl">ℹ️ 此頁為唯讀顯示。需要編輯（填銷售額、填應繳稅額、改狀態）請打開 <a href="https://docs.google.com/spreadsheets/d/1IsAhNuj7nLI4fKNECnVzW6p-dW_C9Lcr0ZxyAN9iNic/edit" target="_blank" style="color:var(--bl);text-decoration:underline;font-weight:700">Google Sheet 「稅務費用」分頁</a> 直接改。改完回來這裡按 ↻ 重整。</div>`;
+
+  // 區塊 1：營業稅
+  h += `<div class="card"><div class="ch"><h3>📋 營業稅申報紀錄</h3><span class="meta">雙月申報 · 每年 6 次</span></div>
+    <div class="tw"><table class="pay-table" style="table-layout:auto"><thead><tr>
+      <th>申報期間</th><th>申報截止日</th><th style="text-align:right">銷售額</th><th style="text-align:right">應繳稅額</th><th>付款日期</th><th>付款方式</th><th>狀態</th><th>備註</th>
+    </tr></thead><tbody>`;
+  if(businessRows.length===0){
+    h += `<tr><td colspan="8" style="text-align:center;color:var(--ink4);padding:24px">稅務 sheet 沒有資料</td></tr>`;
+  }else{
+    businessRows.forEach(r=>{
+      const stTrim = String(r.status||'').trim();
+      const isPaid = stTrim.includes('已繳')||stTrim.includes('已付');
+      const isWait = stTrim.includes('待');
+      const stChip = isPaid ? `<span class="chip pd">${stTrim}</span>` : isWait ? `<span class="chip pn">${stTrim}</span>` : `<span class="chip qt">${stTrim||'—'}</span>`;
+      const amt = _toInt(r.amount);
+      const sal = _toInt(r.sales);
+      h += `<tr>
+        <td style="font-weight:600">${r.period}</td>
+        <td class="dt">${$d(r.dueDate)}</td>
+        <td class="num" style="color:${sal>0?'var(--ink2)':'var(--ink4)'}">${sal>0?$m(sal):'—'}</td>
+        <td class="num" style="color:${amt>0?'var(--ink)':'var(--am)'};font-weight:700">${amt>0?$m(amt):'<span style="color:var(--am)">待填</span>'}</td>
+        <td class="dt">${r.paidDate?$d(r.paidDate):'—'}</td>
+        <td style="font-size:12px;color:var(--ink3)">${r.method||'—'}</td>
+        <td>${stChip}</td>
+        <td style="font-size:12px;color:var(--ink4)">${r.note||''}</td>
+      </tr>`;
+    });
+    h += `<tr><td colspan="3" style="text-align:right;font-weight:700">${curYear} 年度合計</td><td class="num" style="font-weight:700;color:var(--ink)">${$m(yearBusinessTotal)}</td><td colspan="4" style="color:var(--ink4);font-size:12px">＊ 申報後請於 sheet 填入實際稅額</td></tr>`;
+  }
+  h += `</tbody></table></div></div>`;
+
+  // 區塊 2：會計代辦費
+  h += `<div class="card"><div class="ch"><h3>📋 冠融會計代辦費</h3><span class="meta">年繳 · 不列入每月固定成本</span></div>
+    <div class="tw"><table class="pay-table" style="table-layout:auto"><thead><tr>
+      <th>年度</th><th>服務項目</th><th style="text-align:right">金額</th><th>付款日期</th><th>付款方式</th><th>狀態</th><th>備註</th>
+    </tr></thead><tbody>`;
+  if(accountingRows.length===0){
+    h += `<tr><td colspan="7" style="text-align:center;color:var(--ink4);padding:24px">稅務 sheet 沒有資料</td></tr>`;
+  }else{
+    accountingRows.forEach(r=>{
+      const stTrim = String(r.status||'').trim();
+      const isPaid = stTrim.includes('已繳')||stTrim.includes('已付');
+      const stChip = isPaid ? `<span class="chip pd">${stTrim}</span>` : `<span class="chip pn">${stTrim||'⏳待繳'}</span>`;
+      const amt = _toInt(r.amount);
+      h += `<tr>
+        <td style="font-weight:700">${r.year}</td>
+        <td>${r.item||'—'}</td>
+        <td class="num" style="font-weight:700">${$m(amt)}</td>
+        <td class="dt">${r.paidDate?$d(r.paidDate):'—'}</td>
+        <td style="font-size:12px;color:var(--ink3)">${r.method||'—'}</td>
+        <td>${stChip}</td>
+        <td style="font-size:12px;color:var(--ink4)">${r.note||''}</td>
+      </tr>`;
+    });
+    h += `<tr><td colspan="2" style="text-align:right;font-weight:700">${curYear} 年度合計</td><td class="num" style="font-weight:700;color:var(--ink)">${$m(yearAccountingTotal)}</td><td colspan="4"></td></tr>`;
+  }
+  h += `</tbody></table></div>`;
+
+  // 連動說明
+  h += `<div style="font-size:12px;color:var(--ink4);margin-top:14px;padding:10px 14px;background:var(--paper2);border-radius:var(--r5);line-height:1.7">
+    <div style="font-weight:700;color:var(--ink2);margin-bottom:4px">🔗 與月付清單的連動</div>
+    <div>• 營業稅項目只在「申報截止日」當月出現在月付清單（例：3-4 月期截止日 5/15 → 5 月顯示）</div>
+    <div>• 會計費項目只在「付款日期」當月出現在月付清單</div>
+    <div>• 月付清單的金額/狀態以稅務 sheet 為準，不能在月付清單編輯（chip 不可點）</div>
+    <div>• 若 sheet 未填金額，月付清單會顯示「待確認 → 稅務頁」連結</div>
+  </div>`;
+
+  document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
+}
+
 // ═══ STAFF RECORDS（同仁填寫紀錄）═════════
 async function rStaffRecords(){
   document.getElementById('advBtn').style.display='none';
@@ -1512,9 +1639,9 @@ async function rRemind(){
     // ─── 政府 / 法定（不同頻率）───
     {cat:'政府', name:'勞保+就業保險（Renn）', amount:3969, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, note:'每月繳款書到再付'},
     {cat:'政府', name:'健保（Renn）', amount:1428, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, note:'每月繳款書到再付'},
-    {cat:'政府', name:'營業稅', amount:0, payer:'公司', freq:'bimonthly', months:[1,3,5,7,9,11], dueDay:15, autoDebit:false, note:'雙月 15 號前申報（金額待確認）'},
+    {cat:'政府', name:'營業稅', amount:0, payer:'公司', freq:'bimonthly', dynamic:'tax_business', dueDay:15, autoDebit:false, note:'雙月 15 號前申報（金額讀稅務頁）'},
     {cat:'政府', name:'停車費', amount:0, payer:'公司', freq:'quarterly', months:[1,4,7,10], dueDay:null, autoDebit:false, note:'每季一次（金額待確認）'},
-    {cat:'政府', name:'會計費', amount:0, payer:'公司', freq:'yearly', months:[3], dueDay:null, autoDebit:false, note:'年繳（月份與金額待確認）'},
+    {cat:'政府', name:'會計費', amount:0, payer:'公司', freq:'yearly', dynamic:'tax_accounting', dueDay:null, autoDebit:false, note:'年繳（金額讀稅務頁）'},
 
     // ─── 自動扣款（純資訊，不顯示 chip）───
     {cat:'工具', name:'Google Workspace', amount:550, payer:'老闆代墊', freq:'monthly', autoDebit:true, note:'信用卡自動扣'},
@@ -1523,8 +1650,63 @@ async function rRemind(){
     {cat:'工具', name:'Seameet', amount:320, payer:'老闆代墊', freq:'monthly', autoDebit:true, note:'信用卡自動扣'},
   ];
 
+  // ─── normalizeYM helper（給整個 rRemind 用，提前定義）───
+  // 防呆：sheet A 欄可能被自動解析為日期物件，回來變 ISO 字串，需要正規化
+  const normalizeYM = (val) => {
+    if(!val) return '';
+    const s = String(val);
+    if(/^\d{4}-\d{2}$/.test(s)) return s;
+    if(/^\d{4}-\d{2}-/.test(s)) return s.substring(0,7);
+    const d = new Date(s);
+    if(!isNaN(d.getTime())) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    return s;
+  };
+
+  // ─── 讀稅務費用 sheet（給 dynamic:'tax_*' 項目用）───
+  // schema:
+  //   Row 5: 表頭 / Row 6-11: 營業稅資料（A 含「年」字樣）/ Row 12: 合計
+  //   Row 15: 表頭 / Row 16+: 會計代辦費資料（A 是 4 位數年度）/ 後續一行: 合計
+  // 強制重撈，使用者剛在 sheet 填了金額要立即反映
+  cdel('稅務費用');
+  const taxData = await gs('稅務費用').catch(()=>[]);
+  const taxBusinessRows = []; // {period, dueDate, sales, amount, paidDate, method, status, note, sheetRow}
+  const taxAccountingRows = []; // {year, item, amount, paidDate, method, status, note, sheetRow}
+  // 營業稅：sheet row 6-11（陣列 index 5-10）
+  for(let i=5; i<Math.min(taxData.length, 12); i++){
+    const r = taxData[i];
+    if(!r || !r[0]) continue;
+    const a = String(r[0]);
+    if(a.includes('合計') || a.includes('▌')) break;
+    if(!a.includes('年')) continue;
+    taxBusinessRows.push({period:a, dueDate:r[1]||'', sales:r[2]||0, amount:r[3]||0, paidDate:r[4]||'', method:r[5]||'', status:r[6]||'', note:r[7]||'', sheetRow:i+1});
+  }
+  // 會計代辦費：sheet row 16+（陣列 index 15+），A 欄是 4 位數年度
+  for(let i=15; i<taxData.length; i++){
+    const r = taxData[i];
+    if(!r || !r[0]) continue;
+    const a = String(r[0]).trim();
+    if(a.includes('合計') || a.includes('▌') || a.includes('總計')) break;
+    if(!/^\d{4}$/.test(a)) continue;
+    taxAccountingRows.push({year:a, item:r[1]||'', amount:r[2]||0, paidDate:r[3]||'', method:r[4]||'', status:r[5]||'', note:r[6]||'', sheetRow:i+1});
+  }
+
   // 篩本月該出現的項目（雙月/季/年付只在指定月份出現）— 用切換後的月份
+  // dynamic:'tax_*' 改用稅務 sheet 動態判斷（只在 sheet 對應月份有資料時才顯示）
   const isItemThisMonth = (it) => {
+    if(it.dynamic === 'tax_business'){
+      return taxBusinessRows.some(r => {
+        if(!r.dueDate) return false;
+        const d = new Date(r.dueDate);
+        if(isNaN(d.getTime())) return false;
+        return d.getFullYear() === viewYear && (d.getMonth()+1) === viewMonthNum;
+      });
+    }
+    if(it.dynamic === 'tax_accounting'){
+      return taxAccountingRows.some(r => {
+        if(!r.paidDate) return false;
+        return normalizeYM(r.paidDate) === viewYM;
+      });
+    }
     if(it.freq === 'monthly') return true;
     if(['bimonthly','quarterly','yearly'].includes(it.freq)) return (it.months||[]).includes(viewMonthNum);
     return false;
@@ -1541,16 +1723,6 @@ async function rRemind(){
   };
 
   // 讀月付狀態紀錄（從 sheet）— 篩切換後的月份
-  // 防呆：sheet A 欄可能被自動解析為日期物件，回來變 ISO 字串，需要正規化
-  const normalizeYM = (val) => {
-    if(!val) return '';
-    const s = String(val);
-    if(/^\d{4}-\d{2}$/.test(s)) return s;           // 純字串 "2026-04"
-    if(/^\d{4}-\d{2}-/.test(s)) return s.substring(0,7);  // ISO "2026-04-01T..."
-    const d = new Date(s);
-    if(!isNaN(d.getTime())) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    return s;
-  };
   const monthStatusData = await gs('月付狀態紀錄').catch(()=>[]);
   const monthStatus = {};  // {itemName: {paid:bool, paidDate:str, sheetRow:int}}
   monthStatusData.slice(1).forEach((r,i)=>{
@@ -1572,6 +1744,36 @@ async function rRemind(){
     .reduce((s, r) => s + (parseInt(r[4])||0), 0);
   MONTHLY_FIXED.forEach(x => {
     if(x.dynamic === 'designer') x.amount = designerDynamic;
+    if(x.dynamic === 'tax_business'){
+      const found = taxBusinessRows.find(r => {
+        if(!r.dueDate) return false;
+        const d = new Date(r.dueDate);
+        if(isNaN(d.getTime())) return false;
+        return d.getFullYear() === viewYear && (d.getMonth()+1) === viewMonthNum;
+      });
+      if(found){
+        x.amount = parseInt(String(found.amount).replace(/[^0-9.-]/g,'')) || 0;
+        const stTrim = String(found.status||'').trim();
+        x.note = `${found.period} · ${$d(found.dueDate)} 截止${stTrim?' · '+stTrim:''}`;
+        x._taxReadOnly = true;
+        x._taxIsPaid = stTrim.includes('已繳') || stTrim.includes('已付');
+        x._taxStatusLabel = stTrim || '⏳待申報';
+      }
+    }
+    if(x.dynamic === 'tax_accounting'){
+      const found = taxAccountingRows.find(r => {
+        if(!r.paidDate) return false;
+        return normalizeYM(r.paidDate) === viewYM;
+      });
+      if(found){
+        x.amount = parseInt(String(found.amount).replace(/[^0-9.-]/g,'')) || 0;
+        const stTrim = String(found.status||'').trim();
+        x.note = `${found.year}年度 · ${found.item}${stTrim?' · '+stTrim:''}`;
+        x._taxReadOnly = true;
+        x._taxIsPaid = stTrim.includes('已繳') || stTrim.includes('已付');
+        x._taxStatusLabel = stTrim || '⏳待付';
+      }
+    }
   });
 
   // 拆兩塊：手動轉帳 vs 自動扣款
@@ -1581,7 +1783,9 @@ async function rRemind(){
   // 計算（只計算手動轉帳那塊的 paid/pending）
   let mPaid=0, mPending=0;
   manualItems.forEach(x=>{
-    if(monthStatus[x.name]?.paid) mPaid+=x.amount;
+    // 稅務項目：以稅務 sheet 狀態為準；其他項目：看月付狀態紀錄
+    const isPaid = x._taxReadOnly ? !!x._taxIsPaid : !!monthStatus[x.name]?.paid;
+    if(isPaid) mPaid+=x.amount;
     else mPending+=x.amount;
   });
   const mAuto = autoItems.reduce((s,x)=>s+x.amount, 0);
@@ -1603,9 +1807,12 @@ async function rRemind(){
   }
 
   // KPI 三欄：本月已付 / 本月待付 / 自動扣款
+  // 統一判斷項目是否已付（稅務看 _taxIsPaid，其他看 monthStatus）
+  const _itemPaid = (x) => x._taxReadOnly ? !!x._taxIsPaid : !!monthStatus[x.name]?.paid;
+
   h+=`<div class="kpi-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
-    <div class="kc gr"><div class="kl">${isCurrentMonth?'本月':viewMonthNum+'月'}已付</div><div class="kv">${$m(mPaid)}</div><div class="ks">${manualItems.filter(x=>monthStatus[x.name]?.paid).length} 項手動</div></div>
-    <div class="kc yl"><div class="kl">${isCurrentMonth?'本月':viewMonthNum+'月'}待付</div><div class="kv">${$m(mPending)}</div><div class="ks">${manualItems.filter(x=>!monthStatus[x.name]?.paid).length} 項手動</div></div>
+    <div class="kc gr"><div class="kl">${isCurrentMonth?'本月':viewMonthNum+'月'}已付</div><div class="kv">${$m(mPaid)}</div><div class="ks">${manualItems.filter(_itemPaid).length} 項手動</div></div>
+    <div class="kc yl"><div class="kl">${isCurrentMonth?'本月':viewMonthNum+'月'}待付</div><div class="kv">${$m(mPending)}</div><div class="ks">${manualItems.filter(x=>!_itemPaid(x)).length} 項手動</div></div>
     <div class="kc"><div class="kl">自動扣款</div><div class="kv">${$m(mAuto)}</div><div class="ks">${autoItems.length} 項信用卡</div></div>
   </div>`;
 
@@ -1623,7 +1830,7 @@ async function rRemind(){
     if(!items.length) return;
     const catTotal = items.reduce((s,x)=>s+x.amount,0);
     const meta = CAT_META[cat];
-    const paidCnt = items.filter(x=>monthStatus[x.name]?.paid).length;
+    const paidCnt = items.filter(_itemPaid).length;
     h+=`<div class="card">
       <div class="fg-head" style="border-left:3px solid ${meta.color}">
         <span style="font-size:14px">${meta.icon}</span>
@@ -1633,21 +1840,35 @@ async function rRemind(){
       </div>`;
     items.forEach(x=>{
       const isPlaceholder = x.amount===0;
+      const isTaxReadOnly = !!x._taxReadOnly;
       const st = monthStatus[x.name];
-      const isPaid = st?.paid;
+      // 稅務項目以稅務 sheet 狀態為準；其他項目用月付狀態紀錄
+      const isPaid = isTaxReadOnly ? !!x._taxIsPaid : st?.paid;
       // 頻率 badge（雙月/季/年）
       const freqBadge = x.freq==='bimonthly'?'雙月':x.freq==='quarterly'?'每季':x.freq==='yearly'?'每年':'';
+      // chip / 提示
+      let chipHtml = '';
+      if(isPlaceholder){
+        // 金額還沒填
+        if(isTaxReadOnly){
+          chipHtml = `<span class="chip pn" onclick="go(document.querySelector('[data-k=tax]'))" style="cursor:pointer;user-select:none;min-width:60px;text-align:center" title="去稅務頁填金額">→ 稅務頁</span>`;
+        }
+      }else if(isTaxReadOnly){
+        chipHtml = `<span class="chip ${isPaid?'pd':'pn'}" onclick="go(document.querySelector('[data-k=tax]'))" style="cursor:pointer;user-select:none;min-width:60px;text-align:center" title="編輯請去稅務頁">${x._taxStatusLabel||(isPaid?'✅已繳':'⏳待繳')}</span>`;
+      }else{
+        chipHtml = `<span class="chip ${isPaid?'pd':'pn'}" onclick="toggleMonthlyPaid('${x.name.replace(/'/g,"\\'")}',${isPaid?0:1})" style="cursor:pointer;user-select:none;min-width:60px;text-align:center" title="點擊切換">${isPaid?'✅已付':'⏳待付'}</span>`;
+      }
       h+=`<div style="padding:9px 14px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;justify-content:space-between;gap:10px;${isPaid?'opacity:.6':''}">
         <div style="min-width:0;flex:1">
           <div style="font-size:13px;font-weight:600;color:var(--ink);${isPaid?'text-decoration:line-through':''}">${x.name}${freqBadge?`<span style="font-size:10px;color:#92400E;background:#FEF3C7;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:500">${freqBadge}</span>`:''}</div>
-          <div style="font-size:11px;color:var(--ink4);margin-top:1px">${x.note}${isPaid&&st.paidDate?' · 已付 '+$d(st.paidDate):''}</div>
+          <div style="font-size:11px;color:var(--ink4);margin-top:1px">${x.note}${isPaid&&!isTaxReadOnly&&st?.paidDate?' · 已付 '+$d(st.paidDate):''}</div>
         </div>
         <div style="text-align:right;flex-shrink:0;display:flex;align-items:center;gap:8px">
           <div style="text-align:right">
             <div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>
             <div style="font-size:10px;color:var(--ink4);margin-top:1px">${x.payer}</div>
           </div>
-          ${isPlaceholder?'':`<span class="chip ${isPaid?'pd':'pn'}" onclick="toggleMonthlyPaid('${x.name.replace(/'/g,"\\'")}',${isPaid?0:1})" style="cursor:pointer;user-select:none;min-width:60px;text-align:center" title="點擊切換">${isPaid?'✅已付':'⏳待付'}</span>`}
+          ${chipHtml}
         </div>
       </div>`;
     });
@@ -1681,7 +1902,7 @@ async function rRemind(){
   }
 
   h+=`<div style="font-size:11px;color:var(--ink4);margin-top:8px;padding:8px 12px;background:var(--paper2);border-radius:var(--r5)">
-    💡 點 chip 切換已付/待付。轉帳證明截圖請存到 Drive，這裡只記錄已付日期。「待確認」的項目（營業稅/停車費/會計費）請告知 Claude 補上正確金額。設計師薪水自動讀取「同仁_設計師月費」當月加總。
+    💡 點 chip 切換已付/待付。轉帳證明截圖請存到 Drive，這裡只記錄已付日期。營業稅/會計費的金額讀「📊 稅務費用」頁，需編輯請去 Google Sheet 改。停車費金額待確認時請告知 Claude。設計師薪水自動讀取「同仁_設計師月費」當月加總。
   </div>`;
 
   // === 同仁本月填寫支付（讀 3 個同仁 sheet）===
