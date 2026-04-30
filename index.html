@@ -1333,6 +1333,58 @@ async function rAdvances(){
     h+=`</div>`;
   }
   
+  // ━━━ 從專案付款記錄帶出（付款人=老闆代墊） ━━━━━━━━━━━━
+  const projAdvData = await Promise.all(PKS.map(k=>gs(k+'_付款帳').catch(()=>[])));
+  const projAdv = [];
+  projAdvData.forEach((d, idx) => {
+    const projKey = PKS[idx];
+    d.slice(5).forEach((r) => {
+      if(!r || !$valid(r)) return;
+      if(String(r[5]||'').trim() !== '老闆代墊') return;
+      projAdv.push({
+        date: r[0],
+        proj: projKey,
+        projName: PROJ[projKey] || projKey,
+        vendor: r[2]||'',
+        desc: r[3]||'',
+        amount: parseInt(r[4])||0,
+        status: r[7]||''
+      });
+    });
+  });
+  const projAdvTotalAll = projAdv.reduce((s,x)=>s+x.amount, 0);
+  const projAdvPending = projAdv.filter(x => !String(x.status||'').includes('已付'));
+  const projAdvDone = projAdv.filter(x => String(x.status||'').includes('已付'));
+  const projAdvTotalPending = projAdvPending.reduce((s,x)=>s+x.amount, 0);
+  
+  if(projAdv.length){
+    // 排序：日期新到舊
+    projAdv.sort((a, b) => String(b.date||'').localeCompare(String(a.date||'')));
+    
+    h+=`<div class="card" style="margin-top:18px">
+      <div class="ch">
+        <h3>📂 從專案付款記錄帶出</h3>
+        <span class="meta">${projAdv.length} 筆 · 合計 ${$m(projAdvTotalAll)} · 待付 ${$m(projAdvTotalPending)}</span>
+      </div>
+      <div class="al bl" style="margin:0;border-radius:0;font-size:11.5px;line-height:1.5">💡 此區自動聚合各專案付款記錄裡「付款人=老闆代墊」的款項（信用卡只能你刷的）。<b>read-only</b>，要修改請點「→」回該專案頁。狀態跟付款進度由各專案管。</div>
+      <div class="tw"><table>
+        <thead><tr><th>日期</th><th>專案</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>狀態</th><th style="width:36px"></th></tr></thead>
+        <tbody>`;
+    projAdv.forEach(x => {
+      const isPaid = String(x.status||'').includes('已付');
+      h+=`<tr style="${isPaid?'opacity:.55':''}">
+        <td class="dt">${$d(x.date)}</td>
+        <td style="font-size:12px;color:var(--ink4)">${x.projName}</td>
+        <td style="font-size:13px">${x.vendor}</td>
+        <td style="font-size:12px;color:var(--ink4)">${x.desc}</td>
+        <td class="num">${$m(x.amount)}</td>
+        <td><span class="chip ${isPaid?'pd':'pn'}" style="font-size:10px;cursor:default" title="狀態由專案頁管理">${isPaid?'✅已付':'⏳待付'}</span></td>
+        <td style="text-align:center"><button class="row-edit" onclick="goToProject('${x.proj}')" title="跳到 ${x.projName}">→</button></td>
+      </tr>`;
+    });
+    h+=`</tbody></table></div></div>`;
+  }
+  
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
@@ -1455,10 +1507,7 @@ async function rRemind(){
     {cat:'薪資', name:'專案PM薪水（Renn 鄭琇仁）', amount:29800, payer:'公司', freq:'monthly', dueDay:8, autoDebit:false, note:'每月8號前'},
     {cat:'薪資', name:'設計師薪水（兼職）', amount:0, payer:'公司', freq:'monthly', dueDay:8, autoDebit:false, dynamic:'designer', note:'每月8號前 · 動態讀同仁_設計師月費當月加總'},
 
-    // ─── 每月外包稿費 ───
-    {cat:'SEO', name:'Wonda 存在日曆 SEO 稿費', amount:4000, payer:'公司', freq:'monthly', dueDay:10, autoDebit:false, note:'每月 2 篇 × NT$2,000'},
-    {cat:'SEO', name:'Wonda 包裝研究所 SEO 稿費', amount:4000, payer:'公司', freq:'monthly', dueDay:10, autoDebit:false, note:'每月 2 篇 × NT$2,000'},
-    {cat:'社群', name:'Amy 小編 社群發文', amount:20000, payer:'公司', freq:'monthly', dueDay:10, autoDebit:false, note:'每月固定支付'},
+    // 注：Wonda SEO + Amy 社群已移除，改在各專案的付款記錄表追蹤
 
     // ─── 政府 / 法定（不同頻率）───
     {cat:'政府', name:'勞保+就業保險（Renn）', amount:3969, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, note:'每月繳款書到再付'},
@@ -1515,9 +1564,11 @@ async function rRemind(){
   });
 
   // 動態：讀同仁_設計師月費當月加總，套到 dynamic:'designer' 的項目 — 用切換後的月份
+  // 強制重撈避免 cache 殘留舊資料（同仁剛填的金額要立即反映）
+  cdel('同仁_設計師月費');
   const designerData = await gs('同仁_設計師月費').catch(()=>[]);
   const designerDynamic = designerData.slice(1)
-    .filter(r => r && String(r[2]||'').startsWith(viewYM))
+    .filter(r => r && normalizeYM(r[2]) === viewYM)
     .reduce((s, r) => s + (parseInt(r[4])||0), 0);
   MONTHLY_FIXED.forEach(x => {
     if(x.dynamic === 'designer') x.amount = designerDynamic;
@@ -2218,6 +2269,12 @@ async function submitAdvance(){
 function changeMonthView(ym){
   window._monthlyViewYM = ym;
   render();
+}
+
+// ═══ 跳到指定專案頁（給代墊聚合的 → 按鈕用）═══
+function goToProject(key){
+  const el = document.querySelector(`[data-k="${key}"]`);
+  if(el) el.click();
 }
 
 // ═══ 月付清單 切換狀態（Renn薪水/Amy/工具等固定項目）═══
