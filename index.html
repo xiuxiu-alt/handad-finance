@@ -865,12 +865,17 @@ async function rProj(key){
     for(let i=0;i<ov.length;i++){
       if(String(ov[i]?.[0]||'').includes('執行項目')&&ov[i]?.[1])budgetStart=i+1;
       if(budgetStart>0&&String(ov[i]?.[0]||'').includes('合計')&&i>budgetStart){budgetEnd=i;break;}
+      // v30.2 修：遇到下一個區塊標題（▌開頭，例如「▌客戶收款進度」）也要停
+      if(budgetStart>0&&String(ov[i]?.[0]||'').includes('▌')&&i>budgetStart){budgetEnd=i;break;}
     }
     if(budgetStart>0){
       for(let i=budgetStart;i<(budgetEnd>0?budgetEnd:ov.length);i++){
         const r=ov[i];
         if(!r||!r[0]||String(r[0]).includes('(請')||String(r[0]).trim()==='')continue;
-        budgetRows.push({nm:String(r[0]),budget:parseInt(r[1])||0,actual:parseInt(r[2])||0,remain:parseInt(r[3])||0,st:String(r[4]||''),rowNum:i+1});
+        // v30.2 防呆：不能把客戶收款相關列當執行項目
+        const a=String(r[0]);
+        if(a.includes('▌')||a.includes('客戶收款')||a.includes('期數')||a.includes('第一期')||a.includes('第二期')||a.includes('尾款'))continue;
+        budgetRows.push({nm:a,budget:parseInt(r[1])||0,actual:parseInt(r[2])||0,remain:parseInt(r[3])||0,st:String(r[4]||''),rowNum:i+1});
       }
     }
     // 前端重算 actual：從付款記錄的備註欄 [執行:項目名稱] 累計
