@@ -128,7 +128,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── CARD ─── */
 .card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(17,17,16,.04),0 0 0 0 rgba(17,17,16,0);transition:box-shadow .2s;}
 .card:hover{box-shadow:0 2px 8px rgba(17,17,16,.06);}
-.ch{padding:14px 18px;border-bottom:2px solid var(--paper3);display:flex;align-items:center;justify-content:space-between;background:#F5F2E8;}
+.ch{padding:14px 18px;border-bottom:2px solid #6B6553;display:flex;align-items:center;justify-content:space-between;background:#C9C5B5;color:var(--ink);}
 .ch h3{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.015em;}
 .ch .meta{font-size:12px;color:var(--ink3);font-weight:500;}
 
@@ -154,7 +154,7 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 /* ── TABLES ─── */
 .tw{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
-th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);background:#E8E4D5;border-bottom:2px solid var(--ink4);white-space:nowrap;}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink);background:#B8B4A4;border-bottom:2px solid #4D4738;white-space:nowrap;}
 td{padding:9px 12px;font-size:14px;border-bottom:1px solid var(--paper2);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(246,195,28,.04);}
@@ -233,14 +233,14 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-num{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;font-size:14px;}
 .br-num.pos{color:var(--gr);}
 .br-num.neg{color:var(--re);}
-.br-head{background:#E8E4D5;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--ink4);}
+.br-head{background:#B8B4A4;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink);padding-top:11px;padding-bottom:11px;border-bottom:2px solid #4D4738;}
 .br-row:last-child{border-bottom:none;}
 .br-edit{display:flex;gap:4px;}
 
 /* ── GROUP HEADERS（可摺疊分組） ─── */
-.rr-group-head{display:flex;align-items:center;gap:10px;padding:11px 16px;background:linear-gradient(to right,rgba(255,201,25,.12),rgba(255,201,25,.04));border-bottom:1px solid var(--paper3);cursor:pointer;user-select:none;transition:background .15s;}
-.rr-group-head:hover{background:linear-gradient(to right,rgba(255,201,25,.18),rgba(255,201,25,.06));}
-.rr-group-head.collapsed{background:var(--paper2);}
+.rr-group-head{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#E8E4D5;border-bottom:1px solid #8C8676;cursor:pointer;user-select:none;transition:background .15s;}
+.rr-group-head:hover{background:#DBD6C4;}
+.rr-group-head.collapsed{background:#D4D0C0;}
 .rr-gh-arrow{font-size:10px;color:var(--ink3);width:14px;display:inline-block;}
 .rr-gh-icon{font-size:14px;}
 .rr-gh-name{font-size:14px;font-weight:700;color:var(--ink);}
@@ -249,7 +249,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* ── RECEIPT ROWS ─── */
 .rr-head,.rr-row{display:grid;grid-template-columns:1fr 110px 110px 110px 90px 60px 40px;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--paper2);}
-.rr-head{background:#E8E4D5;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink2);padding-top:11px;padding-bottom:11px;border-bottom:2px solid var(--ink4);}
+.rr-head{background:#B8B4A4;font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--ink);padding-top:11px;padding-bottom:11px;border-bottom:2px solid #4D4738;}
 /* 客戶收款進度 zebra stripe（加深反差） */
 .rr-row:nth-child(even){background:rgba(255,201,25,.08);}
 .rr-row:last-child{border-bottom:none;}
@@ -260,7 +260,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .br-row:hover{background:rgba(255,201,25,.16);}
 
 /* ── FIXED COST GROUPS ─── */
-.fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:#F5F2E8;border-bottom:2px solid var(--paper3);}
+.fg-head{display:flex;align-items:center;gap:10px;padding:13px 16px;background:#C9C5B5;border-bottom:2px solid #6B6553;}
 .fg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 2px var(--paper);}
 .fg-nm{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.01em;}
 .fg-pct{font-size:11px;color:var(--ink4);background:var(--paper2);padding:2px 8px;border-radius:10px;font-weight:600;}
@@ -450,6 +450,11 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
         <div class="fp"><label class="fl">報價單連結</label><input type="url" class="fi" id="p8" placeholder="https://drive.google.com/..."></div>
         <div class="fp"><label class="fl">轉帳證明連結</label><input type="url" class="fi" id="p11"></div>
         <div class="fp full"><label class="fl">備註</label><input type="text" class="fi" id="p9" placeholder="選填"></div>
+        <div class="fp full" id="p-exec-wrap" style="background:rgba(255,201,25,.08);border:1px solid rgba(255,201,25,.3);border-radius:var(--r5);padding:10px 12px;margin-top:4px;display:none">
+          <label class="fl" style="color:#A16800">🎯 對應執行項目（可複選，會扣到「執行預算追蹤」）</label>
+          <div id="p-exec-list" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:200px;overflow-y:auto"></div>
+          <div style="font-size:11px;color:var(--ink4);margin-top:6px">不選 = 雜支（不扣預算項目）</div>
+        </div>
         <div class="fp full" id="p-expand-wrap" style="background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.2);border-radius:var(--r5);padding:10px 12px;margin-top:4px">
           <label class="fl" style="color:#6D28D9">📅 自動分期展開（適合月費／分期付款）</label>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px">
@@ -757,6 +762,42 @@ async function rProj(key){
         budgetRows.push({nm:String(r[0]),budget:parseInt(r[1])||0,actual:parseInt(r[2])||0,remain:parseInt(r[3])||0,st:String(r[4]||''),rowNum:i+1});
       }
     }
+    // 前端重算 actual：從付款記錄的備註欄 [執行:項目名稱] 累計
+    // 採「已承諾」概念：已付 + 待付都算（金額已確定）；待估價/待報價不算（金額未確定）
+    if(budgetRows.length>0&&rows&&rows.length>0){
+      const execMap={};  // 項目名稱 → {paid: 已付金額, pending: 待付金額}
+      rows.forEach(r=>{
+        const status=String(r[7]||'');
+        // 只跳過待估價/待報價（金額未確定）
+        if(status.includes('待估價')||status.includes('待報價'))return;
+        const amount=parseInt(r[4])||0;
+        if(amount<=0)return;
+        const tags=getExecTagsFromNote(r[8]);
+        if(tags.length===0)return;  // 沒標籤的算雜支
+        const share=amount/tags.length;
+        const isPaid=status.includes('已付');
+        tags.forEach(t=>{
+          if(!execMap[t])execMap[t]={paid:0,pending:0};
+          if(isPaid)execMap[t].paid+=share;
+          else execMap[t].pending+=share;
+        });
+      });
+      budgetRows.forEach(b=>{
+        if(execMap[b.nm]!==undefined){
+          const m=execMap[b.nm];
+          b.paid=Math.round(m.paid);
+          b.pending=Math.round(m.pending);
+          b.actual=b.paid+b.pending;  // 已承諾 = 已付 + 待付
+          b.remain=b.budget-b.actual;
+          if(b.actual>b.budget)b.st='🔴 超支';
+          else if(b.actual===b.budget)b.st='✅ 用罄';
+          else if(b.paid>0&&b.pending>0)b.st='💰 進行中';
+          else if(b.paid>0)b.st='💰 進行中';
+          else if(b.pending>0)b.st='⏳ 待付款';
+          else b.st='💰 尚有結餘';
+        }
+      });
+    }
     // Receipt rows
     let rcStart=-1;
     for(let i=0;i<ov.length;i++){
@@ -889,23 +930,28 @@ async function rProj(key){
     const pct=$p(totA,totB);
     h+=`<div class="card"><div class="ch"><h3>執行預算追蹤</h3>
       <div style="display:flex;align-items:center;gap:10px">
-        <span class="meta">已使用 ${$m(totA)} / ${$m(totB)} (${pct}%)</span>
+        <span class="meta">已承諾 ${$m(totA)} / ${$m(totB)} (${pct}%)</span>
         ${role==='admin'?`<button class="btn btn-o btn-sm" onclick="showAddBudget('${key}',${budgetRows.length>0?budgetRows[budgetRows.length-1].rowNum+1:14})">+ 新增項目</button>`:''}
       </div></div>
     <div style="padding:6px 14px 10px;border-bottom:1px solid var(--paper3)">
       <div style="display:flex;align-items:center;gap:6px"><div style="flex:1"><div class="prog"><div class="prog-fill ${$pf(pct)}" style="width:${pct}%"></div></div></div><span style="font-size:12px;color:var(--ink4)">${pct}%</span></div>
     </div>
-    <div class="br-head"><span>執行項目</span><span style="text-align:right">預算</span><span style="text-align:right">已支出</span><span style="text-align:right">剩餘</span><span style="text-align:right">使用率</span><span>狀態</span></div>`;
+    <div class="br-head"><span>執行項目</span><span style="text-align:right">預算</span><span style="text-align:right">已承諾<span style="font-weight:400;font-size:10px">（已付+待付）</span></span><span style="text-align:right">剩餘</span><span style="text-align:right">使用率</span><span>狀態</span></div>`;
     budgetRows.forEach(r=>{
       const rp=$p(r.actual,r.budget);
-      const stc=r.st.includes('超支')?'od':r.st.includes('用罄')?'pd':r.st.includes('結餘')?'pn':'qt';
+      const stc=r.st.includes('超支')?'od':r.st.includes('用罄')?'pd':r.st.includes('結餘')?'pn':r.st.includes('待付款')?'pn':'qt';
+      const paidPart=r.paid||0;
+      const pendingPart=r.pending||0;
+      const showSplit=paidPart>0&&pendingPart>0;
       h+=`<div class="br-row" id="br-${r.rowNum}">
         <span class="br-nm" title="${r.nm}">
           <span class="br-nm-text">${r.nm}</span>
           ${role==='admin'?`<button class="br-edit-btn" onclick="editBudgetRow('${key}',${r.rowNum},'${r.nm.replace(/'/g,"\\'")}',${r.budget})" title="編輯">✏️</button>`:''}
         </span>
         <span class="br-num">${$m(r.budget)}</span>
-        <span class="br-num pos">${$m(r.actual)}</span>
+        <span class="br-num pos" title="${showSplit?`已付 ${$m(paidPart)} ＋ 待付 ${$m(pendingPart)}`:''}">
+          ${$m(r.actual)}${showSplit?`<div style="font-size:10px;color:var(--ink4);font-weight:400;margin-top:2px">已付 ${$m(paidPart)} ⏳ ${$m(pendingPart)}</div>`:pendingPart>0?`<div style="font-size:10px;color:var(--am);font-weight:400;margin-top:2px">⏳ 全為待付</div>`:''}
+        </span>
         <span class="br-num ${r.remain<0?'neg':''}">${$m(r.remain)}</span>
         <span style="text-align:right"><div style="display:flex;align-items:center;gap:5px;justify-content:flex-end"><div style="width:50px"><div class="prog"><div class="prog-fill ${$pf(rp)}" style="width:${Math.min(100,rp)}%"></div></div></div><span style="font-size:11px;color:var(--ink4);width:32px;text-align:right">${rp}%</span></div></span>
         <span><span class="chip ${stc}" style="font-size:11px">${r.st}</span></span>
@@ -1155,9 +1201,22 @@ async function rFixed(){
 async function rAdvances(){
   document.getElementById('advBtn').style.display='';
   const data=await gs('老闆代墊款彙整');
-  const rows=data.slice(5).filter(r=>r[0]&&String(r[0])!=='0'&&r[3]);
-  const pend=rows.filter(r=>!String(r[6]||'').includes('已還清'));
-  const done=rows.filter(r=>String(r[6]||'').includes('已還清'));
+  // 過濾：r[0] 必須是日期、r[3] 必須有金額、且 r[0] 不是合計列（含「總計」「合計」字樣的跳過）
+  const rows=data.slice(5).filter(r=>{
+    if(!r[0]||String(r[0])==='0'||!r[3])return false;
+    const c0=String(r[0]);
+    if(c0.includes('總計')||c0.includes('合計')||c0.includes('尚未'))return false;
+    return true;
+  });
+  // 自動判定狀態：r[5] 有還款日 OR r[6] 含「已還清」 = 已還清
+  rows.forEach(r=>{
+    const hasReturnDate=r[5]&&String(r[5]).trim()&&String(r[5])!=='0';
+    const stMarked=String(r[6]||'').includes('已還清');
+    r._isPaid=hasReturnDate||stMarked;
+  });
+  
+  const pend=rows.filter(r=>!r._isPaid);
+  const done=rows.filter(r=>r._isPaid);
   const tPend=pend.reduce((s,r)=>s+(parseInt(r[3])||0),0);
   const tDone=done.reduce((s,r)=>s+(parseInt(r[3])||0),0);
   
@@ -1168,13 +1227,68 @@ async function rAdvances(){
   </div>`;
   if(tPend>0)h+=`<div class="al am">💳 公司尚欠老闆 ${$m(tPend)}，共 ${pend.length} 筆待還清</div>`;
 
-  h+=`<div class="card"><div class="ch"><h3>代墊明細</h3><span class="meta">${rows.length} 筆</span></div>
-  <div class="tw"><table><thead><tr><th>日期</th><th>來源</th><th>說明</th><th style="text-align:right">金額</th><th>付款方式</th><th>還款日</th><th>狀態</th></tr></thead><tbody>`;
-  rows.forEach(r=>{
-    const ip=String(r[6]||'').includes('已還清');
-    h+=`<tr class="${ip?'':'rds'}"><td class="dt">${$d(r[0])}</td><td style="font-size:12px;color:var(--ink4)">${r[1]||''}</td><td style="font-size:13px">${r[2]||''}</td><td class="num">${$m(r[3])}</td><td style="font-size:12px;color:var(--ink4)">${r[4]||''}</td><td class="dt">${$d(r[5])}</td><td><span class="chip ${ip?'pd':'pn'}">${r[6]||'—'}</span></td></tr>`;
-  });
-  h+=`</tbody></table></div></div>`;
+  // 依月份分組（取 r[0] 日期的 YYYY-MM）
+  const groupByMonth=(list)=>{
+    const m={};
+    list.forEach(r=>{
+      const d=String(r[0]||'');
+      const match=d.match(/(\d{4})[-/](\d{1,2})/);
+      const key=match?`${match[1]}/${match[2].padStart(2,'0')}`:'其他';
+      if(!m[key])m[key]=[];
+      m[key].push(r);
+    });
+    return m;
+  };
+  
+  const renderRow=(r)=>{
+    const ip=r._isPaid;
+    return `<tr class="${ip?'':'rds'}"><td class="dt">${$d(r[0])}</td><td style="font-size:12px;color:var(--ink4)">${r[1]||''}</td><td style="font-size:13px">${r[2]||''}</td><td class="num">${$m(r[3])}</td><td style="font-size:12px;color:var(--ink4)">${r[4]||''}</td><td class="dt">${$d(r[5])}</td><td><span class="chip ${ip?'pd':'pn'}">${ip?'✅已還清':'⏳待還'}</span></td></tr>`;
+  };
+  
+  // 待還區（按月分組，預設展開）
+  if(pend.length>0){
+    const groups=groupByMonth(pend);
+    const months=Object.keys(groups).sort().reverse();
+    h+=`<div class="card"><div class="ch"><h3>⏳ 待還款明細</h3><span class="meta">${pend.length} 筆 · ${$m(tPend)}</span></div>`;
+    months.forEach((m,idx)=>{
+      const list=groups[m];
+      const total=list.reduce((s,r)=>s+(parseInt(r[3])||0),0);
+      const gid=`adv-pend-${idx}`;
+      h+=`<div class="rr-group-head" onclick="toggleGroup('${gid}')">
+        <span class="rr-gh-arrow" id="${gid}-arrow">▼</span>
+        <span class="rr-gh-name">${m}</span>
+        <span class="rr-gh-count">${list.length} 筆</span>
+        <span class="rr-gh-total" style="color:var(--am)">${$m(total)}</span>
+      </div>
+      <div id="${gid}-body"><div class="tw"><table><thead><tr><th>日期</th><th>來源</th><th>說明</th><th style="text-align:right">金額</th><th>付款方式</th><th>還款日</th><th>狀態</th></tr></thead><tbody>`;
+      list.forEach(r=>h+=renderRow(r));
+      h+=`</tbody></table></div></div>`;
+    });
+    h+=`</div>`;
+  }
+  
+  // 已還清區（按月分組，預設折疊）
+  if(done.length>0){
+    const groups=groupByMonth(done);
+    const months=Object.keys(groups).sort().reverse();
+    h+=`<div class="card"><div class="ch"><h3>✅ 已還清明細</h3><span class="meta">${done.length} 筆 · ${$m(tDone)}</span></div>`;
+    months.forEach((m,idx)=>{
+      const list=groups[m];
+      const total=list.reduce((s,r)=>s+(parseInt(r[3])||0),0);
+      const gid=`adv-done-${idx}`;
+      h+=`<div class="rr-group-head collapsed" onclick="toggleGroup('${gid}')">
+        <span class="rr-gh-arrow" id="${gid}-arrow">▶</span>
+        <span class="rr-gh-name">${m}</span>
+        <span class="rr-gh-count">${list.length} 筆</span>
+        <span class="rr-gh-total" style="color:var(--gr)">${$m(total)}</span>
+      </div>
+      <div id="${gid}-body" style="display:none"><div class="tw"><table><thead><tr><th>日期</th><th>來源</th><th>說明</th><th style="text-align:right">金額</th><th>付款方式</th><th>還款日</th><th>狀態</th></tr></thead><tbody>`;
+      list.forEach(r=>h+=renderRow(r));
+      h+=`</tbody></table></div></div>`;
+    });
+    h+=`</div>`;
+  }
+  
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
 
@@ -1379,6 +1493,8 @@ function openModal(type){
     const expEl=document.getElementById('p-expand'); if(expEl)expEl.value='1';
     const expN=document.getElementById('p-expand-n'); if(expN){expN.value='';expN.style.display='none';}
     const expPrev=document.getElementById('p-expand-preview'); if(expPrev)expPrev.style.display='none';
+    // 載入當前專案的執行項目（給多選）
+    loadExecItems(null);
   } else {
     document.getElementById('a0').value=new Date().toISOString().split('T')[0];
     ['a1','a2','a3','a5','a7'].forEach(id=>document.getElementById(id).value='');
@@ -1415,7 +1531,11 @@ function editPayRow(idx){
     else if(stRaw.includes('待付'))stEl.value='⏳待付';
   }
   setVal('p8',r[9]); // 報價單連結 (col J = idx 9)
-  setVal('p9',r[8]); // 備註 (col I = idx 8)
+  // 備註 (col I = idx 8)：拆出執行項目標籤
+  const rawNote=String(r[8]||'');
+  const execTags=getExecTagsFromNote(rawNote);
+  const cleanNote=rawNote.replace(/\s*\[執行:[^\]]+\]\s*/,'').trim();
+  setVal('p9',cleanNote);
   setVal('p10',toDateInput(r[10]));
   setVal('p11',r[11]);
   document.querySelector('#ov-pay .mh h3').textContent='編輯付款記錄';
@@ -1423,6 +1543,8 @@ function editPayRow(idx){
   document.getElementById('payDelBtn').style.display='inline-flex';
   // 編輯模式：隱藏分期欄位（編輯不能分期）
   const expWrap=document.getElementById('p-expand-wrap'); if(expWrap)expWrap.style.display='none';
+  // 載入執行項目並把已勾選的還原
+  loadExecItems(execTags);
   document.getElementById('ov-pay').classList.add('on');
 }
 
@@ -1591,7 +1713,10 @@ async function submitPay(){
   const baseAmount=parseInt(document.getElementById('p4').value)||0;
   const baseDeadline=document.getElementById('p10').value;
   const baseStatus=document.getElementById('p7').value || '⏳待付';
-  const buildRow=(date,desc,deadline,status)=>[date,document.getElementById('p1').value,document.getElementById('p2').value,desc,baseAmount,document.getElementById('p5').value,document.getElementById('p6').value,(status||'⏳待付'),document.getElementById('p9').value,document.getElementById('p8').value,deadline,document.getElementById('p11').value];
+  // 把勾選的執行項目編碼進備註欄
+  const execTags=getSelectedExecTags();
+  const baseNote=setExecTagsToNote(document.getElementById('p9').value,execTags);
+  const buildRow=(date,desc,deadline,status)=>[date,document.getElementById('p1').value,document.getElementById('p2').value,desc,baseAmount,document.getElementById('p5').value,document.getElementById('p6').value,(status||'⏳待付'),baseNote,document.getElementById('p8').value,deadline,document.getElementById('p11').value];
   cdel(sheet);
   try{
     if(_editingPayIdx!=null){
@@ -1660,6 +1785,74 @@ function exportCSV(){
 
 // ═══ TOAST ════════════════════════════════
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2800);}
+
+// ═══ EXEC ITEMS（執行項目對應）═══════════
+// 從備註欄解析「[執行:項目名稱; 項目名稱]」標籤，回傳項目名稱陣列
+function getExecTagsFromNote(note){
+  if(!note)return[];
+  const m=String(note).match(/\[執行:([^\]]+)\]/);
+  if(!m)return[];
+  return m[1].split(';').map(s=>s.trim()).filter(Boolean);
+}
+// 把執行項目陣列編碼回備註欄（保留使用者其他文字）
+function setExecTagsToNote(note,tags){
+  const cleanedNote=String(note||'').replace(/\s*\[執行:[^\]]+\]\s*/,'').trim();
+  if(!tags||tags.length===0)return cleanedNote;
+  const tag=`[執行:${tags.join('; ')}]`;
+  return cleanedNote?`${cleanedNote} ${tag}`:tag;
+}
+// 動態載入當前專案的執行項目，渲染成多選 checkbox 清單
+async function loadExecItems(preselectedTags){
+  const wrap=document.getElementById('p-exec-wrap');
+  const list=document.getElementById('p-exec-list');
+  if(!wrap||!list)return;
+  // 只有專案頁才顯示這個欄位
+  if(!PKS.includes(cur)){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  list.innerHTML='<div style="font-size:12px;color:var(--ink4)">載入中...</div>';
+  try{
+    const data=await gs(cur+'_總覽');
+    // 抓取執行項目區（A 欄含「執行項目」字樣的下方至「執行預算合計」之前）
+    let startIdx=-1, endIdx=-1;
+    for(let i=0;i<data.length;i++){
+      const c0=String(data[i][0]||'');
+      if(c0.includes('執行項目')&&!c0.includes('追蹤')){startIdx=i+1;}
+      if(startIdx>0&&c0.includes('執行預算合計')){endIdx=i;break;}
+    }
+    if(startIdx<0||endIdx<0){
+      list.innerHTML='<div style="font-size:12px;color:var(--ink4)">此專案尚未設定執行項目</div>';
+      return;
+    }
+    const items=[];
+    for(let i=startIdx;i<endIdx;i++){
+      const name=String(data[i][0]||'').trim();
+      const budget=parseInt(data[i][1])||0;
+      const used=parseInt(data[i][2])||0;
+      if(!name||name.includes('(請新增'))continue;
+      items.push({name,budget,used,remaining:budget-used});
+    }
+    if(items.length===0){
+      list.innerHTML='<div style="font-size:12px;color:var(--ink4)">此專案尚未設定執行項目</div>';
+      return;
+    }
+    const pre=preselectedTags||[];
+    list.innerHTML=items.map(it=>{
+      const checked=pre.includes(it.name)?'checked':'';
+      const remColor=it.remaining<=0?'var(--re)':it.remaining<it.budget*0.2?'var(--am)':'var(--ink4)';
+      return `<label style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:var(--paper);border-radius:var(--r3);cursor:pointer;border:1px solid var(--paper3);font-size:13px">
+        <input type="checkbox" class="p-exec-cb" value="${it.name.replace(/"/g,'&quot;')}" ${checked} style="width:16px;height:16px;cursor:pointer">
+        <span style="flex:1;font-weight:600">${it.name}</span>
+        <span style="font-size:11px;color:${remColor}">餘 ${$m(it.remaining)}</span>
+      </label>`;
+    }).join('');
+  }catch(e){
+    list.innerHTML='<div style="font-size:12px;color:var(--re)">載入執行項目失敗</div>';
+  }
+}
+// 從目前勾選的 checkbox 拿到選中的執行項目名稱
+function getSelectedExecTags(){
+  return Array.from(document.querySelectorAll('.p-exec-cb:checked')).map(cb=>cb.value);
+}
 
 // 摺疊分組（收款進度、付款記錄）
 function toggleGroup(id){
