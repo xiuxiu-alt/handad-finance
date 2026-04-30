@@ -557,7 +557,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 // ═══ CONFIG ═══════════════════════════════
 const ADMINS = ['xiuxiu@handad.com.tw'];
 const GAS = 'https://script.google.com/macros/s/AKfycbzZtlWYD6xGbDsundR3hYxRoofMle1gHeToNp7WNqlGysGIa5DciZOcwhuNnxf5a3MO/exec';
-const CACHE_MS = 8 * 60 * 1000;
+// CACHE_MS 已移除，由 FRESH_MS / MAX_STALE_MS 取代（見 cache 區塊）
 
 const PROJ = {'1_海保署海洋友善':'海洋友善行銷','2_海保署月曆':'海保署月曆','3_冠球共編曆':'冠球共編曆','4_冠球利百代':'冠球利百代','5_冠球SEO':'冠球SEO顧問','6_冠球小型':'冠球小型'};
 const PKS = Object.keys(PROJ);
@@ -570,6 +570,19 @@ const T0=new Date(); T0.setHours(0,0,0,0);
 netlifyIdentity.on('init',u=>u?boot(u):netlifyIdentity.open());
 netlifyIdentity.on('login',u=>{netlifyIdentity.close();boot(u);});
 netlifyIdentity.on('logout',()=>{document.getElementById('app').classList.remove('on');netlifyIdentity.open();});
+
+// 無痕視窗 / cookie 受限環境的 splash fallback：
+// 8 秒後若 boot 還沒呼叫，強制隱藏 splash 讓使用者至少看到登入 modal
+setTimeout(() => {
+  const s = document.getElementById('splash');
+  if(s && !s.classList.contains('out')){
+    console.warn('[splash] timeout fallback fired — Netlify Identity 可能在無痕模式被擋');
+    s.classList.add('out');
+    setTimeout(() => s.style.display = 'none', 380);
+    // 再強制觸發登入 modal（如果還沒）
+    try{ netlifyIdentity.open(); }catch(e){}
+  }
+}, 8000);
 
 function boot(u){
   role=ADMINS.includes(u.email)?'admin':'staff';
@@ -585,31 +598,87 @@ function boot(u){
   app.classList.add('on');
   render();
   // 背景預載所有專案資料（不阻塞 UI），讓使用者點專案時秒開
+  // v30: 延遲拉長到 5 秒，避免跟首頁渲染搶 GAS quota；間隔 600ms 錯開請求
   setTimeout(()=>{
     PKS.forEach((k,i)=>{
-      // 錯開時間避免一次打 12 個 request
       setTimeout(()=>{
         gs(k+'_總覽').catch(()=>{});
         gs(k+'_付款帳').catch(()=>{});
-      }, i*400);
+      }, i*600);
     });
-  }, 1500);
+  }, 5000);
 }
 
-// ═══ CACHE ════════════════════════════════
-function cget(k){try{const x=JSON.parse(sessionStorage.getItem('hf_'+k));if(x&&Date.now()-x.t<CACHE_MS)return x.d;}catch(e){}return null;}
-function cset(k,d){try{sessionStorage.setItem('hf_'+k,JSON.stringify({t:Date.now(),d}));}catch(e){}}
-function cdel(k){try{sessionStorage.removeItem('hf_'+k);}catch(e){}}
+// ═══ CACHE (v30: localStorage + Stale-While-Revalidate) ══════
+// fresh: < 30 分鐘 → 直接用
+// stale: 30 分鐘 ~ 24 小時 → 先用舊 cache 立即顯示，背景重打 API 更新
+// dead:  > 24 小時 → 跳過 cache，等 API
+const FRESH_MS = 30 * 60 * 1000;          // 30 分鐘
+const MAX_STALE_MS = 24 * 60 * 60 * 1000; // 24 小時上限
 
-// ═══ FETCH ════════════════════════════════
+// 取出整包 cache（含 timestamp），讓 gs() 自己判斷新舊
+function _cgetRaw(k){
+  try{
+    const x = JSON.parse(localStorage.getItem('hf_'+k));
+    if(!x || typeof x.t !== 'number') return null;
+    return x;
+  }catch(e){ return null; }
+}
+function cget(k){
+  const x = _cgetRaw(k);
+  if(x && Date.now()-x.t < FRESH_MS) return x.d; // 只在 fresh 時回傳（給未改寫成 SWR 的舊 caller 用）
+  return null;
+}
+function cset(k,d){
+  try{ localStorage.setItem('hf_'+k, JSON.stringify({t:Date.now(), d})); }catch(e){}
+}
+function cdel(k){
+  try{ localStorage.removeItem('hf_'+k); }catch(e){}
+}
+
+// ═══ FETCH (v30: SWR + in-flight dedup) ══════
+const _inflight = new Map(); // 同個 sheet 同時呼叫多次，只打一次 API
+
+async function _fetchSheet(name){
+  const r = await fetch(GAS+'?sheetName='+encodeURIComponent(name));
+  const j = await r.json();
+  if(j.error) throw new Error(j.error);
+  const data = j.data || [];
+  cset(name, data);
+  return data;
+}
+
+function _refreshInBackground(name){
+  // 背景靜默更新 cache，不影響當前 UI
+  if(_inflight.has(name)) return;
+  const p = _fetchSheet(name)
+    .catch(e => console.warn('[bg refresh fail]', name, e.message))
+    .finally(() => _inflight.delete(name));
+  _inflight.set(name, p);
+}
+
 async function gs(name){
-  const c=cget(name); if(c)return c;
-  const r=await fetch(GAS+'?sheetName='+encodeURIComponent(name));
-  const j=await r.json();
-  if(j.error)throw new Error(j.error);
-  cset(name,j.data||[]);
-  return j.data||[];
+  const cached = _cgetRaw(name);
+  if(cached){
+    const age = Date.now() - cached.t;
+    if(age < FRESH_MS){
+      // fresh → 直接用
+      return cached.d;
+    }
+    if(age < MAX_STALE_MS){
+      // stale → 先回傳舊資料，背景更新（下次切回來就是新的）
+      _refreshInBackground(name);
+      return cached.d;
+    }
+    // dead → 走下面的 fresh fetch
+  }
+  // 沒 cache 或太舊：等 API（同個 sheet 同時多次呼叫只打一次）
+  if(_inflight.has(name)) return _inflight.get(name);
+  const p = _fetchSheet(name).finally(() => _inflight.delete(name));
+  _inflight.set(name, p);
+  return p;
 }
+
 async function post(body){
   const r=await fetch(GAS,{method:'POST',body:JSON.stringify(body)});
   const j=await r.json();
