@@ -129,10 +129,9 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 .card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(17,17,16,.04),0 0 0 0 rgba(17,17,16,0);transition:box-shadow .2s;}
 .card:hover{box-shadow:0 2px 8px rgba(17,17,16,.06);}
 .ch{padding:14px 18px;border-bottom:2px solid #1a1816;display:flex;align-items:center;justify-content:space-between;background:#2D2926;color:#FAF8F2;}
-.ch h3{color:#FAF8F2;}
-.ch .meta{color:#C9C5B5;}
-.ch h3{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.015em;}
-.ch .meta{font-size:12px;color:var(--ink3);font-weight:500;}
+.ch h3{font-size:16px;font-weight:700;color:#FAF8F2;letter-spacing:-.015em;}
+.ch .meta{font-size:12px;color:#C9C5B5;font-weight:500;}
+.ch button.btn{color:var(--ink);}
 
 /* 區段大標：更明顯的視覺層次（用於頁面分區，如「每月固定應付清單」） */
 .sl{display:flex;align-items:center;gap:10px;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink);}
@@ -834,8 +833,8 @@ async function rProj(key){
   const _showReceipt = receiptRows.length>0;
 
 
-  // 成本結構
-  if(projTotal>0||costItems.length>0){
+  // 成本結構（staff 看不到員工人事成本/老闆策略成本/毛利這些）
+  if((projTotal>0||costItems.length>0) && role!=='staff'){
     h+=`<div class="card"><div class="ch"><h3>成本結構</h3><span class="meta">專案總金額 ${$m(projTotal)}</span></div>
     <div class="cost-list">
       <div class="ci total">
