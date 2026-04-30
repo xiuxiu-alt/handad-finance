@@ -567,19 +567,27 @@ let cur='db', role=null;
 const T0=new Date(); T0.setHours(0,0,0,0);
 
 // ═══ IDENTITY ════════════════════════════
-netlifyIdentity.on('init',u=>u?boot(u):netlifyIdentity.open());
-netlifyIdentity.on('login',u=>{netlifyIdentity.close();boot(u);});
-netlifyIdentity.on('logout',()=>{document.getElementById('app').classList.remove('on');netlifyIdentity.open();});
+// 沒登入時要立即隱藏 splash，否則 z-index:9999 會蓋住 Netlify 登入彈窗
+function _hideSplash(){
+  const s = document.getElementById('splash');
+  if(s && !s.classList.contains('out')){
+    s.classList.add('out');
+    setTimeout(() => s.style.display = 'none', 380);
+  }
+}
+netlifyIdentity.on('init', u => {
+  if(u) boot(u);
+  else { _hideSplash(); netlifyIdentity.open(); }
+});
+netlifyIdentity.on('login', u => { netlifyIdentity.close(); boot(u); });
+netlifyIdentity.on('logout', () => { document.getElementById('app').classList.remove('on'); netlifyIdentity.open(); });
 
-// 無痕視窗 / cookie 受限環境的 splash fallback：
-// 8 秒後若 boot 還沒呼叫，強制隱藏 splash 讓使用者至少看到登入 modal
+// 終極 fallback：8 秒後若 splash 還沒消失（表示 Netlify Identity widget 完全沒回應），強制隱藏
 setTimeout(() => {
   const s = document.getElementById('splash');
   if(s && !s.classList.contains('out')){
-    console.warn('[splash] timeout fallback fired — Netlify Identity 可能在無痕模式被擋');
-    s.classList.add('out');
-    setTimeout(() => s.style.display = 'none', 380);
-    // 再強制觸發登入 modal（如果還沒）
+    console.warn('[splash] timeout fallback fired — Netlify Identity widget 沒有回應');
+    _hideSplash();
     try{ netlifyIdentity.open(); }catch(e){}
   }
 }, 8000);
