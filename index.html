@@ -148,6 +148,16 @@ table.pay-table th.cb-th input{cursor:pointer;}
 .ch h3{font-size:16px;font-weight:700;color:#FAF8F2;letter-spacing:-.015em;}
 .ch .meta{font-size:12px;color:#C9C5B5;font-weight:500;}
 .ch button.btn{color:var(--ink);}
+/* v30.1: 深色 .ch header 內的 btn-o 要用淺色文字才看得到 */
+.ch button.btn-o{background:transparent;color:#FAF8F2;border-color:rgba(250,248,242,.4);}
+.ch button.btn-o:hover{background:rgba(250,248,242,.12);border-color:rgba(250,248,242,.7);}
+
+/* v30.1: 狀態下拉選單（取代 chip toggle，點一下即選即寫，UI 立即更新）*/
+.st-select{font-size:11px;font-weight:700;padding:3px 22px 3px 10px;border-radius:12px;border:1px solid transparent;cursor:pointer;font-family:inherit;outline:none;line-height:1.4;letter-spacing:.02em;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:7px;}
+.st-select:hover{filter:brightness(.96);}
+.st-select.pd{background-color:#D1FAE5;color:#065F46;border-color:#A7F3D0;}
+.st-select.pn{background-color:#FEF3C7;color:#92400E;border-color:#FDE68A;}
+.st-select:disabled{opacity:.5;cursor:not-allowed;}
 
 /* 區段大標：更明顯的視覺層次（用於頁面分區，如「每月固定應付清單」） */
 .sl{display:flex;align-items:center;gap:10px;margin:28px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink);}
@@ -1360,7 +1370,10 @@ async function rAdvances(){
       <td class="num">${$m(r[3])}</td>
       <td style="font-size:12px;color:var(--ink4)">${r[4]||''}</td>
       <td class="dt">${$d(r[5])}</td>
-      <td><span class="chip ${ip?'pd':'pn'}" onclick="toggleAdvanceStatus(${sr},${ip?0:1})" style="cursor:pointer;user-select:none" title="點擊切換狀態">${ip?'✅已還清':'⏳待還'}</span></td>
+      <td><select class="st-select ${ip?'pd':'pn'}" onchange="setAdvanceStatus(${sr}, this.value, this)" title="切換狀態，自動寫入 sheet">
+        <option value="0" ${!ip?'selected':''}>⏳ 待還</option>
+        <option value="1" ${ip?'selected':''}>✅ 已還清</option>
+      </select></td>
       <td style="text-align:center"><button class="row-edit" onclick="editAdvanceRow(${sr})" title="編輯">✏️</button></td>
       <td style="text-align:center"><button class="row-edit" onclick="deleteAdvanceRow(${sr})" title="刪除" style="color:var(--re)">🗑️</button></td>
     </tr>`;
@@ -1947,7 +1960,10 @@ async function rRemind(){
       }else if(isTaxReadOnly){
         chipHtml = `<span class="chip ${isPaid?'pd':'pn'}" onclick="go(document.querySelector('[data-k=tax]'))" style="cursor:pointer;user-select:none;min-width:60px;text-align:center" title="編輯請去稅務頁">${x._taxStatusLabel||(isPaid?'✅已繳':'⏳待繳')}</span>`;
       }else{
-        chipHtml = `<span class="chip ${isPaid?'pd':'pn'}" onclick="toggleMonthlyPaid('${x.name.replace(/'/g,"\\'")}',${isPaid?0:1})" style="cursor:pointer;user-select:none;min-width:60px;text-align:center" title="點擊切換">${isPaid?'✅已付':'⏳待付'}</span>`;
+        chipHtml = `<select class="st-select ${isPaid?'pd':'pn'}" onchange="setMonthlyPaid('${x.name.replace(/'/g,"\\'")}', this.value, this)" title="切換已付/待付，自動寫入">
+          <option value="0" ${!isPaid?'selected':''}>⏳ 待付</option>
+          <option value="1" ${isPaid?'selected':''}>✅ 已付</option>
+        </select>`;
       }
       h+=`<div style="padding:9px 14px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;justify-content:space-between;gap:10px;${isPaid?'opacity:.6':''}">
         <div style="min-width:0;flex:1">
@@ -2665,6 +2681,108 @@ async function toggleAdvanceStatus(sheetRow, markPaid){
     setTimeout(render,500);
   }catch(e){
     toast('⚠️ 切換失敗: '+e.message);
+  }
+}
+
+// v30.1: 下拉選單版（optimistic UI — 點完瞬間變色，背景再寫 sheet）
+async function setAdvanceStatus(sheetRow, val, el){
+  const markPaid = parseInt(val)===1;
+  // 1. UI 立即變色（不等 API）
+  if(el){
+    el.classList.remove('pd','pn');
+    el.classList.add(markPaid?'pd':'pn');
+    el.disabled = true; // 防連點
+  }
+  cdel('老闆代墊款彙整');
+  try{
+    if(markPaid){
+      const today = new Date().toISOString().split('T')[0];
+      await post({action:'updateCell',sheetName:'老闆代墊款彙整',row:sheetRow,col:6,value:today});
+      await post({action:'updateCell',sheetName:'老闆代墊款彙整',row:sheetRow,col:7,value:'✅已還清'});
+    }else{
+      await post({action:'updateCell',sheetName:'老闆代墊款彙整',row:sheetRow,col:6,value:''});
+      await post({action:'updateCell',sheetName:'老闆代墊款彙整',row:sheetRow,col:7,value:'⏳待還清'});
+    }
+    cdel('老闆代墊款彙整');
+    toast(markPaid?'✅ 已還清':'已改回待還');
+    if(el) el.disabled = false;
+    // 800ms 後背景重整 KPI（不會閃爍因為 cache 已更新）
+    setTimeout(render, 800);
+  }catch(e){
+    // rollback UI
+    if(el){
+      el.classList.remove('pd','pn');
+      el.classList.add(markPaid?'pn':'pd');
+      el.value = markPaid?'0':'1';
+      el.disabled = false;
+    }
+    toast('⚠️ 切換失敗: '+e.message);
+  }
+}
+
+// v30.1: 月付清單下拉選單版
+async function setMonthlyPaid(itemName, val, el){
+  const markPaid = parseInt(val)===1;
+  // 1. UI 立即變色
+  if(el){
+    el.classList.remove('pd','pn');
+    el.classList.add(markPaid?'pd':'pn');
+    el.disabled = true;
+  }
+  const ym = window._monthlyViewYM || (() => {
+    const n=new Date();
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;
+  })();
+  cdel('月付狀態紀錄');
+  
+  const normalizeYM = (v) => {
+    if(!v) return '';
+    const s = String(v);
+    if(/^\d{4}-\d{2}$/.test(s)) return s;
+    if(/^\d{4}-\d{2}-/.test(s)) return s.substring(0,7);
+    const d = new Date(s);
+    if(!isNaN(d.getTime())) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    return s;
+  };
+  
+  try{
+    const data = await gs('月付狀態紀錄').catch(()=>[]);
+    let foundRow = null;
+    const targetName = itemName.trim();
+    for(let i=1; i<data.length; i++){
+      const r = data[i];
+      if(r && normalizeYM(r[0])===ym && String(r[1]||'').trim()===targetName){
+        foundRow = i+1;
+        break;
+      }
+    }
+    
+    const n2 = new Date();
+    const today = `${n2.getFullYear()}-${String(n2.getMonth()+1).padStart(2,'0')}-${String(n2.getDate()).padStart(2,'0')}`;
+    const status = markPaid?'✅已付':'⏳待付';
+    const paidDate = markPaid?today:'';
+    
+    if(foundRow){
+      await post({action:'updateCell',sheetName:'月付狀態紀錄',row:foundRow,col:3,value:status});
+      await post({action:'updateCell',sheetName:'月付狀態紀錄',row:foundRow,col:4,value:paidDate});
+    }else{
+      await post({sheetName:'月付狀態紀錄',row:[ym,itemName,status,paidDate,'']});
+    }
+    
+    cdel('月付狀態紀錄');
+    toast(markPaid?'✅ 已付':'已改回待付');
+    if(el) el.disabled = false;
+    setTimeout(render, 800);
+  }catch(e){
+    // rollback UI
+    if(el){
+      el.classList.remove('pd','pn');
+      el.classList.add(markPaid?'pn':'pd');
+      el.value = markPaid?'0':'1';
+      el.disabled = false;
+    }
+    console.error('setMonthlyPaid error:', e);
+    toast('⚠️ 切換失敗: '+(e&&e.message?e.message:'未知錯誤'));
   }
 }
 
