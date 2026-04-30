@@ -1338,11 +1338,15 @@ async function rAdvances(){
   // ━━━ 從專案付款記錄帶出（付款人=老闆代墊） ━━━━━━━━━━━━
   const projAdvData = await Promise.all(PKS.map(k=>gs(k+'_付款帳').catch(()=>[])));
   const projAdv = [];
+  let _scanCount = 0; // 診斷用：總共掃了多少列
   projAdvData.forEach((d, idx) => {
     const projKey = PKS[idx];
     d.slice(5).forEach((r) => {
       if(!r || !$valid(r)) return;
-      if(String(r[5]||'').trim() !== '老闆代墊') return;
+      _scanCount++;
+      // 寬鬆比對：trim + includes 防空白/全形/錯字
+      const payer = String(r[5]||'').trim();
+      if(!payer.includes('老闆代墊')) return;
       projAdv.push({
         date: r[0],
         proj: projKey,
@@ -1354,24 +1358,32 @@ async function rAdvances(){
       });
     });
   });
+  console.log('[老闆代墊聚合] 掃描', _scanCount, '筆有效記錄，找到', projAdv.length, '筆代墊');
   const projAdvTotalAll = projAdv.reduce((s,x)=>s+x.amount, 0);
   const projAdvPending = projAdv.filter(x => !String(x.status||'').includes('已付'));
   const projAdvDone = projAdv.filter(x => String(x.status||'').includes('已付'));
   const projAdvTotalPending = projAdvPending.reduce((s,x)=>s+x.amount, 0);
   
-  if(projAdv.length){
-    // 排序：日期新到舊
-    projAdv.sort((a, b) => String(b.date||'').localeCompare(String(a.date||'')));
-    
-    h+=`<div class="card" style="margin-top:18px">
-      <div class="ch">
-        <h3>📂 從專案付款記錄帶出</h3>
-        <span class="meta">${projAdv.length} 筆 · 合計 ${$m(projAdvTotalAll)} · 待付 ${$m(projAdvTotalPending)}</span>
-      </div>
-      <div class="al bl" style="margin:0;border-radius:0;font-size:11.5px;line-height:1.5">💡 此區自動聚合各專案付款記錄裡「付款人=老闆代墊」的款項（信用卡只能你刷的）。<b>read-only</b>，要修改請點「→」回該專案頁。狀態跟付款進度由各專案管。</div>
-      <div class="tw"><table>
-        <thead><tr><th>日期</th><th>專案</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>狀態</th><th style="width:36px"></th></tr></thead>
-        <tbody>`;
+  // 永遠顯示區塊（即使 0 筆也顯示，避免使用者搞不清楚有沒有跑）
+  // 排序：日期新到舊
+  projAdv.sort((a, b) => String(b.date||'').localeCompare(String(a.date||'')));
+  
+  h+=`<div class="card" style="margin-top:18px">
+    <div class="ch">
+      <h3>📂 從專案付款記錄帶出</h3>
+      <span class="meta">${projAdv.length} 筆 · 合計 ${$m(projAdvTotalAll)} · 待付 ${$m(projAdvTotalPending)}</span>
+    </div>
+    <div class="al bl" style="margin:0;border-radius:0;font-size:11.5px;line-height:1.5">💡 此區自動聚合各專案付款記錄裡「付款人=老闆代墊」的款項（信用卡只能你刷的）。<b>read-only</b>，要修改請點「→」回該專案頁。狀態跟付款進度由各專案管。</div>`;
+  
+  if(projAdv.length === 0){
+    h+=`<div style="padding:24px;text-align:center;color:var(--ink4);font-size:13px">
+      目前沒有從專案帶出的代墊款。<br>
+      <span style="font-size:11px;color:var(--ink4)">已掃描 ${_scanCount} 筆專案付款記錄，篩選條件：付款人欄包含「老闆代墊」</span>
+    </div></div>`;
+  }else{
+    h+=`<div class="tw"><table>
+      <thead><tr><th>日期</th><th>專案</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>狀態</th><th style="width:36px"></th></tr></thead>
+      <tbody>`;
     projAdv.forEach(x => {
       const isPaid = String(x.status||'').includes('已付');
       h+=`<tr style="${isPaid?'opacity:.55':''}">
