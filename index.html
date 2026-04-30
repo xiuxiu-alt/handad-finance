@@ -1431,6 +1431,18 @@ async function rRemind(){
   const dayOfMonth = now2.getDate();
   const curYM_str = `${now2.getFullYear()}-${String(curMonth).padStart(2,'0')}`;
 
+  // 月份切換 view state（預設當月，切到別月看歷史/未來）
+  if(!window._monthlyViewYM) window._monthlyViewYM = curYM_str;
+  const viewYM = window._monthlyViewYM;
+  const [viewYear, viewMonthNum] = viewYM.split('-').map(Number);
+  const isCurrentMonth = viewYM === curYM_str;
+  const _ymOffset = (offset) => {
+    const d = new Date(viewYear, viewMonthNum-1+offset, 1);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  };
+  const prevYM = _ymOffset(-1);
+  const nextYM = _ymOffset(1);
+
   // metadata schema:
   //   freq:      'monthly' | 'bimonthly' | 'quarterly' | 'yearly'
   //   months:    null（每月）| 陣列（雙月/季/年付對應月份）
@@ -1462,10 +1474,10 @@ async function rRemind(){
     {cat:'工具', name:'Seameet', amount:320, payer:'老闆代墊', freq:'monthly', autoDebit:true, note:'信用卡自動扣'},
   ];
 
-  // 篩本月該出現的項目（雙月/季/年付只在指定月份出現）
+  // 篩本月該出現的項目（雙月/季/年付只在指定月份出現）— 用切換後的月份
   const isItemThisMonth = (it) => {
     if(it.freq === 'monthly') return true;
-    if(['bimonthly','quarterly','yearly'].includes(it.freq)) return (it.months||[]).includes(curMonth);
+    if(['bimonthly','quarterly','yearly'].includes(it.freq)) return (it.months||[]).includes(viewMonthNum);
     return false;
   };
   const itemsThisMonth = MONTHLY_FIXED_ALL.filter(isItemThisMonth);
@@ -1479,12 +1491,12 @@ async function rRemind(){
     '工具':{color:'#065F46', icon:'🔧'},
   };
 
-  // 讀月付狀態紀錄（從 sheet）
+  // 讀月付狀態紀錄（從 sheet）— 篩切換後的月份
   const monthStatusData = await gs('月付狀態紀錄').catch(()=>[]);
   const monthStatus = {};  // {itemName: {paid:bool, paidDate:str, sheetRow:int}}
   monthStatusData.slice(1).forEach((r,i)=>{
     if(!r||!r[0])return;
-    if(String(r[0])!==curYM_str)return;
+    if(String(r[0])!==viewYM)return;
     monthStatus[String(r[1]||'')] = {
       paid: String(r[2]||'').includes('已付'),
       paidDate: r[3]||'',
@@ -1492,10 +1504,10 @@ async function rRemind(){
     };
   });
 
-  // 動態：讀同仁_設計師月費當月加總，套到 dynamic:'designer' 的項目
+  // 動態：讀同仁_設計師月費當月加總，套到 dynamic:'designer' 的項目 — 用切換後的月份
   const designerData = await gs('同仁_設計師月費').catch(()=>[]);
   const designerDynamic = designerData.slice(1)
-    .filter(r => r && String(r[2]||'').startsWith(curYM_str))
+    .filter(r => r && String(r[2]||'').startsWith(viewYM))
     .reduce((s, r) => s + (parseInt(r[4])||0), 0);
   MONTHLY_FIXED.forEach(x => {
     if(x.dynamic === 'designer') x.amount = designerDynamic;
@@ -1514,16 +1526,29 @@ async function rRemind(){
   const mAuto = autoItems.reduce((s,x)=>s+x.amount, 0);
   const monthlyTotal = mPaid + mPending + mAuto;  // 給後段「本月支出小計」用
 
-  h+=`<div class="sl" style="margin-top:20px"><h4>📅 每月固定應付清單</h4><span class="sm">${curMonth}月 / 待付 ${$m(mPending)} · 自動扣 ${$m(mAuto)}</span></div>`;
+  h+=`<div class="sl" style="margin-top:20px;align-items:center">
+    <h4>📅 每月固定應付清單</h4>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-o btn-sm" onclick="changeMonthView('${prevYM}')" title="上一月">◀</button>
+      <span style="font-weight:700;font-size:14px;color:${isCurrentMonth?'var(--ink)':'#92400E'};min-width:75px;text-align:center">${viewYear} / ${String(viewMonthNum).padStart(2,'0')}${!isCurrentMonth?' 📜':''}</span>
+      <button class="btn btn-o btn-sm" onclick="changeMonthView('${nextYM}')" title="下一月">▶</button>
+      ${!isCurrentMonth?`<button class="btn btn-y btn-sm" onclick="changeMonthView('${curYM_str}')" style="margin-left:6px">📅 回當月</button>`:''}
+      <span class="sm" style="margin-left:10px">待付 ${$m(mPending)} · 自動扣 ${$m(mAuto)}</span>
+    </div>
+  </div>`;
+
+  if(!isCurrentMonth){
+    h+=`<div class="al" style="background:#FEF3C7;border-left:3px solid #92400E;color:#92400E;font-weight:500">📜 你正在檢視 <b>${viewYear}/${String(viewMonthNum).padStart(2,'0')}</b> 的歷史紀錄。chip 切換仍會寫入該月的記錄。</div>`;
+  }
 
   // KPI 三欄：本月已付 / 本月待付 / 自動扣款
   h+=`<div class="kpi-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
-    <div class="kc gr"><div class="kl">本月已付</div><div class="kv">${$m(mPaid)}</div><div class="ks">${manualItems.filter(x=>monthStatus[x.name]?.paid).length} 項手動</div></div>
-    <div class="kc yl"><div class="kl">本月待付</div><div class="kv">${$m(mPending)}</div><div class="ks">${manualItems.filter(x=>!monthStatus[x.name]?.paid).length} 項手動</div></div>
+    <div class="kc gr"><div class="kl">${isCurrentMonth?'本月':viewMonthNum+'月'}已付</div><div class="kv">${$m(mPaid)}</div><div class="ks">${manualItems.filter(x=>monthStatus[x.name]?.paid).length} 項手動</div></div>
+    <div class="kc yl"><div class="kl">${isCurrentMonth?'本月':viewMonthNum+'月'}待付</div><div class="kv">${$m(mPending)}</div><div class="ks">${manualItems.filter(x=>!monthStatus[x.name]?.paid).length} 項手動</div></div>
     <div class="kc"><div class="kl">自動扣款</div><div class="kv">${$m(mAuto)}</div><div class="ks">${autoItems.length} 項信用卡</div></div>
   </div>`;
 
-  if(isAdmin && dayOfMonth>=1&&dayOfMonth<=8){
+  if(isAdmin && isCurrentMonth && dayOfMonth>=1&&dayOfMonth<=8){
     h+=`<div class="al am">⚠️ 目前是每月 ${dayOfMonth} 號，薪資支付期（1-8號），請確認是否已付款</div>`;
   }
 
@@ -2179,10 +2204,18 @@ async function submitAdvance(){
   catch(e){toast('⚠️ 新增失敗: '+e.message);}
 }
 
+// ═══ 月付清單 切換月份視圖 ═══
+function changeMonthView(ym){
+  window._monthlyViewYM = ym;
+  render();
+}
+
 // ═══ 月付清單 切換狀態（Renn薪水/Amy/工具等固定項目）═══
 async function toggleMonthlyPaid(itemName, markPaid){
-  const now=new Date();
-  const ym=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const ym = window._monthlyViewYM || (() => {
+    const n=new Date();
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;
+  })();
   cdel('月付狀態紀錄');
   
   try{
@@ -2197,15 +2230,18 @@ async function toggleMonthlyPaid(itemName, markPaid){
       }
     }
     
-    const today=now.toISOString().split('T')[0];
+    // 用 local time 取今天日期（避免 UTC 時差問題）
+    const n2=new Date();
+    const today=`${n2.getFullYear()}-${String(n2.getMonth()+1).padStart(2,'0')}-${String(n2.getDate()).padStart(2,'0')}`;
     const status=markPaid?'✅已付':'⏳待付';
     const paidDate=markPaid?today:'';
     
     if(foundRow){
-      // 更新既有列
-      await post({action:'updateRow',sheetName:'月付狀態紀錄',row:foundRow,values:[ym,itemName,status,paidDate,'']});
+      // 改既有列：用 updateCell（跟代墊款 toggle 同模式，已驗證可行）
+      await post({action:'updateCell',sheetName:'月付狀態紀錄',row:foundRow,col:3,value:status});
+      await post({action:'updateCell',sheetName:'月付狀態紀錄',row:foundRow,col:4,value:paidDate});
     }else{
-      // 新增一列
+      // 新增一列（append）
       await post({sheetName:'月付狀態紀錄',row:[ym,itemName,status,paidDate,'']});
     }
     
@@ -2213,7 +2249,8 @@ async function toggleMonthlyPaid(itemName, markPaid){
     toast(markPaid?'✅ 已標記為已付':'已改回待付');
     setTimeout(render,500);
   }catch(e){
-    toast('⚠️ 切換失敗: '+e.message);
+    console.error('toggleMonthlyPaid error:', e);
+    toast('⚠️ 切換失敗: '+(e&&e.message?e.message:'未知錯誤，請開 F12 看 console'));
   }
 }
 
