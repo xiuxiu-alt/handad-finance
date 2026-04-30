@@ -13,7 +13,7 @@ window.STAFF_MODE = true;
 <style>
 :root{
   --ink:#111110;--ink2:#3A3A38;--ink3:#6B6B68;--ink4:#9A9A96;
-  --paper:#FAFAF8;--paper2:#F0EFE9;--paper3:#E2E1DB;
+  --paper:#EDE7D5;--paper-card:#FAF8F2;--paper2:#F0EFE9;--paper3:#E2E1DB;--card-border:#C9C5B5;
   --y:#F6C31C;--yd:#D9AB0E;--yl:rgba(246,195,28,.15);
   --re:#B91C1C;--rl:rgba(185,28,28,.07);
   --gr:#166534;--gl:rgba(22,101,52,.07);
@@ -128,9 +128,25 @@ aside{width:200px;background:var(--ink);flex-shrink:0;display:flex;flex-directio
 .fill-re{background:var(--re);}
 .fill-gr{background:#16A34A;}
 
+/* ── BULK DELETE ─── */
+.bulk-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:var(--r5);display:none;align-items:center;justify-content:space-between;gap:24px;box-shadow:0 6px 20px rgba(0,0,0,.3);z-index:100;}
+.bulk-bar.on{display:flex;}
+.bulk-cnt{font-size:14px;font-weight:600;}
+.bulk-actions{display:flex;gap:8px;}
+.bulk-clear{background:transparent;color:#bbb;border:1px solid #555;padding:7px 12px;border-radius:var(--r3);cursor:pointer;font-size:12px;}
+.bulk-clear:hover{color:#fff;border-color:#888;}
+.bulk-del{background:#B91C1C;color:#fff;border:none;padding:8px 16px;border-radius:var(--r3);cursor:pointer;font-size:13px;font-weight:700;}
+.bulk-del:hover{background:#991414;}
+.bulk-del:disabled{opacity:.6;cursor:wait;}
+.row-cb{cursor:pointer;width:16px;height:16px;}
+.cb-cell{text-align:center;cursor:default;}
+.is-admin table.pay-table th.cb-th,.is-admin table.pay-table td.cb-cell,
+table.pay-table th.cb-th,table.pay-table td.cb-cell{width:36px;text-align:center;padding-left:8px;padding-right:8px;}
+table.pay-table th.cb-th input{cursor:pointer;}
+
 /* ── CARD ─── */
-.card{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--r8);overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(17,17,16,.04),0 0 0 0 rgba(17,17,16,0);transition:box-shadow .2s;}
-.card:hover{box-shadow:0 2px 8px rgba(17,17,16,.06);}
+.card{background:var(--paper-card);border:1.5px solid var(--card-border);border-radius:var(--r8);overflow:hidden;margin-bottom:20px;box-shadow:0 2px 6px rgba(45,41,38,.06),0 1px 2px rgba(45,41,38,.04);transition:box-shadow .2s;}
+.card:hover{box-shadow:0 4px 12px rgba(45,41,38,.08);}
 .ch{padding:14px 18px;border-bottom:2px solid #1a1816;display:flex;align-items:center;justify-content:space-between;background:#2D2926;color:#FAF8F2;}
 .ch h3{font-size:16px;font-weight:700;color:#FAF8F2;letter-spacing:-.015em;}
 .ch .meta{font-size:12px;color:#C9C5B5;font-weight:500;}
@@ -162,7 +178,8 @@ th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spaci
 td{padding:9px 12px;font-size:14px;border-bottom:1px solid var(--paper2);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(246,195,28,.04);}
-tr.rod td{background:rgba(185,28,28,.04);}
+tr.rod td{background:rgba(185,28,28,.12)!important;border-bottom:1px solid rgba(185,28,28,.25);}
+tr.rod td:first-child{border-left:3px solid var(--re);}
 tr.rds td{background:rgba(146,64,14,.04);}
 td.num{font-variant-numeric:tabular-nums;font-weight:600;text-align:right;white-space:nowrap;}
 td.dt{font-size:12px;color:var(--ink4);white-space:nowrap;}
@@ -379,7 +396,6 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     <nav class="sb-nav">
       <div class="ns">總覽</div>
       <div class="ni" data-k="db" onclick="go(this)"><div class="d"></div>儀表板</div>
-      <div class="ni" data-k="remind" onclick="go(this)"><div class="d"></div>結帳提醒 & 月付清單 <span class="bd" id="rdBd" style="display:none">!</span></div>
       <div class="ni" data-k="vendors" onclick="go(this)"><div class="d"></div>廠商清單</div>
 
       <div class="ns">海保署</div>
@@ -596,13 +612,16 @@ function staffLogout(){
 }
 
 function boot(){
-  role='staff';
+  // 同仁在專案頁的權限 = admin（可編輯/刪除/新增付款記錄、改狀態、編輯收款進度與執行預算）
+  // 唯一差別：nav 沒有「公司固定支出」「老闆代墊款」入口 + UI 顯示「同仁」字樣
+  role='admin';
   document.getElementById('uAv').textContent='S';
   document.getElementById('uNm').textContent='同仁';
   const rb=document.getElementById('uRb'); rb.textContent='同仁';
   rb.className='rb stf';
   const app=document.getElementById('app');
-  document.getElementById('tg').textContent='STAFF';
+  app.classList.add('is-admin');  // 啟用 admin CSS（如付款記錄整列可點擊編輯）
+  document.getElementById('tg').textContent='STAFF';  // 但 tag 還是顯示 STAFF
   setTimeout(()=>{const s=document.getElementById('splash');s.classList.add('out');setTimeout(()=>s.style.display='none',380);},800);
   app.classList.add('on');
   // 預設進入「我要填寫」頁
@@ -610,7 +629,7 @@ function boot(){
   document.querySelectorAll('.ni').forEach(i=>{i.classList.remove('on');if(i.dataset.k==='staff_form')i.classList.add('on');});
   document.getElementById('tt').textContent='📝 我要填寫';
   render();
-  // 背景預載專案資料（不阻塞 UI），讓使用者點專案時秒開
+  // 背景預載專案資料
   setTimeout(()=>{
     PKS.forEach((k,i)=>{
       setTimeout(()=>{
@@ -1052,7 +1071,7 @@ async function rProj(key){
       </div>
     `:''}
   </div>
-  <div class="tw"><table class="pay-table" id="pt"><thead><tr><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>證明</th><th></th></tr></thead><tbody>`;
+  <div class="tw"><table class="pay-table" id="pt"><thead><tr><th class="cb-th"><input type="checkbox" onclick="toggleAllPayRows(this)" title="全選"></th><th>日期</th><th>類別</th><th>廠商</th><th>說明</th><th style="text-align:right">金額</th><th>付款人</th><th>截止日</th><th>狀態</th><th>報價單</th><th>證明</th><th></th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
     const s=String(r[7]||''),sc=$sc(s),ip=sc==='pd';
     const py=String(r[6]||''),dl=String(r[10]||'');
@@ -1062,6 +1081,7 @@ async function rProj(key){
     const mMatch=dateStr.match(/(\d{4})[-/](\d{1,2})/);
     const monthTag=mMatch?`${mMatch[1]}-${mMatch[2].padStart(2,'0')}`:'';
     h+=`<tr data-sc="${sc}" data-od="${isOD}" data-month="${monthTag}" class="${isOD?'rod':isDS?'rds':''}">
+      <td class="cb-cell" onclick="event.stopPropagation()"><input type="checkbox" class="row-cb" data-idx="${i}" onclick="togglePayRowCheck(this,${i})"></td>
       <td class="dt">${$d(r[0])}</td><td style="font-size:12px;color:var(--ink4)">${r[1]||''}</td>
       <td style="font-weight:600">${r[2]||''}</td>
       <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r[3]||''}">${r[3]||''}</td>
@@ -1072,9 +1092,11 @@ async function rProj(key){
       <td><button class="row-edit" onclick="editPayRow(${i})" title="編輯">✏️</button></td>
     </tr>`;
   });
-  h+=`</tbody></table></div></div>`;
+  h+=`</tbody></table></div><div class="bulk-bar" id="bulkBar"><span class="bulk-cnt">已選 0 筆</span><div class="bulk-actions"><button class="bulk-clear" onclick="clearPayRowSelection()">取消選取</button><button class="bulk-del" id="bulkDelBtn" onclick="bulkDeletePayRows()">🗑️ 刪除選中</button></div></div></div>`;
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
   window._curRows=rows;window._curKey=key;window._curReceipts=receiptRows;
+  if(window._selectedPayRows)window._selectedPayRows.clear();
+  updateBulkBar();
 }
 
 // ═══ BUDGET INLINE EDIT ═══════════════════
@@ -1826,7 +1848,6 @@ async function deletePayRow(){
   cdel(sheet);
   toast('刪除中...');
   try{
-    // 一次 API call 清空整列（後端 clearRow action）
     await post({action:'clearRow',sheetName:sheet,row:sheetRow});
     closeModal('pay');
     toast('✅ 記錄已刪除');
@@ -1836,6 +1857,87 @@ async function deletePayRow(){
   }finally{
     if(delBtn){delBtn.disabled=false;delBtn.innerHTML='🗑️ 刪除此筆';}
   }
+}
+
+// ═══ 付款記錄多選刪除 ═══════════════════
+window._selectedPayRows = new Set();
+
+function togglePayRowCheck(cb, idx){
+  if(cb.checked) window._selectedPayRows.add(idx);
+  else window._selectedPayRows.delete(idx);
+  updateBulkBar();
+}
+
+function toggleAllPayRows(headerCb){
+  document.querySelectorAll('.row-cb').forEach(cb=>{
+    const tr = cb.closest('tr');
+    if(tr && tr.style.display === 'none') return;
+    cb.checked = headerCb.checked;
+    const idx = parseInt(cb.dataset.idx);
+    if(headerCb.checked) window._selectedPayRows.add(idx);
+    else window._selectedPayRows.delete(idx);
+  });
+  updateBulkBar();
+}
+
+function clearPayRowSelection(){
+  window._selectedPayRows.clear();
+  document.querySelectorAll('.row-cb').forEach(cb=>cb.checked=false);
+  document.querySelectorAll('.cb-th input').forEach(cb=>cb.checked=false);
+  updateBulkBar();
+}
+
+function updateBulkBar(){
+  const bar = document.getElementById('bulkBar');
+  if(!bar) return;
+  const n = window._selectedPayRows.size;
+  if(n > 0){
+    bar.classList.add('on');
+    bar.querySelector('.bulk-cnt').textContent = `已選 ${n} 筆`;
+  }else{
+    bar.classList.remove('on');
+  }
+}
+
+async function bulkDeletePayRows(){
+  const n = window._selectedPayRows.size;
+  if(n === 0){toast('⚠️ 請先勾選要刪除的記錄');return;}
+  if(!confirm(`確定要刪除選中的 ${n} 筆付款記錄嗎？\n\n此操作無法復原。`))return;
+  
+  const sheet = PKS.includes(cur) ? cur+'_付款帳' : null;
+  if(!sheet) return;
+  
+  const rowNums = Array.from(window._selectedPayRows)
+    .map(idx => window._curRows && window._curRows[idx] && window._curRows[idx].__sheetRow)
+    .filter(r => r)
+    .sort((a, b) => b - a);
+  
+  if(rowNums.length === 0){toast('⚠️ 找不到對應的 sheet 列');return;}
+  
+  const btn = document.getElementById('bulkDelBtn');
+  btn.disabled = true;
+  cdel(sheet);
+  
+  let done = 0, failed = 0;
+  for(const r of rowNums){
+    btn.textContent = `🔄 刪除中 ${done+1}/${rowNums.length}...`;
+    try{
+      await post({action:'clearRow', sheetName:sheet, row:r});
+      done++;
+    }catch(e){
+      failed++;
+      console.error(`刪除 row ${r} 失敗:`, e);
+    }
+  }
+  
+  if(failed === 0){
+    toast(`✅ 已刪除 ${done} 筆`);
+  }else{
+    toast(`⚠️ 完成 ${done} 筆，失敗 ${failed} 筆`);
+  }
+  
+  window._selectedPayRows.clear();
+  setTimeout(render, 500);
 }
 
 // 一鍵初始化撥款項目（從模板批次寫入 _總覽 sheet）
