@@ -859,7 +859,7 @@ async function rProj(key){
   let projTotal=0,costItems=[],budgetRows=[],receiptRows=[];
   if(ov.length>5){
     projTotal=parseInt(ov[5]?.[1])||0;
-    for(let i=6;i<=9;i++){const r=ov[i];if(r?.[0]&&!String(r[0]).includes('▌'))costItems.push({nm:String(r[0]),am:parseInt(r[1])||0,pct:String(r[2]||''),ds:String(r[3]||'')});}
+    for(let i=6;i<=10;i++){const r=ov[i];if(r?.[0]&&!String(r[0]).includes('▌'))costItems.push({nm:String(r[0]),am:parseInt(r[1])||0,pct:(()=>{const v=r[2];return(typeof v==='number'&&v>0&&v<1)?(v*100).toFixed(1)+'%':String(v||'');})(),ds:String(r[3]||'')});}
     // Budget rows: find rows between header and 合計
     let budgetStart=-1,budgetEnd=-1;
     for(let i=0;i<ov.length;i++){
