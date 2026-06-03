@@ -425,7 +425,7 @@ table.pay-table td{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
         </div>
       </div>
       <div class="tb-r">
-        <button class="btn btn-o btn-sm" onclick="render()">↻ 重整</button>
+        <button class="btn btn-o btn-sm" onclick="Object.keys(_cache).forEach(k=>delete _cache[k]);render()">↻ 重整</button>
         <button class="btn btn-o btn-sm" id="csvBtn" onclick="exportCSV()" style="display:none">↓ CSV</button>
         <button class="btn btn-o btn-sm" id="advBtn" onclick="openModal('advances')" style="display:none">+ 新增代墊款</button>
         <button class="btn btn-y btn-sm" id="addBtn" onclick="openModal('pay')" style="display:none;opacity:0;pointer-events:none">+ 新增記帳</button>
@@ -625,6 +625,11 @@ function boot(u){
       }, i*600);
     });
   }, 5000);
+  // 預載所有靜態工作表，讓非專案頁面也能秒開
+  const STATIC_SHEETS=['公司固定成本','老闆代墊款彙整','稅務費用','同仁_設計師月費','同仁_PM加班費','同仁_PM請假紀錄','月付狀態紀錄'];
+  setTimeout(()=>{
+    STATIC_SHEETS.forEach((s,i)=>setTimeout(()=>gs(s).catch(()=>{}), i*400));
+  }, 3000);
 }
 
 // ═══ CACHE (v30: localStorage + Stale-While-Revalidate) ══════
@@ -656,12 +661,19 @@ function cdel(k){
 
 // ═══ FETCH (v30: SWR + in-flight dedup) ══════
 const _inflight = new Map(); // 同個 sheet 同時呼叫多次，只打一次 API
+const _cache = {}; // in-memory cache: { sheetName: { data, ts } }
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in-memory TTL
 
 async function _fetchSheet(name){
+  // Check in-memory cache first (fastest path)
+  if(_cache[name] && Date.now()-_cache[name].ts < CACHE_TTL){
+    return _cache[name].data;
+  }
   const r = await fetch(GAS+'?sheetName='+encodeURIComponent(name));
   const j = await r.json();
   if(j.error) throw new Error(j.error);
   const data = j.data || [];
+  _cache[name] = {data, ts: Date.now()}; // store in memory
   cset(name, data);
   return data;
 }
