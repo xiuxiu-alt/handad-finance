@@ -1141,7 +1141,7 @@ async function rProj(key){
       <td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r[3]||''}">${r[3]||''}</td>
       <td class="num">${r[4]?$m(r[4]):''}</td>
       <td><span class="payer ${py.includes('老闆')?'py-bo':'py-co'}">${py}</span></td>
-      <td>${$due(dl,ip)}</td><td>${$st(s,i+6,key+'_付款帳')}</td>
+      <td>${$due(dl,ip)}</td><td>${$st(s,(r.__sheetRow||(i+6)),key+'_付款帳')}</td>
       <td class="lk">${$lk(r[9],'報價單')}</td><td class="lk">${$lk(r[11],'證明')}</td>
       <td><button class="row-edit" onclick="editPayRow(${i})" title="編輯">✏️</button></td>
     </tr>`;
