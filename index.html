@@ -1753,10 +1753,11 @@ async function rRemind(){
     // 注：Wonda SEO + Amy 社群已移除，改在各專案的付款記錄表追蹤
 
     // ─── 政府 / 法定（不同頻率）───
-    {cat:'政府', name:'勞保+就業保險（Renn）', amount:3969, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, note:'每月繳款書到再付'},
-    {cat:'政府', name:'健保（Renn）', amount:1428, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, note:'每月繳款書到再付'},
+    {cat:'政府', name:'勞保+就業保險（Renn）', amount:0, defaultAmt:3634, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, manual:true, note:'可改，預設 NT$3,634'},
+    {cat:'政府', name:'勞工退休金（Renn）', amount:0, defaultAmt:1908, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, manual:true, note:'可改，預設 NT$1,908'},
+    {cat:'政府', name:'健保（含老闆＋Renn）', amount:0, payer:'公司', freq:'monthly', dueDay:null, autoDebit:false, manual:true, note:'每月自填（健保繳款書）'},
     {cat:'政府', name:'營業稅', amount:0, payer:'公司', freq:'bimonthly', dynamic:'tax_business', dueDay:15, autoDebit:false, note:'雙月 15 號前申報（金額讀稅務頁）'},
-    {cat:'政府', name:'停車費', amount:0, payer:'公司', freq:'quarterly', months:[1,4,7,10], dueDay:null, autoDebit:false, note:'每季一次（金額待確認）'},
+    {cat:'政府', name:'停車費', amount:6300, payer:'公司', freq:'quarterly', months:[1,4,7,10], dueDay:null, autoDebit:false, note:'每季一次 NT$6,300'},
     {cat:'政府', name:'會計費', amount:0, payer:'公司', freq:'yearly', dynamic:'tax_accounting', dueDay:null, autoDebit:false, note:'年繳（金額讀稅務頁）'},
 
     // ─── 自動扣款（純資訊，不顯示 chip）───
@@ -1891,6 +1892,14 @@ async function rRemind(){
     }
   });
 
+  // 自填項目（manual:true）：讀 localStorage 當月填的金額，套進 x.amount 供後續 totals/KPI 計算
+  MONTHLY_FIXED.forEach(x => {
+    if(x.manual){
+      const v = localStorage.getItem(`hf_manual_${x.name}_${viewYM}`);
+      x.amount = (v!=null && v!=='') ? (parseInt(v)||0) : (x.defaultAmt||0);
+    }
+  });
+
   // 拆兩塊：手動轉帳 vs 自動扣款
   const manualItems = MONTHLY_FIXED.filter(x => !x.autoDebit);
   const autoItems = MONTHLY_FIXED.filter(x => x.autoDebit);
@@ -1963,7 +1972,7 @@ async function rRemind(){
       const freqBadge = x.freq==='bimonthly'?'雙月':x.freq==='quarterly'?'每季':x.freq==='yearly'?'每年':'';
       // chip / 提示
       let chipHtml = '';
-      if(isPlaceholder){
+      if(isPlaceholder && !x.manual){
         // 金額還沒填
         if(isTaxReadOnly){
           chipHtml = `<span class="chip pn" onclick="go(document.querySelector('[data-k=tax]'))" style="cursor:pointer;user-select:none;min-width:60px;text-align:center" title="去稅務頁填金額">→ 稅務頁</span>`;
@@ -1983,7 +1992,9 @@ async function rRemind(){
         </div>
         <div style="text-align:right;flex-shrink:0;display:flex;align-items:center;gap:8px">
           <div style="text-align:right">
-            <div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>
+            ${x.manual
+              ? `<input type="number" inputmode="numeric" class="manual-amt" value="${x.amount||''}" placeholder="自填金額" onchange="setManualAmt('${x.name.replace(/'/g,"\\'")}', this.value)" onclick="event.stopPropagation()" style="width:98px;text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);border:1px solid var(--paper2);border-radius:6px;padding:3px 7px;background:var(--paper)">`
+              : `<div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>`}
             <div style="font-size:10px;color:var(--ink4);margin-top:1px">${x.payer}</div>
           </div>
           ${chipHtml}
@@ -2732,6 +2743,16 @@ async function setAdvanceStatus(sheetRow, val, el){
 }
 
 // v30.1: 月付清單下拉選單版
+function setManualAmt(itemName, val){
+  const ym = window._monthlyViewYM || (()=>{const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;})();
+  const clean = String(val).replace(/[^0-9.-]/g,'');
+  try{
+    if(clean==='') localStorage.removeItem(`hf_manual_${itemName}_${ym}`);
+    else localStorage.setItem(`hf_manual_${itemName}_${ym}`, String(parseInt(clean)||0));
+  }catch(e){}
+  render();
+}
+
 async function setMonthlyPaid(itemName, val, el){
   const markPaid = parseInt(val)===1;
   // 1. UI 立即變色
