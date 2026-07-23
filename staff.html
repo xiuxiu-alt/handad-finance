@@ -1564,6 +1564,17 @@ async function rStaffRecords(){
   
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
 }
+function setManualAmt(itemName, val){
+  const n=new Date();
+  const ym = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;
+  const clean = String(val).replace(/[^0-9.-]/g,'');
+  try{
+    if(clean==='') localStorage.removeItem(`hf_manual_${itemName}_${ym}`);
+    else localStorage.setItem(`hf_manual_${itemName}_${ym}`, String(parseInt(clean)||0));
+  }catch(e){}
+  render();
+}
+
 async function rRemind(){
   const results=await Promise.all(PKS.map(k=>gs(k+'_付款帳').catch(()=>[])));
   let items=[];
@@ -1615,10 +1626,11 @@ async function rRemind(){
     {cat:'社群', name:'Amy 小編 社群發文', amount:20000, payer:'公司', freq:'monthly', autoDebit:false, note:'每月固定支付'},
 
     // ─── 政府 / 法定（不同頻率）───
-    {cat:'政府', name:'勞保+就業保險（Renn）', amount:3969, payer:'公司', freq:'monthly', autoDebit:false, note:'每月繳款書到再付'},
-    {cat:'政府', name:'健保（Renn）', amount:1428, payer:'公司', freq:'monthly', autoDebit:false, note:'每月繳款書到再付'},
+    {cat:'政府', name:'勞保+就業保險（Renn）', amount:0, defaultAmt:3634, payer:'公司', freq:'monthly', autoDebit:false, manual:true, note:'可改，預設 NT$3,634'},
+    {cat:'政府', name:'勞工退休金（Renn）', amount:0, defaultAmt:1908, payer:'公司', freq:'monthly', autoDebit:false, manual:true, note:'可改，預設 NT$1,908'},
+    {cat:'政府', name:'健保（含老闆＋Renn）', amount:0, payer:'公司', freq:'monthly', autoDebit:false, manual:true, note:'每月自填（健保繳款書）'},
     {cat:'政府', name:'營業稅', amount:0, payer:'公司', freq:'bimonthly', months:[1,3,5,7,9,11], autoDebit:false, note:'雙月 15 號前申報（金額待確認）'},
-    {cat:'政府', name:'停車費', amount:0, payer:'公司', freq:'quarterly', months:[1,4,7,10], autoDebit:false, note:'每季一次（金額待確認）'},
+    {cat:'政府', name:'停車費', amount:6300, payer:'公司', freq:'quarterly', months:[1,4,7,10], autoDebit:false, note:'每季一次 NT$6,300'},
     {cat:'政府', name:'會計費', amount:0, payer:'公司', freq:'yearly', months:[3], autoDebit:false, note:'年繳（月份與金額待確認）'},
 
     // ─── 自動扣款（純資訊）───
@@ -1650,6 +1662,14 @@ async function rRemind(){
     .reduce((s, r) => s + (parseInt(r[4])||0), 0);
   MONTHLY_FIXED.forEach(x => {
     if(x.dynamic === 'designer') x.amount = designerDynamic;
+  });
+
+  // 自填項目（manual:true）：讀 localStorage 當月金額
+  MONTHLY_FIXED.forEach(x => {
+    if(x.manual){
+      const v = localStorage.getItem(`hf_manual_${x.name}_${curYM_str}`);
+      x.amount = (v!=null && v!=='') ? (parseInt(v)||0) : (x.defaultAmt||0);
+    }
   });
 
   const manualItems = MONTHLY_FIXED.filter(x => !x.autoDebit);
@@ -1689,7 +1709,9 @@ async function rRemind(){
           <div style="font-size:11px;color:var(--ink4);margin-top:1px">${x.note}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>
+          ${x.manual
+            ? `<input type="number" inputmode="numeric" value="${x.amount||''}" placeholder="自填金額" onchange="setManualAmt('${x.name.replace(/'/g,"\\'")}', this.value)" style="width:98px;text-align:right;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);border:1px solid var(--paper2);border-radius:6px;padding:3px 7px;background:var(--paper)">`
+            : `<div style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;color:${isPlaceholder?'var(--am)':'var(--ink)'}">${isPlaceholder?'待確認':$m(x.amount)}</div>`}
           <div style="font-size:10px;color:var(--ink4);margin-top:1px">${x.payer}</div>
         </div>
       </div>`;
@@ -1724,7 +1746,7 @@ async function rRemind(){
   }
 
   h+=`<div style="font-size:11px;color:var(--ink4);margin-top:8px;padding:8px 12px;background:var(--paper2);border-radius:var(--r5)">
-    💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。「待確認」的項目（營業稅/停車費/會計費）請告知 Claude 補上正確金額。設計師薪水自動讀取「同仁_設計師月費」當月加總。
+    💡 以上清單為每月提醒用，實際付款後請在對應的付款帳或代墊款頁面新增記錄。「待確認」的項目（營業稅/會計費）請告知 Claude 補上正確金額；勞保／就業保險／健保費用可直接於欄位自填。設計師薪水自動讀取「同仁_設計師月費」當月加總。
   </div>`;
 
   document.getElementById('ct').innerHTML='<div class="ct-inner">'+h+'</div>';
